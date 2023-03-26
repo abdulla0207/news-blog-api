@@ -27,8 +27,10 @@ public class ProfileEntity {
     @Column
     private String password;
     @Column
+    @Enumerated(value = EnumType.STRING)
     private ProfileStatusEnum status;
     @Column
+    @Enumerated(value = EnumType.STRING)
     private ProfileRoleEnum role;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
