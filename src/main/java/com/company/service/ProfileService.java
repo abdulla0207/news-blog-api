@@ -4,6 +4,7 @@ import com.company.dto.ProfileDTO;
 import com.company.entity.ProfileEntity;
 import com.company.enums.ProfileRoleEnum;
 import com.company.enums.ProfileStatusEnum;
+import com.company.exception.ItemNotFoundException;
 import com.company.exception.ProfileCreationException;
 import com.company.repository.ProfileRepository;
 import com.company.util.MD5Util;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProfileService {
@@ -87,5 +89,15 @@ public class ProfileService {
         profileEntity.setPhoneNumber(profileDTO.getPhoneNumber());
 
         return profileEntity;
+    }
+
+    public String deleteById(int id){
+        Optional<ProfileEntity> byId = profileRepository.findById(id);
+
+        if(byId.isEmpty()){
+            throw new ItemNotFoundException("Profile with id " + id + " not found");
+        }
+        profileRepository.deleteById(id);
+        return "Profile deleted";
     }
 }

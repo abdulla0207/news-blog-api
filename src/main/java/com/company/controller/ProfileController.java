@@ -27,10 +27,19 @@ public class ProfileController {
         return ResponseEntity.ok(responseDTO);
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteById(@PathVariable int id){
+        String s = profileService.deleteById(id);
+
+        return ResponseEntity.ok(s);
+    }
+
     @GetMapping("/")
     public ResponseEntity<?> getList(@RequestParam("page") int page){
         Page<ProfileDTO> profileList = profileService.getProfileList(page);
 
         return ResponseEntity.ok(profileList);
     }
+
+
 }
