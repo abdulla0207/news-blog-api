@@ -5,7 +5,7 @@ import com.company.entity.ProfileEntity;
 import com.company.enums.ProfileRoleEnum;
 import com.company.enums.ProfileStatusEnum;
 import com.company.exception.ItemNotFoundException;
-import com.company.exception.ProfileCreationException;
+import com.company.exception.ProfileCreateException;
 import com.company.repository.ProfileRepository;
 import com.company.util.MD5Util;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,14 +32,14 @@ public class ProfileService {
     public ProfileDTO create(ProfileDTO profileDTO) {
         //Validation
         if(profileDTO.getName().isEmpty() || profileDTO.getName().isBlank())
-            throw new ProfileCreationException("Name field is empty");
+            throw new ProfileCreateException("Name field is empty");
         if(profileDTO.getSurname().isBlank() || profileDTO.getSurname().isEmpty())
-            throw new ProfileCreationException("Surname field is empty");
+            throw new ProfileCreateException("Surname field is empty");
         if(!profileDTO.getPassword().matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$"))
-            throw new ProfileCreationException("Password should have at least one number, one lowercase or uppercase character" +
+            throw new ProfileCreateException("Password should have at least one number, one lowercase or uppercase character" +
                     " and the length should be at least 8 letters");
         if(!profileDTO.getPhoneNumber().matches("[+]998[0-9]{9}"))
-            throw new ProfileCreationException("Phone number should be in the following format: +998 xx xxx-xx-xx");
+            throw new ProfileCreateException("Phone number should be in the following format: +998 xx xxx-xx-xx");
 
         profileRepository.save(toEntity(profileDTO));
         return profileDTO;
