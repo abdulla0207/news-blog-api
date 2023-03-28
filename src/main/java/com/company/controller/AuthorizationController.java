@@ -1,7 +1,7 @@
 package com.company.controller;
 
-import com.company.dto.auth.AuthResponseDTO;
-import com.company.dto.auth.LoginDTO;
+import com.company.dto.authentication.AuthResponseDTO;
+import com.company.dto.authentication.LoginDTO;
 import com.company.dto.RegistrationDTO;
 import com.company.service.AuthorizationService;
 import org.springframework.beans.factory.annotation.Autowired;

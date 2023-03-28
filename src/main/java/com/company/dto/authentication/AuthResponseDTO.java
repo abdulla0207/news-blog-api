@@ -1,4 +1,4 @@
-package com.company.dto.auth;
+package com.company.dto.authentication;
 
 import com.company.enums.ProfileRoleEnum;
 import lombok.Getter;
