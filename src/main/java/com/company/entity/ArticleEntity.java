@@ -16,23 +16,23 @@ import java.util.UUID;
 public class ArticleEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    private String uuid;
     @Column
     private String title;
     @Column
     private String description;
-    @Column
+    @Column(columnDefinition = "text")
     private String content;
-    @JoinColumn(name = "publisher_id", insertable = false, updatable = false)
-    @ManyToOne(fetch = FetchType.LAZY)
-    private ProfileEntity profile;
-    @JoinColumn(name = "category_id", insertable = false, updatable = false)
-    @OneToOne(fetch = FetchType.LAZY)
-    private CategoryEntity category;
-
-    @OneToMany(mappedBy = "article")
-    @Column(name = "comment")
-    private List<CommentEntity> commentEntity;
+//    @JoinColumn(name = "publisher_id", insertable = false, updatable = false)
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    private ProfileEntity profile;
+//    @JoinColumn(name = "category_id", insertable = false, updatable = false)
+//    @OneToOne(fetch = FetchType.LAZY)
+//    private CategoryEntity category;
+//
+//    @OneToMany(mappedBy = "article")
+//    @Column(name = "comment")
+//    private List<CommentEntity> commentEntity;
     @Column(name = "article_status")
     @Enumerated(EnumType.STRING)
     private ArticleStatusEnum articleStatus;
