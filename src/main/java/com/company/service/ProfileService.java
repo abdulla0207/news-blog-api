@@ -100,4 +100,24 @@ public class ProfileService {
         profileRepository.deleteById(id);
         return "Profile deleted";
     }
+
+    private ProfileEntity getById(int id){
+        Optional<ProfileEntity> byId = profileRepository.findById(id);
+        return byId.orElse(null);
+    }
+
+    public String update(ProfileDTO profileDTO, int id) {
+        ProfileEntity byId = getById(id);
+
+        if(byId == null)
+            throw new ItemNotFoundException("User with given id is not found");
+
+        byId.setSurname(profileDTO.getSurname());
+        byId.setName(profileDTO.getName());
+        byId.setPassword(profileDTO.getPassword());
+        byId.setEmail(profileDTO.getEmail());
+
+        profileRepository.save(byId);
+        return "Profile Updated";
+    }
 }
