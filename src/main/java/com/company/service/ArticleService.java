@@ -119,4 +119,29 @@ public class ArticleService {
 
         return "Article Updated";
     }
+
+    public ArticleDTO getById(String uuid) {
+        Optional<ArticleEntity> getById = articleRepository.findById(uuid);
+
+        if(getById.isEmpty())
+            throw new ItemNotFoundException("Article not FOUND");
+
+        ArticleEntity article = getById.get();
+
+        return toDto(article);
+    }
+
+    private ArticleDTO toDto(ArticleEntity article) {
+        ArticleDTO articleDTO = new ArticleDTO();
+
+        articleDTO.setUuid(article.getUuid());
+        articleDTO.setDescription(article.getDescription());
+        articleDTO.setContent(article.getContent());
+        articleDTO.setTitle(article.getTitle());
+        articleDTO.setVisible(article.isVisible());
+        articleDTO.setPublishedAt(article.getPublishedAt());
+        articleDTO.setCreatedAt(article.getCreatedAt());
+
+        return articleDTO;
+    }
 }

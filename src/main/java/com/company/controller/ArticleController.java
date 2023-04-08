@@ -44,4 +44,11 @@ public class ArticleController {
 
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/{uuid}")
+    public ResponseEntity<?> getById(@PathVariable String uuid){
+        ArticleDTO articleDTO = articleService.getById(uuid);
+
+        return ResponseEntity.ok(articleDTO);
+    }
 }
