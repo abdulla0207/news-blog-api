@@ -30,4 +30,18 @@ public class ArticleController {
 
         return ResponseEntity.ok(getArticlePaginationList);
     }
+
+    @DeleteMapping("/{uuid}")
+    public ResponseEntity<?> deleteById(@PathVariable String uuid){
+        String response = articleService.deleteById(uuid);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{uuid}")
+    public ResponseEntity<?> updateById(@PathVariable String uuid, @RequestBody ArticleDTO articleDTO){
+        String response = articleService.updateById(uuid, articleDTO);
+
+        return ResponseEntity.ok(response);
+    }
 }

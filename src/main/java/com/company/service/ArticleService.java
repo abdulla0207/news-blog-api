@@ -4,6 +4,7 @@ import com.company.dto.ArticleDTO;
 import com.company.entity.ArticleEntity;
 import com.company.enums.ArticleStatusEnum;
 import com.company.exception.ArticleCreateException;
+import com.company.exception.ItemNotFoundException;
 import com.company.repository.ArticleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,9 +13,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ArticleService {
@@ -73,6 +76,7 @@ public class ArticleService {
         ArticleDTO articleDTO = null;
         for (ArticleEntity articleEntity : articleEntities) {
             articleDTO = new ArticleDTO();
+            articleDTO.setUuid(articleEntity.getUuid());
             articleDTO.setTitle(articleEntity.getTitle());
             articleDTO.setDescription(articleEntity.getDescription());
             articleDTO.setVisible(articleEntity.isVisible());
@@ -85,5 +89,34 @@ public class ArticleService {
         }
 
         return res;
+    }
+
+    public String deleteById(String uuid) {
+        Optional<ArticleEntity> findById = articleRepository.findById(uuid);
+
+        if(findById.isEmpty())
+            throw new ItemNotFoundException("Article with the ID not found in DB");
+
+        articleRepository.deleteById(uuid);
+        return "Article deleted";
+    }
+
+    public String updateById(String uuid, ArticleDTO articleDTO) {
+        Optional<ArticleEntity> findById = articleRepository.findById(uuid);
+
+        if(findById.isEmpty())
+            throw new ItemNotFoundException("Article not found");
+
+        ArticleEntity article = findById.get();
+
+        article.setContent(articleDTO.getContent());
+        article.setTitle(articleDTO.getTitle());
+        article.setArticleStatus(articleDTO.getArticleStatus());
+        article.setVisible(articleDTO.isVisible());
+
+        articleRepository.save(article);
+        articleDTO.setUuid(article.getUuid());
+
+        return "Article Updated";
     }
 }
