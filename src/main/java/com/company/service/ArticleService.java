@@ -18,6 +18,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class ArticleService {
@@ -57,8 +59,8 @@ public class ArticleService {
         return article;
     }
 
-    public Page<ArticleDTO> getArticlePagination(int page) {
-        Pageable pageable = PageRequest.of(page, 5);
+    public Page<ArticleDTO> getArticlePagination(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
         Page<ArticleEntity> pageAllArticle =articleRepository.findAll(pageable);
 
         List<ArticleEntity> content = pageAllArticle.getContent();
@@ -89,6 +91,31 @@ public class ArticleService {
         }
 
         return res;
+    }
+
+    public Page<ArticleDTO> findAllOrderByPublishedDate(int page, int size){
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<ArticleEntity> articlesOrderByPublishedDate = articleRepository.findArticlesOrderByPublishedDate(pageable);
+
+        Stream<ArticleEntity> articleEntityStream = articlesOrderByPublishedDate.get();
+        long totalElements = articlesOrderByPublishedDate.getTotalElements();
+        List<ArticleDTO> response = (List<ArticleDTO>) articleEntityStream.map(articleEntity -> {
+            ArticleDTO dto = new ArticleDTO();
+            dto.setUuid(articleEntity.getUuid());
+            dto.setTitle(articleEntity.getTitle());
+            dto.setDescription(articleEntity.getDescription());
+            dto.setVisible(articleEntity.isVisible());
+            dto.setContent(articleEntity.getContent());
+            dto.setArticleStatus(articleEntity.getArticleStatus());
+            dto.setPublishedAt(articleEntity.getPublishedAt());
+            dto.setCreatedAt(articleEntity.getCreatedAt());
+            return dto;
+        }).toList();
+
+        Page<ArticleDTO> articleDTOS = new PageImpl<>(response, pageable, totalElements);
+
+        return articleDTOS;
     }
 
     public String deleteById(String uuid) {

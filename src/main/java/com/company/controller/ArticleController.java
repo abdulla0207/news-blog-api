@@ -7,6 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/article")
 public class ArticleController {
@@ -25,8 +27,8 @@ public class ArticleController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<?> getArticlePagination(@RequestParam("page") int page){
-        Page<ArticleDTO> getArticlePaginationList = articleService.getArticlePagination(page);
+    public ResponseEntity<?> getArticlePagination(@RequestParam("page") int page, @RequestParam("size") int size){
+        Page<ArticleDTO> getArticlePaginationList = articleService.getArticlePagination(page, size);
 
         return ResponseEntity.ok(getArticlePaginationList);
     }
@@ -50,5 +52,11 @@ public class ArticleController {
         ArticleDTO articleDTO = articleService.getById(uuid);
 
         return ResponseEntity.ok(articleDTO);
+    }
+
+    @GetMapping("/order/published-date/")
+    public ResponseEntity<?> getAllOrderByPublishedDate(@RequestParam("page") int page, @RequestParam("size") int size){
+        Page<ArticleDTO> response = articleService.findAllOrderByPublishedDate(page, size);
+        return ResponseEntity.ok(response);
     }
 }
