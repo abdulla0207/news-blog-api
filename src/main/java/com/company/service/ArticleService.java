@@ -93,25 +93,14 @@ public class ArticleService {
         return res;
     }
 
-    public Page<ArticleDTO> findAllOrderByPublishedDate(int page, int size){
+    public Page<ArticleDTO> findAllArticleByPublishedDate(int page, int size){
         Pageable pageable = PageRequest.of(page, size);
 
-        Page<ArticleEntity> articlesOrderByPublishedDate = articleRepository.findArticlesOrderByPublishedDate(pageable);
+        Page<ArticleEntity> articlesOrderByPublishedDate = articleRepository.findArticlesByPublishedDate(pageable);
 
         Stream<ArticleEntity> articleEntityStream = articlesOrderByPublishedDate.get();
         long totalElements = articlesOrderByPublishedDate.getTotalElements();
-        List<ArticleDTO> response = (List<ArticleDTO>) articleEntityStream.map(articleEntity -> {
-            ArticleDTO dto = new ArticleDTO();
-            dto.setUuid(articleEntity.getUuid());
-            dto.setTitle(articleEntity.getTitle());
-            dto.setDescription(articleEntity.getDescription());
-            dto.setVisible(articleEntity.isVisible());
-            dto.setContent(articleEntity.getContent());
-            dto.setArticleStatus(articleEntity.getArticleStatus());
-            dto.setPublishedAt(articleEntity.getPublishedAt());
-            dto.setCreatedAt(articleEntity.getCreatedAt());
-            return dto;
-        }).toList();
+        List<ArticleDTO> response = articleEntityStream.map(this::toDto).toList();
 
         Page<ArticleDTO> articleDTOS = new PageImpl<>(response, pageable, totalElements);
 
@@ -170,5 +159,28 @@ public class ArticleService {
         articleDTO.setCreatedAt(article.getCreatedAt());
 
         return articleDTO;
+    }
+
+    public Page<ArticleDTO> findArticlesOrderedByTitle(int page, int size) {
+        PageRequest of = PageRequest.of(page, size);
+
+        Page<ArticleEntity> articlesByTitle = articleRepository.findArticlesByTitle(of);
+
+        Stream<ArticleEntity> articleEntityStream = articlesByTitle.get();
+
+        List<ArticleDTO> articleDTOS = articleEntityStream.map(this::toDto).toList();
+
+        long totalElements = articlesByTitle.getTotalElements();
+
+        Page<ArticleDTO> response = new PageImpl<>(articleDTOS, of, totalElements);
+
+        return response;
+    }
+
+    public List<ArticleDTO> searchArticlesByTitle(String title){
+        title = "%" + title + "%";
+        List<ArticleEntity> articleEntities = articleRepository.findArticleEntitiesByTitleLikeIgnoreCase(title);
+
+        return toDtoList(articleEntities);
     }
 }

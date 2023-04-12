@@ -12,7 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/article")
 public class ArticleController {
-    private ArticleService articleService;
+    private final ArticleService articleService;
 
     @Autowired
     public ArticleController(ArticleService articleService){
@@ -55,8 +55,22 @@ public class ArticleController {
     }
 
     @GetMapping("/order/published-date/")
-    public ResponseEntity<?> getAllOrderByPublishedDate(@RequestParam("page") int page, @RequestParam("size") int size){
-        Page<ArticleDTO> response = articleService.findAllOrderByPublishedDate(page, size);
+    public ResponseEntity<?> getArticlesOrderedByPublishedDate(@RequestParam("page") int page, @RequestParam("size") int size){
+        Page<ArticleDTO> response = articleService.findAllArticleByPublishedDate(page, size);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/order/title")
+    public ResponseEntity<?> getArticlesByOrderedByTitle(@RequestParam("page") int page, @RequestParam("size") int size){
+        Page<ArticleDTO> response = articleService.findArticlesOrderedByTitle(page, size);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<?> searchArticlesByTitle(@RequestParam("title") String title){
+        List<ArticleDTO> articleDTOS = articleService.searchArticlesByTitle(title);
+
+        return ResponseEntity.ok(articleDTOS);
     }
 }
