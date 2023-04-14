@@ -41,13 +41,23 @@ public class JwtUtil {
 
             Integer id = (Integer) body.get("id");
             ProfileRoleEnum role = ProfileRoleEnum.valueOf((String) body.get("role"));
-            String email =(String) body.get("email");
-            String phoneNumber = (String) body.get("phoneNumber");
 
-            return new JwtDTO(id, email, phoneNumber, role);
+            return new JwtDTO(id, role);
         }catch (JwtException e){
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static String getToken(String header){
+        if(!header.startsWith("Bearer"))
+            return null;
+
+        String[] s = header.split(" ");
+        if(s.length != 2)
+            throw new RuntimeException("Wrong header Token");
+
+
+        return s[1].trim();
     }
 }

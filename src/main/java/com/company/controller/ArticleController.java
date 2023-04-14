@@ -9,6 +9,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Article Controller is a Controller for Article entity manipulation.
+ */
+
 @RestController
 @RequestMapping("/article")
 public class ArticleController {

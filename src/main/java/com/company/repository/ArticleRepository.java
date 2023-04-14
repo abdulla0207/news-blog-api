@@ -21,8 +21,7 @@ public interface ArticleRepository extends JpaRepository<ArticleEntity, String> 
     @Query("select a from ArticleEntity as a order by a.title")
     Page<ArticleEntity> findArticlesByTitle(Pageable pageable);
 
-//    @Query("select a from ArticleEntity  as a where a.title ilike '%:title%'")
-//    List<ArticleEntity> searchArticlesByTitle(@Param("title") String title);
-//
+
+
     List<ArticleEntity> findArticleEntitiesByTitleLikeIgnoreCase(String title);
 }

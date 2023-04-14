@@ -19,17 +19,18 @@ import java.util.Optional;
 
 @Service
 public class AuthorizationService {
-    private ProfileRepository profileRepository;
+    private final ProfileRepository profileRepository;
 
     public AuthorizationService(ProfileRepository profileRepository){
         this.profileRepository = profileRepository;
     }
-    public String registration(RegistrationDTO registrationDTO) {
+    public String signup(RegistrationDTO registrationDTO) {
         Optional<ProfileEntity> byEmail = profileRepository.findByEmail(registrationDTO.getEmail());
 
         if(byEmail.isPresent()){
             throw new EmailException("Profile with this email already exist");
         }
+        //Validating the object that came from user side
         if(registrationDTO.getName().isEmpty() || registrationDTO.getName().isBlank())
             throw new ProfileCreateException("Name is empty. Please indicate your name");
         if(registrationDTO.getSurname().isEmpty() || registrationDTO.getSurname().isBlank())
@@ -40,7 +41,7 @@ public class AuthorizationService {
         if(!registrationDTO.getPhoneNumber().matches("[+]998[0-9]{9}"))
             throw new ProfileCreateException("Phone number should be in the following format: +998 xx xxx-xx-xx");
 
-
+        //Creating an entity object by setting values from user side
         ProfileEntity profileEntity = new ProfileEntity();
 
         profileEntity.setPhoneNumber(registrationDTO.getPhoneNumber());
@@ -62,7 +63,7 @@ public class AuthorizationService {
                 loginDTO.getPhoneNumber(), MD5Util.encode(loginDTO.getPassword()));
 
         if(getProfile.isEmpty())
-            throw new ItemNotFoundException("Email, phonenumber or password is incorrect");
+            throw new ItemNotFoundException("Email, phone number or password is incorrect");
 
         ProfileEntity profileEntity = getProfile.get();
         if(profileEntity.getStatus().equals(ProfileStatusEnum.BLOCKED))

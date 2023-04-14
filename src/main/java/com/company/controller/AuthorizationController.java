@@ -11,10 +11,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * This class is only used, when in the USER side.
+ * For creation of an account and registration
+ */
+
 @RestController
 @RequestMapping("/auth")
 public class AuthorizationController {
-    private AuthorizationService authorizationService;
+    private final AuthorizationService authorizationService;
 
     @Autowired
     public AuthorizationController(AuthorizationService authorizationService){
@@ -23,7 +28,7 @@ public class AuthorizationController {
 
     @PostMapping("/signup")
     public ResponseEntity<?> registration(@RequestBody RegistrationDTO registrationDTO){
-        String response = authorizationService.registration(registrationDTO);
+        String response = authorizationService.signup(registrationDTO);
 
         return ResponseEntity.ok(response);
     }

@@ -27,6 +27,8 @@ public class ProfileEntity {
     @Column
     private String password;
     @Column
+    private boolean visible;
+    @Column
     @Enumerated(value = EnumType.STRING)
     private ProfileStatusEnum status;
     @Column

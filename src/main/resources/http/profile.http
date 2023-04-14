@@ -1,0 +1,17 @@
+### Create new Profile by admin
+POST localhost:8080/profile/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2ODE0MjM1MDcsImlkIjoyLCJlbWFpbCI6ImpvaG4uYWRhc2hldkBnbWFpbC5jb20iLCJwaG9uZU51bWJlciI6Iis5OTg5NDY0NjI0MjUiLCJyb2xlIjoiVVNFUiIsImV4cCI6MTY4MTUwOTkwNywiaXNzIjoiTmV3c0Jsb2cifQ.mfzJHJV4Ym5OItjfBFm17Q63EZk1m_6N6hRx4KaO0U0
+
+{
+  "name": "Javlon1",
+  "surname": "Ergashev1",
+  "email": "jav1.erg@gmail.com",
+  "phoneNumber": "+998913334760",
+  "password": "QurtQobil333",
+  "role": "PUBLISHER"
+}
+
+### Get profile list
+GET localhost:8080/profile/?page=0&size=3
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2ODE0NzYxNTEsImlkIjoxMywiZW1haWwiOiJhYmR1bGxhLmVybWF0b3YwNDA3QGdtYWlsLmNvbSIsInBob25lTnVtYmVyIjoiKzk5ODk0MzM1MTMyNSIsInJvbGUiOiJBRE1JTiIsImV4cCI6MTY4MTU2MjU1MSwiaXNzIjoiTmV3c0Jsb2cifQ.8MEXB6v3-41vdTRGjHCzR7XMpK7QoAoGDEtDwP5dEDk

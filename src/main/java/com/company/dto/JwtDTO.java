@@ -10,8 +10,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class JwtDTO {
     private int id;
-
-    private String email;
-    private String phoneNumber;
     private ProfileRoleEnum role;
 }
