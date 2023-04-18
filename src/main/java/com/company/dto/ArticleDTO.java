@@ -23,4 +23,6 @@ public class ArticleDTO {
     private LocalDateTime createdAt;
     private LocalDateTime publishedAt;
     private boolean visible;
+    private int categoryId;
+    private CategoryDTO categoryDTO;
 }

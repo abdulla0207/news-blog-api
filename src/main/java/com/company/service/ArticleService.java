@@ -2,6 +2,7 @@ package com.company.service;
 
 import com.company.dto.ArticleDTO;
 import com.company.entity.ArticleEntity;
+import com.company.entity.CategoryEntity;
 import com.company.enums.ArticleStatusEnum;
 import com.company.exception.ArticleCreateException;
 import com.company.exception.ItemNotFoundException;
@@ -23,11 +24,14 @@ import java.util.stream.Stream;
 
 @Service
 public class ArticleService {
-    private ArticleRepository articleRepository;
+    private final ArticleRepository articleRepository;
+
+    private final CategoryService categoryService;
 
     @Autowired
-    public ArticleService(ArticleRepository articleRepository){
+    public ArticleService(ArticleRepository articleRepository, CategoryService categoryService){
         this.articleRepository = articleRepository;
+        this.categoryService = categoryService;
     }
     public ArticleDTO createPost(ArticleDTO articleDTO) {
         if(articleDTO.getTitle().isEmpty() || articleDTO.getTitle().isBlank())
@@ -51,10 +55,11 @@ public class ArticleService {
         article.setTitle(articleDTO.getTitle());
         article.setContent(articleDTO.getContent());
         article.setDescription(articleDTO.getDescription());
-        article.setArticleStatus(articleDTO.getArticleStatus());
+        article.setArticleStatus(ArticleStatusEnum.NOT_PUBLISHED);
         article.setVisible(true);
         article.setCreatedAt(LocalDateTime.now());
         article.setPublishedAt(LocalDateTime.now());
+        article.setCategoryId(articleDTO.getCategoryId());
 
         return article;
     }
@@ -157,6 +162,7 @@ public class ArticleService {
         articleDTO.setVisible(article.isVisible());
         articleDTO.setPublishedAt(article.getPublishedAt());
         articleDTO.setCreatedAt(article.getCreatedAt());
+        articleDTO.setCategoryId(article.getCategoryId());
 
         return articleDTO;
     }
@@ -182,5 +188,24 @@ public class ArticleService {
         List<ArticleEntity> articleEntities = articleRepository.findArticleEntitiesByTitleLikeIgnoreCase(title);
 
         return toDtoList(articleEntities);
+    }
+
+    public Page<ArticleDTO> getArticlesByCategory(String key, int page, int size) {
+        CategoryEntity category = categoryService.getCategoryByKey(key);
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<ArticleEntity> articleEntities = articleRepository.findArticleEntitiesByCategory_Key(pageable, category.getKey());
+
+        long totalElements = articleEntities.getTotalElements();
+
+        Stream<ArticleEntity> articleEntityStream = articleEntities.get();
+
+
+        List<ArticleDTO> responseDTO = articleEntityStream.map(this::toDto).toList();
+
+        Page<ArticleDTO> responsePage = new PageImpl<>(responseDTO, pageable, totalElements);
+
+        return responsePage;
     }
 }

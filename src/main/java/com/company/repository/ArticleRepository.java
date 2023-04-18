@@ -24,4 +24,6 @@ public interface ArticleRepository extends JpaRepository<ArticleEntity, String> 
 
 
     List<ArticleEntity> findArticleEntitiesByTitleLikeIgnoreCase(String title);
+
+    Page<ArticleEntity> findArticleEntitiesByCategory_Key(Pageable pageable, String key);
 }

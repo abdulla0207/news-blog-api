@@ -26,9 +26,12 @@ public class ArticleEntity {
 //    @JoinColumn(name = "publisher_id", insertable = false, updatable = false)
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    private ProfileEntity profile;
-//    @JoinColumn(name = "category_id", insertable = false, updatable = false)
-//    @OneToOne(fetch = FetchType.LAZY)
-//    private CategoryEntity category;
+
+    @Column(name = "category_id")
+    private Integer categoryId;
+    @JoinColumn(name = "category_id", insertable = false, updatable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    private CategoryEntity category;
 //
 //    @OneToMany(mappedBy = "article")
 //    @Column(name = "comment")

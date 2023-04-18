@@ -77,4 +77,13 @@ public class ArticleController {
 
         return ResponseEntity.ok(articleDTOS);
     }
+
+    @GetMapping("/category/{key}")
+    public ResponseEntity<?> getArticlesByCategory(@PathVariable String key,
+                                                   @RequestParam("page") int page,
+                                                   @RequestParam("size") int size){
+        Page<ArticleDTO> articleDTOS = articleService.getArticlesByCategory(key, page, size);
+
+        return ResponseEntity.ok(articleDTOS);
+    }
 }
