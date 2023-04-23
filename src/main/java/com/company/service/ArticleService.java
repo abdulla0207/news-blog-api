@@ -34,12 +34,20 @@ public class ArticleService {
         this.categoryService = categoryService;
     }
     public ArticleDTO createPost(ArticleDTO articleDTO) {
-        if(articleDTO.getTitle().isEmpty() || articleDTO.getTitle().isBlank())
-            throw new ArticleCreateException("Article Title should be filled");
-        if(articleDTO.getContent().isEmpty() || articleDTO.getContent().isBlank())
-            throw new ArticleCreateException("Article Content cannot be empty");
-        if(articleDTO.getDescription().isEmpty() || articleDTO.getDescription().isBlank())
-            throw new ArticleCreateException("Article description cannot be empty");
+        if(articleDTO.getTitleUz().isEmpty() || articleDTO.getTitleUz().isBlank())
+            throw new ArticleCreateException("Article Title in Uzbek should be filled");
+        if(articleDTO.getTitleEn().isEmpty() || articleDTO.getTitleEn().isBlank())
+            throw new ArticleCreateException("Article Title in English should be filled");
+
+        if(articleDTO.getContentUz().isEmpty() || articleDTO.getContentUz().isBlank())
+            throw new ArticleCreateException("Article Content in Uzbek cannot be empty");
+        if(articleDTO.getContentEn().isEmpty() || articleDTO.getContentEn().isBlank())
+            throw new ArticleCreateException("Article Content in English cannot be empty");
+
+        if(articleDTO.getDescriptionUz().isEmpty() || articleDTO.getDescriptionUz().isBlank())
+            throw new ArticleCreateException("Article description in Uzbek cannot be empty");
+        if(articleDTO.getDescriptionEn().isEmpty() || articleDTO.getDescriptionEn().isBlank())
+            throw new ArticleCreateException("Article description in English cannot be empty");
         articleDTO.setArticleStatus(ArticleStatusEnum.PUBLISHED);
 
         ArticleEntity article = toEntity(articleDTO);
@@ -52,9 +60,12 @@ public class ArticleService {
 
     private ArticleEntity toEntity(ArticleDTO articleDTO){
         ArticleEntity article = new ArticleEntity();
-        article.setTitle(articleDTO.getTitle());
-        article.setContent(articleDTO.getContent());
-        article.setDescription(articleDTO.getDescription());
+        article.setTitleUz(articleDTO.getTitleUz());
+        article.setTitleEn(articleDTO.getTitleEn());
+        article.setContentUz(articleDTO.getContentUz());
+        article.setContentEn(articleDTO.getContentEn());
+        article.setDescriptionUz(articleDTO.getDescriptionUz());
+        article.setDescriptionEn(articleDTO.getDescriptionEn());
         article.setArticleStatus(ArticleStatusEnum.NOT_PUBLISHED);
         article.setVisible(true);
         article.setCreatedAt(LocalDateTime.now());
@@ -84,10 +95,13 @@ public class ArticleService {
         for (ArticleEntity articleEntity : articleEntities) {
             articleDTO = new ArticleDTO();
             articleDTO.setUuid(articleEntity.getUuid());
-            articleDTO.setTitle(articleEntity.getTitle());
-            articleDTO.setDescription(articleEntity.getDescription());
+            articleDTO.setTitleUz(articleEntity.getTitleUz());
+            articleDTO.setTitleEn(articleEntity.getTitleEn());
+            articleDTO.setDescriptionUz(articleEntity.getDescriptionUz());
+            articleDTO.setDescriptionEn(articleEntity.getDescriptionEn());
             articleDTO.setVisible(articleEntity.isVisible());
-            articleDTO.setContent(articleEntity.getContent());
+            articleDTO.setContentUz(articleEntity.getContentUz());
+            articleDTO.setContentEn(articleEntity.getContentEn());
             articleDTO.setArticleStatus(articleEntity.getArticleStatus());
             articleDTO.setPublishedAt(articleEntity.getPublishedAt());
             articleDTO.setCreatedAt(articleEntity.getCreatedAt());
@@ -130,8 +144,12 @@ public class ArticleService {
 
         ArticleEntity article = findById.get();
 
-        article.setContent(articleDTO.getContent());
-        article.setTitle(articleDTO.getTitle());
+        article.setContentUz(articleDTO.getContentUz());
+        article.setContentEn(articleDTO.getContentEn());
+        article.setTitleUz(articleDTO.getTitleUz());
+        article.setTitleEn(articleDTO.getTitleEn());
+        article.setDescriptionEn(articleDTO.getDescriptionEn());
+        article.setDescriptionUz(articleDTO.getDescriptionUz());
         article.setArticleStatus(articleDTO.getArticleStatus());
         article.setVisible(articleDTO.isVisible());
 
@@ -156,9 +174,12 @@ public class ArticleService {
         ArticleDTO articleDTO = new ArticleDTO();
 
         articleDTO.setUuid(article.getUuid());
-        articleDTO.setDescription(article.getDescription());
-        articleDTO.setContent(article.getContent());
-        articleDTO.setTitle(article.getTitle());
+        articleDTO.setDescriptionUz(article.getDescriptionUz());
+        articleDTO.setDescriptionEn(article.getDescriptionEn());
+        articleDTO.setContentUz(article.getContentUz());
+        articleDTO.setContentEn(article.getContentEn());
+        articleDTO.setTitleUz(article.getTitleUz());
+        articleDTO.setTitleEn(article.getTitleEn());
         articleDTO.setVisible(article.isVisible());
         articleDTO.setPublishedAt(article.getPublishedAt());
         articleDTO.setCreatedAt(article.getCreatedAt());
@@ -167,7 +188,7 @@ public class ArticleService {
         return articleDTO;
     }
 
-    public Page<ArticleDTO> findArticlesOrderedByTitle(int page, int size) {
+    public Page<ArticleDTO> findArticlesOrderedByTitleUz(int page, int size) {
         PageRequest of = PageRequest.of(page, size);
 
         Page<ArticleEntity> articlesByTitle = articleRepository.findArticlesByTitle(of);
@@ -183,9 +204,9 @@ public class ArticleService {
         return response;
     }
 
-    public List<ArticleDTO> searchArticlesByTitle(String title){
-        title = "%" + title + "%";
-        List<ArticleEntity> articleEntities = articleRepository.findArticleEntitiesByTitleLikeIgnoreCase(title);
+    public List<ArticleDTO> searchArticlesByTitleUz(String titleUz){
+        titleUz = "%" + titleUz + "%";
+        List<ArticleEntity> articleEntities = articleRepository.findArticleEntitiesByTitleUzLikeIgnoreCase(titleUz);
 
         return toDtoList(articleEntities);
     }

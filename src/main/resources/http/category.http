@@ -1,0 +1,8 @@
+POST localhost:8080/category/
+Content-Type: application/json
+
+{
+  "nameUz": "Jahon Bozorlari",
+  "nameEn": "World markets",
+  "visible": true
+}

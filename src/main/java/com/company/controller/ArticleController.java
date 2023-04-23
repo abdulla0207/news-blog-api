@@ -66,14 +66,14 @@ public class ArticleController {
 
     @GetMapping("/order/title")
     public ResponseEntity<?> getArticlesByOrderedByTitle(@RequestParam("page") int page, @RequestParam("size") int size){
-        Page<ArticleDTO> response = articleService.findArticlesOrderedByTitle(page, size);
+        Page<ArticleDTO> response = articleService.findArticlesOrderedByTitleUz(page, size);
 
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/search")
-    public ResponseEntity<?> searchArticlesByTitle(@RequestParam("title") String title){
-        List<ArticleDTO> articleDTOS = articleService.searchArticlesByTitle(title);
+    public ResponseEntity<?> searchArticlesByTitleUz(@RequestParam("title") String title){
+        List<ArticleDTO> articleDTOS = articleService.searchArticlesByTitleUz(title);
 
         return ResponseEntity.ok(articleDTOS);
     }

@@ -17,12 +17,21 @@ public class ArticleEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String uuid;
-    @Column
-    private String title;
-    @Column
-    private String description;
-    @Column(columnDefinition = "text")
-    private String content;
+
+    @Column(name = "title_uz")
+    private String titleUz;
+    @Column(name = "title_en")
+    private String titleEn;
+
+    @Column(name = "description_uz")
+    private String descriptionUz;
+    @Column(name = "description_en")
+    private String descriptionEn;
+
+    @Column(name = "content_uz", columnDefinition = "text")
+    private String contentUz;
+    @Column(name = "content_en", columnDefinition = "text")
+    private String contentEn;
 //    @JoinColumn(name = "publisher_id", insertable = false, updatable = false)
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    private ProfileEntity profile;

@@ -12,10 +12,11 @@ import java.time.LocalDateTime;
 public class CategoryDTO {
 
     private int id;
-    private String nameRu;
-    private String nameEng;
+    private String nameUz;
+    private String nameEn;
     private boolean visible;
     private LocalDateTime createdAt;
     private String key;
+    private String slag;
 
 }

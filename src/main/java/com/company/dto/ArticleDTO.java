@@ -16,9 +16,12 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ArticleDTO {
     private String uuid;
-    private String title;
-    private String description;
-    private String content;
+    private String titleUz;
+    private String titleEn;
+    private String descriptionUz;
+    private String descriptionEn;
+    private String contentUz;
+    private String contentEn;
     private ArticleStatusEnum articleStatus;
     private LocalDateTime createdAt;
     private LocalDateTime publishedAt;
