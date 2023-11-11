@@ -16,6 +16,7 @@ import java.util.Optional;
 /**
  * Init Controller is a class that will create initial users, articles and etc.
  * Used one time when we run the application first time
+ * It populates the local database with initial records for further usage
  */
 
 @RestController
