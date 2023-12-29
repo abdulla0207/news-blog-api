@@ -34,43 +34,41 @@ public class ArticleService {
         this.categoryService = categoryService;
     }
     public ArticleDTO createPost(ArticleDTO articleDTO) {
-        if(articleDTO.getTitleUz().isEmpty() || articleDTO.getTitleUz().isBlank())
+        if(articleDTO.titleUz().isEmpty() || articleDTO.titleUz().isBlank())
             throw new ArticleCreateException("Article Title in Uzbek should be filled");
-        if(articleDTO.getTitleEn().isEmpty() || articleDTO.getTitleEn().isBlank())
+        if(articleDTO.titleEn().isEmpty() || articleDTO.titleEn().isBlank())
             throw new ArticleCreateException("Article Title in English should be filled");
 
-        if(articleDTO.getContentUz().isEmpty() || articleDTO.getContentUz().isBlank())
+        if(articleDTO.contentUz().isEmpty() || articleDTO.contentUz().isBlank())
             throw new ArticleCreateException("Article Content in Uzbek cannot be empty");
-        if(articleDTO.getContentEn().isEmpty() || articleDTO.getContentEn().isBlank())
+        if(articleDTO.contentEn().isEmpty() || articleDTO.contentEn().isBlank())
             throw new ArticleCreateException("Article Content in English cannot be empty");
 
-        if(articleDTO.getDescriptionUz().isEmpty() || articleDTO.getDescriptionUz().isBlank())
+        if(articleDTO.descriptionUz().isEmpty() || articleDTO.descriptionUz().isBlank())
             throw new ArticleCreateException("Article description in Uzbek cannot be empty");
-        if(articleDTO.getDescriptionEn().isEmpty() || articleDTO.getDescriptionEn().isBlank())
+        if(articleDTO.descriptionEn().isEmpty() || articleDTO.descriptionEn().isBlank())
             throw new ArticleCreateException("Article description in English cannot be empty");
-        articleDTO.setArticleStatus(ArticleStatusEnum.PUBLISHED);
 
         ArticleEntity article = toEntity(articleDTO);
-        articleDTO.setCreatedAt(article.getCreatedAt());
-        articleDTO.setPublishedAt(article.getPublishedAt());
 
+        ArticleDTO resDTO = toDto(article);
         articleRepository.save(article);
-        return articleDTO;
+        return resDTO;
     }
 
     private ArticleEntity toEntity(ArticleDTO articleDTO){
         ArticleEntity article = new ArticleEntity();
-        article.setTitleUz(articleDTO.getTitleUz());
-        article.setTitleEn(articleDTO.getTitleEn());
-        article.setContentUz(articleDTO.getContentUz());
-        article.setContentEn(articleDTO.getContentEn());
-        article.setDescriptionUz(articleDTO.getDescriptionUz());
-        article.setDescriptionEn(articleDTO.getDescriptionEn());
+        article.setTitleUz(articleDTO.titleUz());
+        article.setTitleEn(articleDTO.titleEn());
+        article.setContentUz(articleDTO.contentUz());
+        article.setContentEn(articleDTO.contentEn());
+        article.setDescriptionUz(articleDTO.descriptionUz());
+        article.setDescriptionEn(articleDTO.descriptionEn());
         article.setArticleStatus(ArticleStatusEnum.NOT_PUBLISHED);
         article.setVisible(true);
         article.setCreatedAt(LocalDateTime.now());
         article.setPublishedAt(LocalDateTime.now());
-        article.setCategoryId(articleDTO.getCategoryId());
+        article.setCategoryId(articleDTO.categoryId());
 
         return article;
     }
@@ -93,19 +91,7 @@ public class ArticleService {
         List<ArticleDTO> res = new ArrayList<>();
         ArticleDTO articleDTO = null;
         for (ArticleEntity articleEntity : articleEntities) {
-            articleDTO = new ArticleDTO();
-            articleDTO.setUuid(articleEntity.getUuid());
-            articleDTO.setTitleUz(articleEntity.getTitleUz());
-            articleDTO.setTitleEn(articleEntity.getTitleEn());
-            articleDTO.setDescriptionUz(articleEntity.getDescriptionUz());
-            articleDTO.setDescriptionEn(articleEntity.getDescriptionEn());
-            articleDTO.setVisible(articleEntity.isVisible());
-            articleDTO.setContentUz(articleEntity.getContentUz());
-            articleDTO.setContentEn(articleEntity.getContentEn());
-            articleDTO.setArticleStatus(articleEntity.getArticleStatus());
-            articleDTO.setPublishedAt(articleEntity.getPublishedAt());
-            articleDTO.setCreatedAt(articleEntity.getCreatedAt());
-
+            articleDTO = toDto(articleEntity);
             res.add(articleDTO);
         }
 
@@ -144,17 +130,16 @@ public class ArticleService {
 
         ArticleEntity article = findById.get();
 
-        article.setContentUz(articleDTO.getContentUz());
-        article.setContentEn(articleDTO.getContentEn());
-        article.setTitleUz(articleDTO.getTitleUz());
-        article.setTitleEn(articleDTO.getTitleEn());
-        article.setDescriptionEn(articleDTO.getDescriptionEn());
-        article.setDescriptionUz(articleDTO.getDescriptionUz());
-        article.setArticleStatus(articleDTO.getArticleStatus());
-        article.setVisible(articleDTO.isVisible());
+        article.setContentUz(articleDTO.contentUz());
+        article.setContentEn(articleDTO.contentEn());
+        article.setTitleUz(articleDTO.titleUz());
+        article.setTitleEn(articleDTO.titleEn());
+        article.setDescriptionEn(articleDTO.descriptionEn());
+        article.setDescriptionUz(articleDTO.descriptionUz());
+        article.setArticleStatus(articleDTO.articleStatus());
+        article.setVisible(articleDTO.visible());
 
         articleRepository.save(article);
-        articleDTO.setUuid(article.getUuid());
 
         return "Article Updated";
     }
@@ -171,20 +156,20 @@ public class ArticleService {
     }
 
     private ArticleDTO toDto(ArticleEntity article) {
-        ArticleDTO articleDTO = new ArticleDTO();
-
-        articleDTO.setUuid(article.getUuid());
-        articleDTO.setDescriptionUz(article.getDescriptionUz());
-        articleDTO.setDescriptionEn(article.getDescriptionEn());
-        articleDTO.setContentUz(article.getContentUz());
-        articleDTO.setContentEn(article.getContentEn());
-        articleDTO.setTitleUz(article.getTitleUz());
-        articleDTO.setTitleEn(article.getTitleEn());
-        articleDTO.setVisible(article.isVisible());
-        articleDTO.setPublishedAt(article.getPublishedAt());
-        articleDTO.setCreatedAt(article.getCreatedAt());
-        articleDTO.setCategoryId(article.getCategoryId());
-
+        ArticleDTO articleDTO = new ArticleDTO(
+                article.getUuid(),
+                article.getTitleUz(),
+                article.getTitleEn(),
+                article.getDescriptionUz(),
+                article.getDescriptionEn(),
+                article.getContentUz(),
+                article.getContentEn(),
+                article.getArticleStatus(),
+                article.getCreatedAt(),
+                article.getPublishedAt(),
+                article.isVisible(),
+                article.getCategoryId()
+        );
         return articleDTO;
     }
 

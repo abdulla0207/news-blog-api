@@ -36,17 +36,17 @@ public class ProfileService {
     public ProfileDTO create(ProfileDTO profileDTO, JwtDTO jwtDTO) {
 
         //Validation
-        if (profileDTO.getName().isEmpty() || profileDTO.getName().isBlank())
+        if (profileDTO.name().isEmpty() || profileDTO.name().isBlank())
             throw new ProfileCreateException("Name field is empty");
-        if (profileDTO.getSurname().isBlank() || profileDTO.getSurname().isEmpty())
+        if (profileDTO.surname().isBlank() || profileDTO.surname().isEmpty())
             throw new ProfileCreateException("Surname field is empty");
-        if (!profileDTO.getPassword().matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$"))
+        if (!profileDTO.password().matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$"))
             throw new ProfileCreateException("Password should have at least one number, one lowercase or uppercase character" +
                     " and the length should be at least 8 letters");
-        if (!profileDTO.getPhoneNumber().matches("[+]998[0-9]{9}"))
+        if (!profileDTO.phoneNumber().matches("[+]998[0-9]{9}"))
             throw new ProfileCreateException("Phone number should be in the following format: +998 xx xxx-xx-xx");
 
-        if (!jwtDTO.getRole().equals(ProfileRoleEnum.ADMIN))
+        if (!jwtDTO.role().equals(ProfileRoleEnum.ADMIN))
             throw new AppForbiddenException("Method not allowed");
 
         Optional<ProfileEntity> byEmail = profileRepository.findByEmail(profileDTO.getEmail());
@@ -61,7 +61,7 @@ public class ProfileService {
     }
 
     public Page<ProfileDTO> getProfileList(int page, int size, JwtDTO jwtDTO) {
-        if (!jwtDTO.getRole().equals(ProfileRoleEnum.ADMIN))
+        if (!jwtDTO.role().equals(ProfileRoleEnum.ADMIN))
             throw new AppForbiddenException("Method Not Allowed");
         Pageable pageable = PageRequest.of(page, size);
         Page<ProfileEntity> all = profileRepository.findAll(pageable);
@@ -78,38 +78,47 @@ public class ProfileService {
 
     private List<ProfileDTO> toDTOList(List<ProfileEntity> entityList) {
         List<ProfileDTO> result = new ArrayList<>();
-        ProfileDTO profileDTO = new ProfileDTO();
 
         entityList.forEach(profileEntity -> {
-            profileDTO.setRole(profileEntity.getRole());
-            profileDTO.setEmail(profileEntity.getEmail());
-            profileDTO.setName(profileEntity.getName());
-            profileDTO.setStatus(profileEntity.getStatus());
-            profileDTO.setSurname(profileEntity.getSurname());
-            profileDTO.setPhoneNumber(profileEntity.getPhoneNumber());
+            final ProfileDTO profileDTO = toDTO(profileEntity);
 
             result.add(profileDTO);
         });
         return result;
     }
 
+    private ProfileDTO toDTO(ProfileEntity entity){
+        ProfileDTO dto = new ProfileDTO(
+                entity.getId(),
+                entity.getName(),
+                entity.getSurname(),
+                entity.getEmail(),
+                entity.getPhoneNumber(),
+                entity.getPassword(),
+                entity.getStatus(),
+                entity.getRole(),
+                entity.getCreatedAt()
+        );
+        return dto;
+    }
+
     private ProfileEntity toEntity(ProfileDTO profileDTO) {
         ProfileEntity profileEntity = new ProfileEntity();
-        profileEntity.setSurname(profileDTO.getSurname());
-        profileEntity.setName(profileDTO.getName());
-        profileEntity.setPassword(MD5Util.encode(profileDTO.getPassword()));
-        profileEntity.setEmail(profileDTO.getEmail());
-        profileEntity.setRole(profileDTO.getRole());
+        profileEntity.setSurname(profileDTO.surname());
+        profileEntity.setName(profileDTO.name());
+        profileEntity.setPassword(MD5Util.encode(profileDTO.password()));
+        profileEntity.setEmail(profileDTO.email());
+        profileEntity.setRole(profileDTO.roleEnum());
         profileEntity.setStatus(ProfileStatusEnum.ACTIVE);
         profileEntity.setCreatedAt(LocalDateTime.now());
         profileEntity.setUpdatedAt(LocalDateTime.now());
-        profileEntity.setPhoneNumber(profileDTO.getPhoneNumber());
+        profileEntity.setPhoneNumber(profileDTO.phoneNumber());
         profileEntity.setVisible(true);
         return profileEntity;
     }
 
     public String deleteById(int id, JwtDTO jwtDTO) {
-        if (!jwtDTO.getRole().equals(ProfileRoleEnum.ADMIN))
+        if (!jwtDTO.role().equals(ProfileRoleEnum.ADMIN))
             throw new AppForbiddenException("Method not Allowed");
         Optional<ProfileEntity> byId = profileRepository.findById(id);
 
@@ -126,10 +135,10 @@ public class ProfileService {
     }
 
     public String update(ProfileDTO profileDTO, int id, JwtDTO jwtDTO) {
-        if (!jwtDTO.getRole().equals(ProfileRoleEnum.ADMIN))
+        if (!jwtDTO.role().equals(ProfileRoleEnum.ADMIN))
             throw new AppForbiddenException("Method not Allowed");
 
-        int b = profileRepository.updateByAdminByProfileId(profileDTO.getName(), profileDTO.getSurname(), profileDTO.getRole(), profileDTO.getStatus(), id);
+        int b = profileRepository.updateByAdminByProfileId(profileDTO.name(), profileDTO.surname(), profileDTO.roleEnum(), profileDTO.statusEnum(), id);
 
         if (b <= 0)
             throw new RuntimeException("Not updated");
@@ -137,7 +146,7 @@ public class ProfileService {
     }
 
     public String updateByProfile(ProfileDTO profileDTO, JwtDTO jwtDTO) {
-        int b = profileRepository.updateByAll(profileDTO.getName(), profileDTO.getSurname(), jwtDTO.getId());
+        int b = profileRepository.updateByAll(profileDTO.name(), profileDTO.surname(), jwtDTO.id());
 
         if(b <=0)
             throw new RuntimeException("User not updated");

@@ -25,32 +25,32 @@ public class AuthorizationService {
         this.profileRepository = profileRepository;
     }
     public String signup(RegistrationDTO registrationDTO) {
-        Optional<ProfileEntity> byEmail = profileRepository.findByEmail(registrationDTO.getEmail());
+        Optional<ProfileEntity> byEmail = profileRepository.findByEmail(registrationDTO.email());
 
         if(byEmail.isPresent()){
             throw new EmailException("Profile with this email already exist");
         }
         //Validating the object that came from user side
-        if(registrationDTO.getName().isEmpty() || registrationDTO.getName().isBlank())
+        if(registrationDTO.name().isEmpty() || registrationDTO.name().isBlank())
             throw new ProfileCreateException("Name is empty. Please indicate your name");
-        if(registrationDTO.getSurname().isEmpty() || registrationDTO.getSurname().isBlank())
+        if(registrationDTO.surname().isEmpty() || registrationDTO.surname().isBlank())
             throw new ProfileCreateException("Surname is empty. Please indicate your surname");
-        if(!registrationDTO.getPassword().matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$"))
+        if(!registrationDTO.password().matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$"))
             throw new ProfileCreateException("Password should have at least one number, one lowercase or uppercase character" +
                     " and the length should be at least 8 letters");
-        if(!registrationDTO.getPhoneNumber().matches("[+]998[0-9]{9}"))
+        if(!registrationDTO.phoneNumber().matches("[+]998[0-9]{9}"))
             throw new ProfileCreateException("Phone number should be in the following format: +998 xx xxx-xx-xx");
 
         //Creating an entity object by setting values from user side
         ProfileEntity profileEntity = new ProfileEntity();
 
-        profileEntity.setPhoneNumber(registrationDTO.getPhoneNumber());
-        profileEntity.setName(registrationDTO.getName());
-        profileEntity.setSurname(registrationDTO.getSurname());
-        profileEntity.setEmail(registrationDTO.getEmail());
+        profileEntity.setPhoneNumber(registrationDTO.phoneNumber());
+        profileEntity.setName(registrationDTO.name());
+        profileEntity.setSurname(registrationDTO.surname());
+        profileEntity.setEmail(registrationDTO.email());
         profileEntity.setStatus(ProfileStatusEnum.ACTIVE);
         profileEntity.setRole(ProfileRoleEnum.USER);
-        profileEntity.setPassword(MD5Util.encode(registrationDTO.getPassword()));
+        profileEntity.setPassword(MD5Util.encode(registrationDTO.password()));
         profileEntity.setUpdatedAt(LocalDateTime.now());
         profileEntity.setCreatedAt(LocalDateTime.now());
 

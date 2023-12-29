@@ -33,11 +33,11 @@ public class CategoryService {
     }
 
     public String createCategory(CategoryDTO categoryDTO) {
-        if(categoryDTO.getNameUz().isEmpty() || categoryDTO.getNameUz().isBlank())
+        if(categoryDTO.nameUz().isEmpty() || categoryDTO.nameUz().isBlank())
             throw new CategoryCreateException("Name of the category in Uzbek should be filled");
-        if(categoryDTO.getNameEn().isEmpty() || categoryDTO.getNameEn().isBlank())
+        if(categoryDTO.nameEn().isEmpty() || categoryDTO.nameEn().isBlank())
             throw new CategoryCreateException("Name of the category in English should be filled");
-        String[] s = categoryDTO.getNameEn().toLowerCase().split(" ");
+        String[] s = categoryDTO.nameEn().toLowerCase().split(" ");
 
         String newSlag = String.join("_", s);
 
@@ -50,12 +50,12 @@ public class CategoryService {
     }
 
     public String updateCategoryByKey(CategoryDTO categoryDTO, String key){
-        String[] s = categoryDTO.getNameEn().toLowerCase().split(" ");
+        String[] s = categoryDTO.nameEn().toLowerCase().split(" ");
 
         String newSlag = String.join("_", s);
 
-        int i = categoryRepository.updateCategory(categoryDTO.getNameUz(), categoryDTO.getNameEn(),
-                newSlag, categoryDTO.isVisible(), key);
+        int i = categoryRepository.updateCategory(categoryDTO.nameUz(), categoryDTO.nameEn(),
+                newSlag, categoryDTO.visible(), key);
 
         if(i <= 0)
             throw new ItemNotFoundException("Category not found with this keyword");
@@ -66,8 +66,8 @@ public class CategoryService {
 
     private CategoryEntity toEntity(CategoryDTO categoryDTO){
         CategoryEntity entity = new CategoryEntity();
-        entity.setNameUz(categoryDTO.getNameUz());
-        entity.setNameEn(categoryDTO.getNameEn());
+        entity.setNameUz(categoryDTO.nameUz());
+        entity.setNameEn(categoryDTO.nameEn());
         entity.setCreatedAt(LocalDateTime.now());
 
         return entity;
@@ -88,15 +88,15 @@ public class CategoryService {
 
 
     private CategoryDTO toDto(CategoryEntity categoryEntity){
-        CategoryDTO dto = new CategoryDTO();
-
-        dto.setNameUz(categoryEntity.getNameUz());
-        dto.setNameEn(categoryEntity.getNameEn());
-        dto.setVisible(categoryEntity.isVisible());
-        dto.setKey(categoryEntity.getKey());
-        dto.setSlag(categoryEntity.getSlag());
-        dto.setCreatedAt(categoryEntity.getCreatedAt());
-
+        CategoryDTO dto = new CategoryDTO(
+                categoryEntity.getId(),
+                categoryEntity.getNameUz(),
+                categoryEntity.getNameEn(),
+                categoryEntity.isVisible(),
+                categoryEntity.getCreatedAt(),
+                categoryEntity.getKey(),
+                categoryEntity.getSlag()
+        );
         return dto;
     }
 }
