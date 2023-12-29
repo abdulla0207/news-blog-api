@@ -10,8 +10,8 @@ public class JwtUtil {
 
     private static final String secretKey = "newsblogsecret";
 
-    // This static method accepts the id and role of the user who wants to login to the website
-    // and creates a Token by encoding this information
+    // This static method accepts the id, email, phone number and role of the user who wants to login to the website
+    // and creates a Token by encoding this information by using JWT
     public static String encode(Integer profileId, String email, String phoneNumber, ProfileRoleEnum profileRole){
         JwtBuilder jwtBuilder = Jwts.builder();
         jwtBuilder.setIssuedAt(new Date());
@@ -30,6 +30,7 @@ public class JwtUtil {
         return generatedToken;
     }
 
+    // Decodes the token to Jwt object
     public static JwtDTO decode(String token){
         try{
             JwtParser jwtParser = Jwts.parser();

@@ -20,9 +20,10 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
 
-    // POST "/category/" request is send to API controller method
-    // Request Method gets category object that should be added to database
-    // It sends to service method and returns a response entity
+    /** POST "/category/" request is send to API controller method
+     * Request Method gets category object that should be added to database
+     * It sends to service method and returns a response entity
+     **/
     @PostMapping("/")
     public ResponseEntity<?> createCategory(@RequestBody CategoryDTO categoryDTO){
         String response = categoryService.createCategory(categoryDTO);
