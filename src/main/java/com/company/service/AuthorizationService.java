@@ -26,9 +26,9 @@ public class AuthorizationService {
     }
     public String signup(RegistrationDTO registrationDTO) {
         Optional<ProfileEntity> byEmail = profileRepository.findByEmail(registrationDTO.email());
-
-        if(byEmail.isPresent()){
-            throw new EmailException("Profile with this email already exist");
+        Optional<ProfileEntity> byPhoneNumber = profileRepository.findByPhoneNumber(registrationDTO.phoneNumber());
+        if(byEmail.isPresent() || byPhoneNumber.isPresent()){
+            throw new EmailException("Profile with this email or phone number already exist");
         }
         //Validating the object that came from user side
         if(registrationDTO.name().isEmpty() || registrationDTO.name().isBlank())

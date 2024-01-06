@@ -15,3 +15,28 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2ODE0MjM1MDcsImlkIjoyLCJlb
 ### Get profile list
 GET localhost:8080/profile/?page=0&size=3
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2ODE0NzYxNTEsImlkIjoxMywiZW1haWwiOiJhYmR1bGxhLmVybWF0b3YwNDA3QGdtYWlsLmNvbSIsInBob25lTnVtYmVyIjoiKzk5ODk0MzM1MTMyNSIsInJvbGUiOiJBRE1JTiIsImV4cCI6MTY4MTU2MjU1MSwiaXNzIjoiTmV3c0Jsb2cifQ.8MEXB6v3-41vdTRGjHCzR7XMpK7QoAoGDEtDwP5dEDk
+
+
+### Sign up
+POST localhost:8080/auth/signup
+Content-Type: application/json
+
+{
+  "name": "Abdulla",
+  "surname": "Ermatov",
+  "email": "abdulla.ermatov04@gmail.com",
+  "phoneNumber": "+998946651313",
+  "password": "QurtovAbdulSumbulov223"
+}
+
+
+
+### Log in
+POST localhost:8080/auth/login
+Content-Type: application/json
+
+{
+  "email": "abdulla.ermatov04@gmail.com",
+  "phoneNumber": "+998946651313",
+  "password": "QurtovAbdulSumbulov223"
+}
