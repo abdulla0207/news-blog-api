@@ -49,10 +49,10 @@ public class ProfileService {
         if (!jwtDTO.role().equals(ProfileRoleEnum.ADMIN))
             throw new AppForbiddenException("Method not allowed");
 
-        Optional<ProfileEntity> byEmail = profileRepository.findByEmail(profileDTO.getEmail());
+        Optional<ProfileEntity> byEmail = profileRepository.findByEmail(profileDTO.email());
         if (byEmail.isPresent())
             throw new ProfileCreateException("User with this email already exists");
-        Optional<ProfileEntity> byPhoneNumber = profileRepository.findByPhoneNumber(profileDTO.getPhoneNumber());
+        Optional<ProfileEntity> byPhoneNumber = profileRepository.findByPhoneNumber(profileDTO.phoneNumber());
         if (byPhoneNumber.isPresent())
             throw new ProfileCreateException("User with this phone number already exists");
 

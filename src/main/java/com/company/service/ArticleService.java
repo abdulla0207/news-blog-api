@@ -8,6 +8,9 @@ import com.company.exception.ArticleCreateException;
 import com.company.exception.ItemNotFoundException;
 import com.company.repository.ArticleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -30,6 +33,7 @@ public class ArticleService {
 
     @Autowired
     public ArticleService(ArticleRepository articleRepository, CategoryService categoryService){
+        System.out.println("In constr" + getClass().getSimpleName());
         this.articleRepository = articleRepository;
         this.categoryService = categoryService;
     }

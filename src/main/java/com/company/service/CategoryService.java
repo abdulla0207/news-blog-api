@@ -5,6 +5,7 @@ import com.company.entity.CategoryEntity;
 import com.company.exception.CategoryCreateException;
 import com.company.exception.ItemNotFoundException;
 import com.company.repository.CategoryRepository;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +21,7 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
 
     public CategoryService(CategoryRepository categoryRepository){
+        System.out.println("In constr" + getClass().getSimpleName());
         this.categoryRepository = categoryRepository;
     }
 

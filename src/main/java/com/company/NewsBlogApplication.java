@@ -10,4 +10,6 @@ public class NewsBlogApplication {
 		SpringApplication.run(NewsBlogApplication.class, args);
 	}
 
+
+
 }
