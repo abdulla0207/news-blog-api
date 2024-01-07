@@ -33,7 +33,7 @@ public class ProfileService {
     }
 
     // TODO: 4/14/2023 Make this method to be accessible only by admins
-    public ProfileDTO create(ProfileDTO profileDTO, JwtDTO jwtDTO) {
+    public ProfileDTO create(ProfileDTO profileDTO, int adminId) {
 
         //Validation
         if (profileDTO.name().isEmpty() || profileDTO.name().isBlank())
@@ -46,8 +46,6 @@ public class ProfileService {
         if (!profileDTO.phoneNumber().matches("[+]998[0-9]{9}"))
             throw new ProfileCreateException("Phone number should be in the following format: +998 xx xxx-xx-xx");
 
-        if (!jwtDTO.role().equals(ProfileRoleEnum.ADMIN))
-            throw new AppForbiddenException("Method not allowed");
 
         Optional<ProfileEntity> byEmail = profileRepository.findByEmail(profileDTO.email());
         if (byEmail.isPresent())
@@ -55,14 +53,13 @@ public class ProfileService {
         Optional<ProfileEntity> byPhoneNumber = profileRepository.findByPhoneNumber(profileDTO.phoneNumber());
         if (byPhoneNumber.isPresent())
             throw new ProfileCreateException("User with this phone number already exists");
-
-        profileRepository.save(toEntity(profileDTO));
+        ProfileEntity entity = toEntity(profileDTO);
+        entity.setParentId(adminId);
+        profileRepository.save(entity);
         return profileDTO;
     }
 
-    public Page<ProfileDTO> getProfileList(int page, int size, JwtDTO jwtDTO) {
-        if (!jwtDTO.role().equals(ProfileRoleEnum.ADMIN))
-            throw new AppForbiddenException("Method Not Allowed");
+    public Page<ProfileDTO> getProfileList(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<ProfileEntity> all = profileRepository.findAll(pageable);
 
@@ -117,9 +114,7 @@ public class ProfileService {
         return profileEntity;
     }
 
-    public String deleteById(int id, JwtDTO jwtDTO) {
-        if (!jwtDTO.role().equals(ProfileRoleEnum.ADMIN))
-            throw new AppForbiddenException("Method not Allowed");
+    public String deleteById(int id) {
         Optional<ProfileEntity> byId = profileRepository.findById(id);
 
         if (byId.isEmpty()) {
@@ -134,10 +129,7 @@ public class ProfileService {
         return byId.orElse(null);
     }
 
-    public String update(ProfileDTO profileDTO, int id, JwtDTO jwtDTO) {
-        if (!jwtDTO.role().equals(ProfileRoleEnum.ADMIN))
-            throw new AppForbiddenException("Method not Allowed");
-
+    public String update(ProfileDTO profileDTO, int id) {
         int b = profileRepository.updateByAdminByProfileId(profileDTO.name(), profileDTO.surname(), profileDTO.roleEnum(), profileDTO.statusEnum(), id);
 
         if (b <= 0)
@@ -145,8 +137,8 @@ public class ProfileService {
         return "Profile Updated";
     }
 
-    public String updateByProfile(ProfileDTO profileDTO, JwtDTO jwtDTO) {
-        int b = profileRepository.updateByAll(profileDTO.name(), profileDTO.surname(), jwtDTO.id());
+    public String updateByProfile(ProfileDTO profileDTO, int tokenId) {
+        int b = profileRepository.updateByAll(profileDTO.name(), profileDTO.surname(), tokenId);
 
         if(b <=0)
             throw new RuntimeException("User not updated");

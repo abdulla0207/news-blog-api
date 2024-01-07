@@ -38,4 +38,6 @@ public class ProfileEntity {
     private LocalDateTime createdAt;
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+    @Column(name = "parent_id")
+    private Integer parentId;
 }

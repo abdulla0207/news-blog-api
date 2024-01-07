@@ -1,14 +1,15 @@
 ### Create new Profile by admin
 POST localhost:8080/profile/
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2ODE0MjM1MDcsImlkIjoyLCJlbWFpbCI6ImpvaG4uYWRhc2hldkBnbWFpbC5jb20iLCJwaG9uZU51bWJlciI6Iis5OTg5NDY0NjI0MjUiLCJyb2xlIjoiVVNFUiIsImV4cCI6MTY4MTUwOTkwNywiaXNzIjoiTmV3c0Jsb2cifQ.mfzJHJV4Ym5OItjfBFm17Q63EZk1m_6N6hRx4KaO0U0
+//Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MDQ2MzAxMTEsImlkIjoxLCJlbWFpbCI6ImFiZHVsbGEuZXJtYXRvdjA0MDdAZ21haWwuY29tIiwicGhvbmVOdW1iZXIiOiIrOTk4OTQzMzUxMzI1Iiwicm9sZSI6IkFETUlOIiwiZXhwIjoxNzA0NzE2NTExLCJpc3MiOiJOZXdzQmxvZyJ9.N_nMbhopWoF9iNyzJQ4x2YpMQztavYRrzYAqefUw7Ss
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MDQ2MzAyOTAsImlkIjozLCJlbWFpbCI6ImFiZHVsbGEuZXJtYXRvdjA0QGdtYWlsLmNvbSIsInBob25lTnVtYmVyIjoiKzk5ODk0NjY1MTMxMyIsInJvbGUiOiJVU0VSIiwiZXhwIjoxNzA0NzE2NjkwLCJpc3MiOiJOZXdzQmxvZyJ9.r18DTSMfsAUKDjtZ1N4h-3-plPZfn8Tu0w-KjL9BaWw
 
 {
-  "name": "Javlon1",
-  "surname": "Ergashev1",
-  "email": "jav1.erg@gmail.com",
-  "phoneNumber": "+998913334760",
-  "password": "QurtQobil333",
+  "name": "Javlon12",
+  "surname": "Ergashev12",
+  "email": "jav12.erg@gmail.com",
+  "phoneNumber": "+998913334761",
+  "password": "QurtQobil3333",
   "role": "PUBLISHER"
 }
 
@@ -40,3 +41,7 @@ Content-Type: application/json
   "phoneNumber": "+998946651313",
   "password": "QurtovAbdulSumbulov223"
 }
+
+
+### Init admin
+GET localhost:8080/init/admin

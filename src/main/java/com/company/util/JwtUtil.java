@@ -2,7 +2,10 @@ package com.company.util;
 
 import com.company.dto.JwtDTO;
 import com.company.enums.ProfileRoleEnum;
+import com.company.exception.AppForbiddenException;
+import com.company.exception.TokenNotValidException;
 import io.jsonwebtoken.*;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.Date;
 
@@ -25,40 +28,47 @@ public class JwtUtil {
         jwtBuilder.setExpiration(new Date(System.currentTimeMillis() + (tokenLifetime)));
         jwtBuilder.setIssuer("NewsBlog");
 
-        String generatedToken = jwtBuilder.compact();
-
-        return generatedToken;
+        return jwtBuilder.compact();
     }
 
     // Decodes the token to Jwt object
     public static JwtDTO decode(String token){
-        try{
-            JwtParser jwtParser = Jwts.parser();
-            jwtParser.setSigningKey(secretKey);
+        JwtParser jwtParser = Jwts.parser();
+        jwtParser.setSigningKey(secretKey);
 
-            Jws<Claims> claimsJws = jwtParser.parseClaimsJws(token);
+        Jws<Claims> claimsJws = jwtParser.parseClaimsJws(token);
 
-            Claims body = claimsJws.getBody();
+        Claims body = claimsJws.getBody();
 
-            Integer id = (Integer) body.get("id");
-            ProfileRoleEnum role = ProfileRoleEnum.valueOf((String) body.get("role"));
+        Integer id = (Integer) body.get("id");
+        ProfileRoleEnum role = ProfileRoleEnum.valueOf((String) body.get("role"));
 
-            return new JwtDTO(id, role);
-        }catch (JwtException e){
-            e.printStackTrace();
-        }
-        return null;
+        return new JwtDTO(id, role);
     }
 
-    public static String getToken(String header){
-        if(!header.startsWith("Bearer"))
-            return null;
+    public static Integer getIdFromHeader(HttpServletRequest request){
+        try {
+            return (Integer) request.getAttribute("id");
+        }catch (RuntimeException e){
+            throw new TokenNotValidException("Unauthorized");
+        }
+    }
 
-        String[] s = header.split(" ");
-        if(s.length != 2)
-            throw new RuntimeException("Wrong header Token");
+    public static JwtDTO getJwtDTO(HttpServletRequest request){
+        try {
+            int id = (Integer) request.getAttribute("id");
+            ProfileRoleEnum roleEnum = (ProfileRoleEnum) request.getAttribute("role");
 
+            return new JwtDTO(id, roleEnum);
+        }catch (RuntimeException e){
+            throw new TokenNotValidException("Unauthorized");
+        }
+    }
 
-        return s[1].trim();
+    public static void checkForAdmin(HttpServletRequest request, ProfileRoleEnum roleEnum){
+            ProfileRoleEnum adminRole = (ProfileRoleEnum) request.getAttribute("role");
+            if(!adminRole.equals(roleEnum)){
+                throw new AppForbiddenException("Method Not Allowed");
+            }
     }
 }
