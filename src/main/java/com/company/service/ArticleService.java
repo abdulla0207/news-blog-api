@@ -71,7 +71,6 @@ public class ArticleService {
         article.setArticleStatus(ArticleStatusEnum.NOT_PUBLISHED);
         article.setVisible(true);
         article.setCreatedAt(LocalDateTime.now());
-        article.setPublishedAt(LocalDateTime.now());
         article.setCategoryId(articleDTO.categoryId());
 
         return article;

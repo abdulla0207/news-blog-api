@@ -37,9 +37,9 @@ POST localhost:8080/auth/login
 Content-Type: application/json
 
 {
-  "email": "abdulla.ermatov04@gmail.com",
-  "phoneNumber": "+998946651313",
-  "password": "QurtovAbdulSumbulov223"
+  "email": "abdulla.ermatov0407@gmail.com",
+  "phoneNumber": "+998943351325",
+  "password": "admin123"
 }
 
 

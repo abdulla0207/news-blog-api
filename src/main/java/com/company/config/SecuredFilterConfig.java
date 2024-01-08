@@ -8,10 +8,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SecuredFilterConfig {
 
-    private final TokenFilterConfig tokenFilterConfig;
+    private final TokenFilter tokenFilterConfig;
 
     @Autowired
-    public SecuredFilterConfig(TokenFilterConfig tokenFilterConfig){
+    public SecuredFilterConfig(TokenFilter tokenFilterConfig){
         this.tokenFilterConfig = tokenFilterConfig;
     }
 
@@ -19,7 +19,8 @@ public class SecuredFilterConfig {
     public FilterRegistrationBean filterRegistrationBean(){
         FilterRegistrationBean bean = new FilterRegistrationBean();
         bean.setFilter(tokenFilterConfig);
-        bean.addUrlPatterns("/profile/*");
+        bean.addUrlPatterns("/profile/*",
+                "/article/type/*");
         return bean;
     }
 }

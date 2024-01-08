@@ -2,6 +2,7 @@ package com.company.controller;
 
 import com.company.dto.ArticleDTO;
 import com.company.service.ArticleService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,8 @@ public class ArticleController {
      * It returns ok response with DTO object
      */
     @PostMapping("/")
-    public ResponseEntity<?> createPost(@RequestBody ArticleDTO articleDTO){
+    public ResponseEntity<?> createPost(@RequestBody ArticleDTO articleDTO, HttpServletRequest request){
+
         ArticleDTO res = articleService.createPost(articleDTO);
         return ResponseEntity.ok(res);
     }

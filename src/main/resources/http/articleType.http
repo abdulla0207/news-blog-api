@@ -1,0 +1,28 @@
+### Create article Type
+POST localhost:8080/article/type/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MDQ3MDI1NTYsImlkIjoxLCJlbWFpbCI6ImFiZHVsbGEuZXJtYXRvdjA0MDdAZ21haWwuY29tIiwicGhvbmVOdW1iZXIiOiIrOTk4OTQzMzUxMzI1Iiwicm9sZSI6IkFETUlOIiwiZXhwIjoxNzA0Nzg4OTU2LCJpc3MiOiJOZXdzQmxvZyJ9.Bb_Coc3Y7tESefn_IZClFm2jbB2VnY-hEz_3UOqqL4k
+
+
+{
+  "key": "sport",
+  "nameUz": "Sport",
+  "nameEn": "Sport"
+}
+
+### Update article type
+PUT localhost:8080/article/type/update/1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MDQ3MDI1NTYsImlkIjoxLCJlbWFpbCI6ImFiZHVsbGEuZXJtYXRvdjA0MDdAZ21haWwuY29tIiwicGhvbmVOdW1iZXIiOiIrOTk4OTQzMzUxMzI1Iiwicm9sZSI6IkFETUlOIiwiZXhwIjoxNzA0Nzg4OTU2LCJpc3MiOiJOZXdzQmxvZyJ9.Bb_Coc3Y7tESefn_IZClFm2jbB2VnY-hEz_3UOqqL4k
+
+{
+  "key": "tech",
+  "nameUz": "Texnologiya",
+  "nameEn": "Technology",
+  "visible": true
+}
+
+
+### Get List of article types (pagination)
+GET localhost:8080/article/type/?page=0&size=5
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MDQ3MDI1NTYsImlkIjoxLCJlbWFpbCI6ImFiZHVsbGEuZXJtYXRvdjA0MDdAZ21haWwuY29tIiwicGhvbmVOdW1iZXIiOiIrOTk4OTQzMzUxMzI1Iiwicm9sZSI6IkFETUlOIiwiZXhwIjoxNzA0Nzg4OTU2LCJpc3MiOiJOZXdzQmxvZyJ9.Bb_Coc3Y7tESefn_IZClFm2jbB2VnY-hEz_3UOqqL4k

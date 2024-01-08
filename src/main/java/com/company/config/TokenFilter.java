@@ -15,7 +15,7 @@ import org.springframework.web.filter.GenericFilterBean;
 import java.io.IOException;
 
 @Configuration
-public class TokenFilterConfig extends GenericFilterBean {
+public class TokenFilter extends GenericFilterBean {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse,
                          FilterChain filterChain) throws IOException, ServletException {
