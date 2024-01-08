@@ -2,6 +2,8 @@ package com.company.controller;
 
 import com.company.dto.ArticleDTO;
 import com.company.dto.ArticleTypeDTO;
+import com.company.dto.ArticleTypeResponseDTO;
+import com.company.enums.LanguageEnum;
 import com.company.enums.ProfileRoleEnum;
 import com.company.service.ArticleTypeService;
 import com.company.util.JwtUtil;
@@ -10,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/article/type")
@@ -45,5 +49,21 @@ public class ArticleTypeController {
         Page<ArticleTypeDTO> articleDTOS = articleTypeService.getList(page, size);
 
         return ResponseEntity.ok(articleDTOS);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteById(@PathVariable int id, HttpServletRequest request){
+        JwtUtil.checkForAdmin(request,ProfileRoleEnum.ADMIN);
+
+        String response = articleTypeService.deleteById(id);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/language")
+    public ResponseEntity<?> getListByLanguage(@RequestParam(name = "lang", defaultValue = "ENGLISH") LanguageEnum lang){
+        List<ArticleTypeResponseDTO> dtos = articleTypeService.getListByLanguage(lang);
+
+        return ResponseEntity.ok(dtos);
     }
 }

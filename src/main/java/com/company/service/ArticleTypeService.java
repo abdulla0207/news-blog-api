@@ -2,7 +2,9 @@ package com.company.service;
 
 import com.company.dto.ArticleDTO;
 import com.company.dto.ArticleTypeDTO;
+import com.company.dto.ArticleTypeResponseDTO;
 import com.company.entity.ArticleTypeEntity;
+import com.company.enums.LanguageEnum;
 import com.company.exception.ArticleTypeCreationException;
 import com.company.exception.ItemNotFoundException;
 import com.company.repository.ArticleTypeRepository;
@@ -108,5 +110,33 @@ public class ArticleTypeService {
         });
 
         return dtos;
+    }
+
+    public String deleteById(int id) {
+        Optional<ArticleTypeEntity> byId = articleTypeRepository.findById(id);
+
+        if(byId.isEmpty())
+            throw new ItemNotFoundException("Article Type with this id not found");
+
+        articleTypeRepository.deleteById(id);
+
+        return "Article Type with id " + id + " has been deleted";
+    }
+
+    public List<ArticleTypeResponseDTO> getListByLanguage(LanguageEnum languageEnum) {
+        List<ArticleTypeEntity> all = articleTypeRepository.findAll();
+
+        List<ArticleTypeResponseDTO> response = new ArrayList<>();
+        all.forEach(entity -> {
+            String name = entity.getNameEn();
+            switch (languageEnum){
+                case UZBEK -> name = entity.getNameUz();
+                case ENGLISH -> name = entity.getNameEn();
+            }
+            ArticleTypeResponseDTO dto = new ArticleTypeResponseDTO(entity.getId(), entity.getKey(), name);
+            response.add(dto);
+        });
+
+        return response;
     }
 }

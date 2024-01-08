@@ -5,9 +5,9 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MDQ3MDI1NTYsImlkIjoxLCJlb
 
 
 {
-  "key": "sport",
-  "nameUz": "Sport",
-  "nameEn": "Sport"
+  "key": "economy",
+  "nameUz": "Iqtisodiyot",
+  "nameEn": "Economy"
 }
 
 ### Update article type
@@ -26,3 +26,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MDQ3MDI1NTYsImlkIjoxLCJlb
 ### Get List of article types (pagination)
 GET localhost:8080/article/type/?page=0&size=5
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MDQ3MDI1NTYsImlkIjoxLCJlbWFpbCI6ImFiZHVsbGEuZXJtYXRvdjA0MDdAZ21haWwuY29tIiwicGhvbmVOdW1iZXIiOiIrOTk4OTQzMzUxMzI1Iiwicm9sZSI6IkFETUlOIiwiZXhwIjoxNzA0Nzg4OTU2LCJpc3MiOiJOZXdzQmxvZyJ9.Bb_Coc3Y7tESefn_IZClFm2jbB2VnY-hEz_3UOqqL4k
+
+
+### Get List of article types by language
+GET localhost:8080/article/type/language?lang=ENGLISH
