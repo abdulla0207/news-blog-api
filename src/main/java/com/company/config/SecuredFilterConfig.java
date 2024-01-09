@@ -20,7 +20,8 @@ public class SecuredFilterConfig {
         FilterRegistrationBean bean = new FilterRegistrationBean();
         bean.setFilter(tokenFilterConfig);
         bean.addUrlPatterns("/profile/*",
-                "/article/type/*");
+                "/article/type/*",
+                "/region/*");
         return bean;
     }
 }

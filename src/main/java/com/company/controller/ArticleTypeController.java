@@ -1,8 +1,7 @@
 package com.company.controller;
 
-import com.company.dto.ArticleDTO;
 import com.company.dto.ArticleTypeDTO;
-import com.company.dto.ArticleTypeResponseDTO;
+import com.company.dto.ArticleTypeByLanguageDTO;
 import com.company.enums.LanguageEnum;
 import com.company.enums.ProfileRoleEnum;
 import com.company.service.ArticleTypeService;
@@ -62,7 +61,7 @@ public class ArticleTypeController {
 
     @GetMapping("/language")
     public ResponseEntity<?> getListByLanguage(@RequestParam(name = "lang", defaultValue = "ENGLISH") LanguageEnum lang){
-        List<ArticleTypeResponseDTO> dtos = articleTypeService.getListByLanguage(lang);
+        List<ArticleTypeByLanguageDTO> dtos = articleTypeService.getListByLanguage(lang);
 
         return ResponseEntity.ok(dtos);
     }

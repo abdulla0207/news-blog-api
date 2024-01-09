@@ -1,0 +1,31 @@
+### Create region
+POST localhost:8080/region/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MDQ4MTk3NTcsImlkIjoxLCJlbWFpbCI6ImFiZHVsbGEuZXJtYXRvdjA0MDdAZ21haWwuY29tIiwicGhvbmVOdW1iZXIiOiIrOTk4OTQzMzUxMzI1Iiwicm9sZSI6IkFETUlOIiwiZXhwIjoxNzA0OTA2MTU3LCJpc3MiOiJOZXdzQmxvZyJ9.ce0__2fBxWUZSCNLHHFBVk_n2d3is8rxkJcsXjjx-X4
+
+{
+  "key": "namangan",
+  "nameUz": "Namangan",
+  "nameEn": "Namangan",
+  "visible": true
+}
+
+### Get List of regions by language
+GET localhost:8080/region/language?lang=UZBEK
+
+### Get List of regions
+GET localhost:8080/region/
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MDQ4MTk3NTcsImlkIjoxLCJlbWFpbCI6ImFiZHVsbGEuZXJtYXRvdjA0MDdAZ21haWwuY29tIiwicGhvbmVOdW1iZXIiOiIrOTk4OTQzMzUxMzI1Iiwicm9sZSI6IkFETUlOIiwiZXhwIjoxNzA0OTA2MTU3LCJpc3MiOiJOZXdzQmxvZyJ9.ce0__2fBxWUZSCNLHHFBVk_n2d3is8rxkJcsXjjx-X4
+
+
+### Update region
+PUT localhost:8080/region/update/1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MDQ4MTk3NTcsImlkIjoxLCJlbWFpbCI6ImFiZHVsbGEuZXJtYXRvdjA0MDdAZ21haWwuY29tIiwicGhvbmVOdW1iZXIiOiIrOTk4OTQzMzUxMzI1Iiwicm9sZSI6IkFETUlOIiwiZXhwIjoxNzA0OTA2MTU3LCJpc3MiOiJOZXdzQmxvZyJ9.ce0__2fBxWUZSCNLHHFBVk_n2d3is8rxkJcsXjjx-X4
+
+{
+  "key": "samarkand",
+  "nameUz": "Samarqand",
+  "nameEn": "Samarkand",
+  "visible": true
+}

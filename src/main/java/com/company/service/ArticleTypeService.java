@@ -1,8 +1,7 @@
 package com.company.service;
 
-import com.company.dto.ArticleDTO;
 import com.company.dto.ArticleTypeDTO;
-import com.company.dto.ArticleTypeResponseDTO;
+import com.company.dto.ArticleTypeByLanguageDTO;
 import com.company.entity.ArticleTypeEntity;
 import com.company.enums.LanguageEnum;
 import com.company.exception.ArticleTypeCreationException;
@@ -80,6 +79,7 @@ public class ArticleTypeService {
         entity.setUpdatedAt(LocalDateTime.now());
         entity.setKey(dto.key());
         entity.setNameEn(dto.nameEn());
+        entity.setNameUz(dto.nameUz());
         entity.setVisible(dto.visible());
 
         articleTypeRepository.save(entity);
@@ -123,17 +123,17 @@ public class ArticleTypeService {
         return "Article Type with id " + id + " has been deleted";
     }
 
-    public List<ArticleTypeResponseDTO> getListByLanguage(LanguageEnum languageEnum) {
-        List<ArticleTypeEntity> all = articleTypeRepository.findAll();
+    public List<ArticleTypeByLanguageDTO> getListByLanguage(LanguageEnum languageEnum) {
+        List<ArticleTypeEntity> all = articleTypeRepository.findAllWhereVisibleIsTrue();
 
-        List<ArticleTypeResponseDTO> response = new ArrayList<>();
+        List<ArticleTypeByLanguageDTO> response = new ArrayList<>();
         all.forEach(entity -> {
             String name = entity.getNameEn();
             switch (languageEnum){
                 case UZBEK -> name = entity.getNameUz();
                 case ENGLISH -> name = entity.getNameEn();
             }
-            ArticleTypeResponseDTO dto = new ArticleTypeResponseDTO(entity.getId(), entity.getKey(), name);
+            ArticleTypeByLanguageDTO dto = new ArticleTypeByLanguageDTO(entity.getId(), entity.getKey(), name);
             response.add(dto);
         });
 

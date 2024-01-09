@@ -27,11 +27,11 @@ public class TokenFilter extends GenericFilterBean {
         String requestURI = request.getRequestURI();
 
         // This if statement will not check for token "/article/type/language/" endpoint
-        if(requestURI.startsWith("/article/type/language")){
-            filterChain.doFilter(request, response);
-            return;
+        switch (requestURI){
+            case "/article/type/language", "/region/language":
+                filterChain.doFilter(request, response);
+                return;
         }
-
         // Gets the Token from the header
         final String authHeader = request.getHeader("Authorization");
 

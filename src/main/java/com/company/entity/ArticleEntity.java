@@ -42,10 +42,19 @@ public class ArticleEntity {
     @JoinColumn(name = "category_id", insertable = false, updatable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private CategoryEntity category;
-//
-//    @OneToMany(mappedBy = "article")
-//    @Column(name = "comment")
-//    private List<CommentEntity> commentEntity;
+
+    @Column(name = "article_type_id")
+    private Integer articleTypeId;
+    @JoinColumn(name = "article_type_id", insertable = false, updatable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    private ArticleTypeEntity articleType;
+
+    @Column(name = "region_id")
+    private Integer regionId;
+    @JoinColumn(name = "region_id", insertable = false, updatable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    private RegionEntity region;
+
     @Column(name = "article_status")
     @Enumerated(EnumType.STRING)
     private ArticleStatusEnum articleStatus;
