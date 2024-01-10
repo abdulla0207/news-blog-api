@@ -1,13 +1,20 @@
 package com.company.controller;
 
+import com.company.dto.CategoryByLanguageDTO;
 import com.company.dto.CategoryDTO;
 import com.company.entity.CategoryEntity;
+import com.company.enums.LanguageEnum;
+import com.company.enums.ProfileRoleEnum;
 import com.company.service.CategoryService;
+import com.company.util.JwtUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * Category Controller is a Controller for Category entity manipulation.
@@ -27,7 +34,8 @@ public class CategoryController {
      * It sends to service method and returns a response entity
      **/
     @PostMapping("/")
-    public ResponseEntity<?> createCategory(@RequestBody CategoryDTO categoryDTO){
+    public ResponseEntity<?> createCategory(@RequestBody CategoryDTO categoryDTO, HttpServletRequest request){
+        JwtUtil.checkForAdmin(request, ProfileRoleEnum.ADMIN);
         String response = categoryService.createCategory(categoryDTO);
 
         return ResponseEntity.ok(response);
@@ -38,7 +46,8 @@ public class CategoryController {
      * It gets categories by pagination
      */
     @GetMapping("/")
-    public ResponseEntity<?> getCategoryList(@RequestParam("page") int page, @RequestParam("size") int size){
+    public ResponseEntity<?> getCategoryList(@RequestParam("page") int page, @RequestParam("size") int size, HttpServletRequest request){
+        JwtUtil.checkForAdmin(request, ProfileRoleEnum.ADMIN);
         Page<CategoryDTO> categoryEntities = categoryService.getCategoriesPagination(page, size);
 
         return ResponseEntity.ok(categoryEntities);
@@ -48,8 +57,25 @@ public class CategoryController {
      * It receives key of specific category and a new category object with updated fields
      */
     @PutMapping("/{key}")
-    public ResponseEntity<?> updateCategoryByKey(@RequestParam("key") String key, @RequestBody CategoryDTO categoryDTO){
-        String response = categoryService.updateCategoryByKey(categoryDTO, key);
+    public ResponseEntity<?> updateCategoryById(@RequestParam("id") int id, @RequestBody CategoryDTO categoryDTO, HttpServletRequest request){
+        JwtUtil.checkForAdmin(request, ProfileRoleEnum.ADMIN);
+        String response = categoryService.updateCategoryByKey(categoryDTO, id);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteById(@PathVariable(name = "id") int id, HttpServletRequest request){
+        JwtUtil.checkForAdmin(request, ProfileRoleEnum.ADMIN);
+
+        String response = categoryService.deleteById(id);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/language")
+    public ResponseEntity<?> getByLanguage(@RequestParam LanguageEnum languageEnum){
+        List<CategoryByLanguageDTO> response = categoryService.getByLanguage(languageEnum);
 
         return ResponseEntity.ok(response);
     }

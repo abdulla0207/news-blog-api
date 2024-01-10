@@ -1,7 +1,10 @@
 package com.company.service;
 
+import com.company.dto.CategoryByLanguageDTO;
 import com.company.dto.CategoryDTO;
 import com.company.entity.CategoryEntity;
+import com.company.entity.RegionEntity;
+import com.company.enums.LanguageEnum;
 import com.company.exception.CategoryCreateException;
 import com.company.exception.ItemNotFoundException;
 import com.company.repository.CategoryRepository;
@@ -12,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,13 +55,13 @@ public class CategoryService {
         return "Category created";
     }
 
-    public String updateCategoryByKey(CategoryDTO categoryDTO, String key){
+    public String updateCategoryByKey(CategoryDTO categoryDTO, int id){
         String[] s = categoryDTO.nameEn().toLowerCase().split(" ");
 
         String newSlag = String.join("_", s);
 
         int i = categoryRepository.updateCategory(categoryDTO.nameUz(), categoryDTO.nameEn(),
-                newSlag, categoryDTO.visible(), key);
+                newSlag, categoryDTO.visible(), id);
 
         if(i <= 0)
             throw new ItemNotFoundException("Category not found with this keyword");
@@ -100,5 +104,31 @@ public class CategoryService {
                 categoryEntity.getSlag()
         );
         return dto;
+    }
+
+    public String deleteById(int id) {
+        Optional<CategoryEntity> byId = categoryRepository.findById(id);
+        if(byId.isEmpty())
+            throw new ItemNotFoundException("Category with this id not found");
+
+        categoryRepository.deleteById(id);
+        return "Category has been deleted";
+    }
+
+    public List<CategoryByLanguageDTO> getByLanguage(LanguageEnum languageEnum) {
+        List<CategoryEntity> allWhereVisibleIsTrue = categoryRepository.findAllWhereVisibleIsTrue();
+
+        List<CategoryByLanguageDTO> response = new ArrayList<>();
+        allWhereVisibleIsTrue.forEach(categoryEntity -> {
+            String name = null;
+            switch (languageEnum){
+                case UZBEK -> name = categoryEntity.getNameUz();
+                case ENGLISH -> name = categoryEntity.getNameEn();
+            }
+            response.add(new CategoryByLanguageDTO(categoryEntity.getId(), name,
+                    categoryEntity.isVisible(), categoryEntity.getKey(), categoryEntity.getSlag()));
+        });
+
+        return response;
     }
 }
