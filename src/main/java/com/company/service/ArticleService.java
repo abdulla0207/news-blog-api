@@ -101,6 +101,18 @@ public class ArticleService {
         return res;
     }
 
+    public Page<ArticleDTO> getArticlesForReview(int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+
+        Page<ArticleEntity> articlesForReview = articleRepository.getArticlesForReview(pageRequest);
+
+        Stream<ArticleEntity> articleEntityStream = articlesForReview.get();
+        long totalElements = articlesForReview.getTotalElements();
+        List<ArticleDTO> responseList = articleEntityStream.map(this::toDto).toList();
+
+        return new PageImpl<>(responseList, pageRequest, totalElements);
+    }
+
     public Page<ArticleDTO> findAllArticleByPublishedDate(int page, int size){
         Pageable pageable = PageRequest.of(page, size);
 
@@ -171,7 +183,10 @@ public class ArticleService {
                 article.getCreatedAt(),
                 article.getPublishedAt(),
                 article.isVisible(),
-                article.getCategoryId()
+                article.getCategoryId(),
+                article.getRegionId(),
+                article.getArticleTypeId(),
+                article.isPublish()
         );
         return articleDTO;
     }
@@ -217,4 +232,6 @@ public class ArticleService {
 
         return responsePage;
     }
+
+
 }

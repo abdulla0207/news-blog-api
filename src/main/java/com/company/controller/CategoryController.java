@@ -2,14 +2,11 @@ package com.company.controller;
 
 import com.company.dto.CategoryByLanguageDTO;
 import com.company.dto.CategoryDTO;
-import com.company.entity.CategoryEntity;
 import com.company.enums.LanguageEnum;
 import com.company.enums.ProfileRoleEnum;
 import com.company.service.CategoryService;
 import com.company.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,7 +32,7 @@ public class CategoryController {
      **/
     @PostMapping("/")
     public ResponseEntity<?> createCategory(@RequestBody CategoryDTO categoryDTO, HttpServletRequest request){
-        JwtUtil.checkForAdmin(request, ProfileRoleEnum.ADMIN);
+        JwtUtil.checkForRole(request, ProfileRoleEnum.ADMIN);
         String response = categoryService.createCategory(categoryDTO);
 
         return ResponseEntity.ok(response);
@@ -47,7 +44,7 @@ public class CategoryController {
      */
     @GetMapping("/")
     public ResponseEntity<?> getCategoryList(@RequestParam("page") int page, @RequestParam("size") int size, HttpServletRequest request){
-        JwtUtil.checkForAdmin(request, ProfileRoleEnum.ADMIN);
+        JwtUtil.checkForRole(request, ProfileRoleEnum.ADMIN);
         Page<CategoryDTO> categoryEntities = categoryService.getCategoriesPagination(page, size);
 
         return ResponseEntity.ok(categoryEntities);
@@ -58,7 +55,7 @@ public class CategoryController {
      */
     @PutMapping("/{key}")
     public ResponseEntity<?> updateCategoryById(@RequestParam("id") int id, @RequestBody CategoryDTO categoryDTO, HttpServletRequest request){
-        JwtUtil.checkForAdmin(request, ProfileRoleEnum.ADMIN);
+        JwtUtil.checkForRole(request, ProfileRoleEnum.ADMIN);
         String response = categoryService.updateCategoryByKey(categoryDTO, id);
 
         return ResponseEntity.ok(response);
@@ -66,7 +63,7 @@ public class CategoryController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteById(@PathVariable(name = "id") int id, HttpServletRequest request){
-        JwtUtil.checkForAdmin(request, ProfileRoleEnum.ADMIN);
+        JwtUtil.checkForRole(request, ProfileRoleEnum.ADMIN);
 
         String response = categoryService.deleteById(id);
 

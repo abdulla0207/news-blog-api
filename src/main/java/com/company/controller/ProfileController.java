@@ -1,6 +1,5 @@
 package com.company.controller;
 
-import com.company.dto.JwtDTO;
 import com.company.dto.ProfileDTO;
 import com.company.enums.ProfileRoleEnum;
 import com.company.service.ProfileService;
@@ -34,7 +33,7 @@ public class ProfileController {
     @PostMapping("/")
     public ResponseEntity<?> create(HttpServletRequest request, @RequestBody ProfileDTO profileDTO){
 
-        JwtUtil.checkForAdmin(request, ProfileRoleEnum.ADMIN);
+        JwtUtil.checkForRole(request, ProfileRoleEnum.ADMIN);
         int id = JwtUtil.getIdFromHeader(request);
         ProfileDTO responseDTO = profileService.create(profileDTO, id);
 
@@ -46,7 +45,7 @@ public class ProfileController {
     // Method decodes the token and calls deleteById method that deletes profile by id
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteById(@PathVariable int id, HttpServletRequest request){
-        JwtUtil.checkForAdmin(request, ProfileRoleEnum.ADMIN);
+        JwtUtil.checkForRole(request, ProfileRoleEnum.ADMIN);
         String s = profileService.deleteById(id);
 
         return ResponseEntity.ok(s);
@@ -59,7 +58,7 @@ public class ProfileController {
     @GetMapping("/")
     public ResponseEntity<?> getList(HttpServletRequest request,
                                      @RequestParam("page") int page, @RequestParam("size") int size){
-        JwtUtil.checkForAdmin(request, ProfileRoleEnum.ADMIN);
+        JwtUtil.checkForRole(request, ProfileRoleEnum.ADMIN);
 
         Page<ProfileDTO> profileList = profileService.getProfileList(page, size);
 
@@ -71,7 +70,7 @@ public class ProfileController {
     // Decodes headerToken, and sends all properties to service method to Update specific profile
     @PutMapping("/admin/{id}")
     public ResponseEntity<?> updateByAdmin(@RequestBody ProfileDTO profileDTO, @PathVariable int id, HttpServletRequest request){
-        JwtUtil.checkForAdmin(request, ProfileRoleEnum.ADMIN);
+        JwtUtil.checkForRole(request, ProfileRoleEnum.ADMIN);
 
         String response = profileService.update(profileDTO, id);
 

@@ -18,5 +18,8 @@ public record ArticleDTO(
         LocalDateTime createdAt,
         LocalDateTime publishedAt,
         boolean visible,
-        int categoryId
+        int categoryId,
+        int regionId,
+        int articleTypeId,
+        boolean publish
 ) {}

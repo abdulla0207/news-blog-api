@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.swing.plaf.synth.Region;
 import java.util.List;
 
 @RestController
@@ -26,7 +25,7 @@ public class RegionController {
 
     @PostMapping("/")
     public ResponseEntity<RegionDTO> create(HttpServletRequest request, @RequestBody RegionDTO regionDTO){
-        JwtUtil.checkForAdmin(request, ProfileRoleEnum.ADMIN);
+        JwtUtil.checkForRole(request, ProfileRoleEnum.ADMIN);
 
         RegionDTO response = regionService.create(regionDTO);
 
@@ -36,7 +35,7 @@ public class RegionController {
     @PutMapping("/update/{id}")
     public ResponseEntity<RegionDTO> updateById(@PathVariable(name = "id") int id,
                                                 HttpServletRequest request, @RequestBody RegionDTO regionDTO){
-        JwtUtil.checkForAdmin(request, ProfileRoleEnum.ADMIN);
+        JwtUtil.checkForRole(request, ProfileRoleEnum.ADMIN);
 
         RegionDTO response = regionService.updateById(id, regionDTO);
 
@@ -45,7 +44,7 @@ public class RegionController {
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteById(@PathVariable(name = "id") int id, HttpServletRequest request){
-        JwtUtil.checkForAdmin(request, ProfileRoleEnum.ADMIN);
+        JwtUtil.checkForRole(request, ProfileRoleEnum.ADMIN);
 
         String response = regionService.deleteById(id);
 
@@ -54,7 +53,7 @@ public class RegionController {
 
     @GetMapping("/")
     public ResponseEntity<List<RegionDTO>> getList(HttpServletRequest request){
-        JwtUtil.checkForAdmin(request, ProfileRoleEnum.ADMIN);
+        JwtUtil.checkForRole(request, ProfileRoleEnum.ADMIN);
 
         List<RegionDTO> response = regionService.getList();
 

@@ -1,7 +1,9 @@
 package com.company.controller;
 
 import com.company.dto.ArticleDTO;
+import com.company.enums.ProfileRoleEnum;
 import com.company.service.ArticleService;
+import com.company.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -30,9 +32,20 @@ public class ArticleController {
      */
     @PostMapping("/")
     public ResponseEntity<?> createPost(@RequestBody ArticleDTO articleDTO, HttpServletRequest request){
+        JwtUtil.checkForRole(request, ProfileRoleEnum.WRITER);
 
         ArticleDTO res = articleService.createPost(articleDTO);
         return ResponseEntity.ok(res);
+    }
+
+    @GetMapping("/review")
+    public ResponseEntity<?> getArticlesForReview(HttpServletRequest request, @RequestParam(name = "page") int page,
+                                                              @RequestParam(name = "size") int size){
+        JwtUtil.checkForRole(request, ProfileRoleEnum.PUBLISHER);
+
+        Page<ArticleDTO> getArticlePaginationList = articleService.getArticlesForReview(page, size);
+
+        return ResponseEntity.ok(getArticlePaginationList);
     }
 
     /** GET "/article/" request is sent to the API with the page and size(size mainly the same number) from Parameters

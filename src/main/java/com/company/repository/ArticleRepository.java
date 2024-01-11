@@ -18,6 +18,9 @@ public interface ArticleRepository extends JpaRepository<ArticleEntity, String> 
     @Query("select a from ArticleEntity as a order by a.publishedAt")
     Page<ArticleEntity> findArticlesByPublishedDate(Pageable pageable);
 
+    @Query("select a from ArticleEntity as a where a.publish=false")
+    Page<ArticleEntity> getArticlesForReview(Pageable pageable);
+
     @Query("select a from ArticleEntity as a order by a.titleUz")
     Page<ArticleEntity> findArticlesByTitle(Pageable pageable);
 

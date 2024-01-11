@@ -27,7 +27,7 @@ public class ArticleTypeController {
 
     @PostMapping("/")
     public ResponseEntity<?> create(@RequestBody ArticleTypeDTO articleTypeDTO, HttpServletRequest request){
-        JwtUtil.checkForAdmin(request, ProfileRoleEnum.ADMIN);
+        JwtUtil.checkForRole(request, ProfileRoleEnum.ADMIN);
 
         ArticleTypeDTO responseDTO = articleTypeService.create(articleTypeDTO);
         return ResponseEntity.ok(responseDTO);
@@ -35,7 +35,7 @@ public class ArticleTypeController {
 
     @PutMapping("update/{id}")
     public ResponseEntity<?> updateById(@PathVariable int id, @RequestBody ArticleTypeDTO dto, HttpServletRequest request){
-        JwtUtil.checkForAdmin(request, ProfileRoleEnum.ADMIN);
+        JwtUtil.checkForRole(request, ProfileRoleEnum.ADMIN);
         ArticleTypeDTO responseDTO = articleTypeService.updateById(id, dto);
 
         return ResponseEntity.ok(responseDTO);
@@ -44,7 +44,7 @@ public class ArticleTypeController {
     @GetMapping("/")
     public ResponseEntity<?> getList(HttpServletRequest request, @RequestParam(name = "page") int page,
                                      @RequestParam(name = "size") int size){
-        JwtUtil.checkForAdmin(request, ProfileRoleEnum.ADMIN);
+        JwtUtil.checkForRole(request, ProfileRoleEnum.ADMIN);
         Page<ArticleTypeDTO> articleDTOS = articleTypeService.getList(page, size);
 
         return ResponseEntity.ok(articleDTOS);
@@ -52,7 +52,7 @@ public class ArticleTypeController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteById(@PathVariable int id, HttpServletRequest request){
-        JwtUtil.checkForAdmin(request,ProfileRoleEnum.ADMIN);
+        JwtUtil.checkForRole(request,ProfileRoleEnum.ADMIN);
 
         String response = articleTypeService.deleteById(id);
 
