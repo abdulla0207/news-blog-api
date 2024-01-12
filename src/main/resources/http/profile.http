@@ -19,15 +19,15 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2ODE0NzYxNTEsImlkIjoxMywiZ
 
 
 ### Sign up
-POST localhost:8080/auth/signup
+POST localhost:8080/api/auth/signup
 Content-Type: application/json
 
 {
-  "name": "Abdulla",
-  "surname": "Ermatov",
-  "email": "abdulla.ermatov04@gmail.com",
-  "phoneNumber": "+998946651313",
-  "password": "QurtovAbdulSumbulov223"
+  "name": "Jambul",
+  "surname": "Jambulov",
+  "email": "lla.abdu46@gmail.com",
+  "phoneNumber": "+998946651344",
+  "password": "JambulJambulov2002"
 }
 
 
