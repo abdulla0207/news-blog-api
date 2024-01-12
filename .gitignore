@@ -33,4 +33,7 @@ build/
 ### VS Code ###
 .vscode/
 
+### Secrete Property ###
+secrets.properties
+
 
