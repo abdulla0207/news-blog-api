@@ -19,9 +19,9 @@ public class SecuredFilterConfig {
     public FilterRegistrationBean filterRegistrationBean(){
         FilterRegistrationBean bean = new FilterRegistrationBean();
         bean.setFilter(tokenFilterConfig);
-        bean.addUrlPatterns("/profile/*",
-                "/article/type/*",
-                "/region/*");
+        bean.addUrlPatterns("/api/profiles/*",
+                "/api/article/types/*",
+                "/api/regions/*");
         return bean;
     }
 }

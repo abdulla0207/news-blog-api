@@ -17,7 +17,7 @@ import java.util.List;
  * Category Controller is a Controller for Category entity manipulation.
  */
 @RestController
-@RequestMapping("/category")
+@RequestMapping("/api/categories")
 public class CategoryController {
 
     private final CategoryService categoryService;

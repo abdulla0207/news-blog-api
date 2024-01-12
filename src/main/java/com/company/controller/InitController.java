@@ -20,7 +20,7 @@ import java.util.Optional;
  */
 
 @RestController
-@RequestMapping("/init")
+@RequestMapping("/api/init")
 // First creation of data
 public class InitController {
 

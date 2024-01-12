@@ -28,7 +28,7 @@ public class TokenFilter extends GenericFilterBean {
 
         // This if statement will not check for token "/article/type/language/" endpoint
         switch (requestURI){
-            case "/article/type/language", "/region/language":
+            case "/api/article/types/language", "/api/regions/language":
                 filterChain.doFilter(request, response);
                 return;
         }

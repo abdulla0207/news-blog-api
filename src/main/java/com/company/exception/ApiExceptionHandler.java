@@ -12,7 +12,9 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(value = {ArticleCreateException.class,
             CategoryCreateException.class,
-            ProfileCreateException.class,})
+            ProfileCreateException.class,
+            ArticleTypeCreationException.class,
+            RegionCreateException.class})
     public ResponseEntity<ExceptionResponse> handleBadRequestException(RuntimeException e){
         ExceptionResponse exceptionResponse = new ExceptionResponse(e.getMessage(),
                 HttpStatus.BAD_REQUEST,
@@ -48,4 +50,8 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(exceptionResponse, HttpStatus.FORBIDDEN);
     }
 
+    @ExceptionHandler({TokenNotValidException.class})
+    public ResponseEntity<?> handleUnauthorized(TokenNotValidException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+    }
 }

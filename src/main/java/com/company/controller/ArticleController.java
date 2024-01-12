@@ -17,7 +17,7 @@ import java.util.List;
  */
 
 @RestController
-@RequestMapping("/article")
+@RequestMapping("/api/articles")
 public class ArticleController {
     private final ArticleService articleService;
 
