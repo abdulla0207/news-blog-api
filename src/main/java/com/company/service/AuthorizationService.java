@@ -4,12 +4,11 @@ import com.company.dto.RegionDTO;
 import com.company.dto.RegistrationDTO;
 import com.company.dto.authentication.AuthResponseDTO;
 import com.company.dto.authentication.LoginDTO;
+import com.company.entity.ConfirmationTokenEntity;
 import com.company.entity.ProfileEntity;
 import com.company.enums.ProfileRoleEnum;
 import com.company.enums.ProfileStatusEnum;
-import com.company.exception.EmailException;
-import com.company.exception.ItemNotFoundException;
-import com.company.exception.ProfileCreateException;
+import com.company.exception.*;
 import com.company.repository.ProfileRepository;
 import com.company.util.JwtUtil;
 import com.company.util.MD5Util;
@@ -18,16 +17,20 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class AuthorizationService {
     private final ProfileRepository profileRepository;
     private final MailService mailService;
+    private final ConfirmationTokenService tokenService;
 
     @Autowired
-    public AuthorizationService(ProfileRepository profileRepository, MailService mailService){
+    public AuthorizationService(ProfileRepository profileRepository, MailService mailService,
+                                ConfirmationTokenService tokenService){
         this.profileRepository = profileRepository;
         this.mailService = mailService;
+        this.tokenService =tokenService;
     }
     public String signup(RegistrationDTO registrationDTO) {
         Optional<ProfileEntity> byEmail = profileRepository.findByEmail(registrationDTO.email());
@@ -57,7 +60,20 @@ public class AuthorizationService {
         profileEntity.setCreatedAt(LocalDateTime.now());
 
         profileRepository.save(profileEntity);
-        return "Profile Added";
+
+        return saveTokenForUser(profileEntity.getId());
+    }
+
+    private String saveTokenForUser(Integer id) {
+        String token = UUID.randomUUID().toString();
+        ConfirmationTokenEntity tokenEntity = new ConfirmationTokenEntity();
+        tokenEntity.setProfileId(id);
+        tokenEntity.setToken(token);
+        tokenEntity.setCreatedAt(LocalDateTime.now());
+        tokenEntity.setExpiresAt(LocalDateTime.now().plusMinutes(15));
+        tokenService.saveConfirmationToken(tokenEntity);
+
+        return token;
     }
 
     private void checkRegistrationDTO(RegistrationDTO registrationDTO){
@@ -99,5 +115,26 @@ public class AuthorizationService {
         responseDTO.setToken(JwtUtil.encode(profileEntity.getId(), profileEntity.getEmail(), profileEntity.getPhoneNumber(), profileEntity.getRole()));
 
         return responseDTO;
+    }
+
+    public String confirmToken(String token){
+        Optional<ConfirmationTokenEntity> token1 = tokenService.getToken(token);
+        if(token1.isEmpty())
+            throw new ItemNotFoundException("Token not found");
+
+        ConfirmationTokenEntity tokenEntity = token1.get();
+
+        if(tokenEntity.getConfirmedAt() != null)
+            throw new TokenAlreadyConfirmedException("Account already Confirmed");
+
+        LocalDateTime expiresAt = tokenEntity.getExpiresAt();
+
+        if(expiresAt.isBefore(LocalDateTime.now()))
+            throw new TokenNotValidException("Token Expired");
+
+        tokenService.setConfirmedAt(token);
+        profileRepository.activateProfileStatus(tokenEntity.getProfileEntity().getEmail());
+
+        return "Confirmed";
     }
 }

@@ -32,7 +32,7 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(exceptionResponse, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(value = {ItemAlreadyExistsException.class, EmailException.class})
+    @ExceptionHandler(value = {ItemAlreadyExistsException.class, EmailException.class, TokenAlreadyConfirmedException.class})
     public ResponseEntity<ExceptionResponse> handleAlreadyExistException(RuntimeException e){
         ExceptionResponse exceptionResponse = new ExceptionResponse(e.getMessage(),
                 HttpStatus.CONFLICT,

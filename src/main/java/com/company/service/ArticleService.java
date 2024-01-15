@@ -7,6 +7,7 @@ import com.company.enums.ArticleStatusEnum;
 import com.company.exception.ArticleCreateException;
 import com.company.exception.ItemNotFoundException;
 import com.company.repository.ArticleRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Lazy;
@@ -137,6 +138,7 @@ public class ArticleService {
         return "Article deleted";
     }
 
+    @Transactional
     public String updateById(String uuid, ArticleDTO articleDTO) {
         Optional<ArticleEntity> findById = articleRepository.findById(uuid);
 

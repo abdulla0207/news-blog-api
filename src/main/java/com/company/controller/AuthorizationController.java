@@ -4,12 +4,10 @@ import com.company.dto.authentication.AuthResponseDTO;
 import com.company.dto.authentication.LoginDTO;
 import com.company.dto.RegistrationDTO;
 import com.company.service.AuthorizationService;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * This class is only used, when in the USER side.
@@ -38,5 +36,12 @@ public class AuthorizationController {
         AuthResponseDTO responseDTO = authorizationService.login(loginDTO);
 
         return ResponseEntity.ok(responseDTO);
+    }
+
+    @GetMapping("/confirm")
+    public ResponseEntity<String> confirm(@RequestParam("token") String token){
+        String response = authorizationService.confirmToken(token);
+
+        return ResponseEntity.ok(response);
     }
 }
