@@ -29,6 +29,6 @@ public class ConfirmationTokenEntity {
     @Column(name = "profile_id")
     private int profileId;
     @ManyToOne
-    @JoinColumn(nullable = false, name = "profile_id")
+    @JoinColumn(nullable = false, name = "profile_id", insertable = false, updatable = false)
     private ProfileEntity profileEntity;
 }

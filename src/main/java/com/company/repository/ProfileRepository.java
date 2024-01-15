@@ -34,6 +34,6 @@ public interface ProfileRepository extends JpaRepository<ProfileEntity, Integer>
 
     @Transactional
     @Modifying
-    @Query("update ProfileEntity p set p.status='ACTIVE' where p.email=?1")
+    @Query("update ProfileEntity p set p.status=com.company.enums.ProfileStatusEnum.ACTIVE where p.email=?1")
     void activateProfileStatus(String email);
 }

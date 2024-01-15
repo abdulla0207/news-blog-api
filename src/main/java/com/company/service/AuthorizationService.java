@@ -1,6 +1,5 @@
 package com.company.service;
 
-import com.company.dto.RegionDTO;
 import com.company.dto.RegistrationDTO;
 import com.company.dto.authentication.AuthResponseDTO;
 import com.company.dto.authentication.LoginDTO;
@@ -22,14 +21,14 @@ import java.util.UUID;
 @Service
 public class AuthorizationService {
     private final ProfileRepository profileRepository;
-    private final MailService mailService;
+    private final EmailService emailService;
     private final ConfirmationTokenService tokenService;
 
     @Autowired
-    public AuthorizationService(ProfileRepository profileRepository, MailService mailService,
+    public AuthorizationService(ProfileRepository profileRepository, EmailService emailService,
                                 ConfirmationTokenService tokenService){
         this.profileRepository = profileRepository;
-        this.mailService = mailService;
+        this.emailService = emailService;
         this.tokenService =tokenService;
     }
     public String signup(RegistrationDTO registrationDTO) {
@@ -38,10 +37,6 @@ public class AuthorizationService {
         if(byEmail.isPresent() || byPhoneNumber.isPresent()){
             throw new EmailException("Profile with this email or phone number already exist");
         }
-
-        // Sending verification mail to users email.
-        String message = mailMessage(registrationDTO.name(), registrationDTO.surname());
-        mailService.sendMail(registrationDTO.email(), "Verification News Blog", message);
 
         //Validating the object that came from user side
         checkRegistrationDTO(registrationDTO);
@@ -61,7 +56,13 @@ public class AuthorizationService {
 
         profileRepository.save(profileEntity);
 
-        return saveTokenForUser(profileEntity.getId());
+        String token = saveTokenForUser(profileEntity.getId());
+
+        // Sending verification mail to users email.
+        String message = mailMessage(registrationDTO.name(), registrationDTO.surname(), token);
+
+        emailService.sendMail(registrationDTO.email(), message);
+        return token;
     }
 
     private String saveTokenForUser(Integer id) {
@@ -88,12 +89,13 @@ public class AuthorizationService {
             throw new ProfileCreateException("Phone number should be in the following format: +998 xx xxx-xx-xx");
     }
 
-    private String mailMessage(String name, String surname) {
+    private String mailMessage(String name, String surname, String token) {
         StringBuilder builder = new StringBuilder();
         builder.append("Hello ");
         builder.append(name);
         builder.append(surname);
-        builder.append(".\n Please verify your account");
+        builder.append(".\n Please verify your account: ");
+        builder.append("http://localhost:8080/api/auth/confirm?token=").append(token);
         return builder.toString();
     }
 
