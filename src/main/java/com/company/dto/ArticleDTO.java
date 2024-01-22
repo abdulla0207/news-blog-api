@@ -20,6 +20,5 @@ public record ArticleDTO(
         boolean visible,
         int categoryId,
         int regionId,
-        int articleTypeId,
-        boolean publish
+        int articleTypeId
 ) {}

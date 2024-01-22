@@ -63,7 +63,8 @@ public class ArticleController {
      * Method returns Ok result.
      */
     @DeleteMapping("/{uuid}")
-    public ResponseEntity<?> deleteById(@PathVariable String uuid){
+    public ResponseEntity<?> deleteById(@PathVariable String uuid, HttpServletRequest request){
+        JwtUtil.checkForRole(request, ProfileRoleEnum.MODERATOR);
         String response = articleService.deleteById(uuid);
 
         return ResponseEntity.ok(response);
@@ -132,4 +133,14 @@ public class ArticleController {
 
         return ResponseEntity.ok(articleDTOS);
     }
+
+    @PutMapping("/status/{uuid}")
+    public ResponseEntity<String> changeStatus(@PathVariable String uuid, HttpServletRequest request){
+        JwtUtil.checkForRole(request, ProfileRoleEnum.PUBLISHER);
+        String response = articleService.changeStatus(uuid);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/")
 }

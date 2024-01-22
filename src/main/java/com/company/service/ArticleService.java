@@ -187,8 +187,7 @@ public class ArticleService {
                 article.isVisible(),
                 article.getCategoryId(),
                 article.getRegionId(),
-                article.getArticleTypeId(),
-                article.isPublish()
+                article.getArticleTypeId()
         );
         return articleDTO;
     }
@@ -236,4 +235,18 @@ public class ArticleService {
     }
 
 
+    public String changeStatus(String id) {
+        Optional<ArticleEntity> byId = articleRepository.findById(id);
+
+        if(byId.isEmpty())
+            throw new ItemNotFoundException("Article not found. Wrong ID");
+
+        ArticleEntity articleEntity = byId.get();
+
+        articleEntity.setArticleStatus(ArticleStatusEnum.PUBLISHED);
+
+        articleRepository.save(articleEntity);
+
+        return "Article Published";
+    }
 }

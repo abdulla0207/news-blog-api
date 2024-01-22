@@ -60,8 +60,6 @@ public class ArticleEntity {
     private ArticleStatusEnum articleStatus;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
-    @Column(name = "publish")
-    private boolean publish;
     @Column(name = "published_at")
     private LocalDateTime publishedAt;
     @Column
