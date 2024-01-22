@@ -20,10 +20,10 @@ public class AttachController {
         this.attachService=attachService;
     }
 
-    @PostMapping("/")
-    public ResponseEntity<?> saveFile(@RequestParam("file") MultipartFile multipartFile){
-        String response = attachService.saveFile(multipartFile);
-
-        return ResponseEntity.ok(response);
-    }
+//    @PostMapping("/")
+//    public ResponseEntity<?> saveFile(@RequestParam("file") MultipartFile multipartFile){
+//        String response = attachService.saveFile(multipartFile);
+//
+//        return ResponseEntity.ok(response);
+//    }
 }

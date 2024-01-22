@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -19,4 +20,7 @@ public interface ConfirmationTokenRepository extends JpaRepository<ConfirmationT
     @Modifying
     @Query("update ConfirmationTokenEntity c set c.confirmedAt = ?2 where c.token=?1")
     int updateConfirmedAt(String token, LocalDateTime now);
+
+    @Query("select c from ConfirmationTokenEntity c where c.confirmedAt is null and c.expiresAt < ?1")
+    List<ConfirmationTokenEntity> getExpiredAndUnconfirmedTokens(LocalDateTime now);
 }
