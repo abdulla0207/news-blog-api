@@ -110,6 +110,16 @@ public class AuthorizationService {
         if(profileEntity.getStatus().equals(ProfileStatusEnum.BLOCKED))
             throw new RuntimeException("Profile is blocked");
 
+        if(profileEntity.getStatus().equals(ProfileStatusEnum.NOT_ACTIVE)){
+            String token = saveTokenForUser(profileEntity.getId());
+            String message = mailMessage(profileEntity.getName(), profileEntity.getSurname(), token);
+
+            emailService.sendMail(profileEntity.getEmail(), message);
+            AuthResponseDTO responseDTO = new AuthResponseDTO();
+            responseDTO.setResendVerification(true);
+            return responseDTO;
+        }
+
         AuthResponseDTO responseDTO = new AuthResponseDTO();
         responseDTO.setName(profileEntity.getName());
         responseDTO.setRole(profileEntity.getRole());

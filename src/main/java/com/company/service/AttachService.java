@@ -6,7 +6,5 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class AttachService {
 
-    public String saveFile(MultipartFile multipartFile) {
 
-    }
 }
