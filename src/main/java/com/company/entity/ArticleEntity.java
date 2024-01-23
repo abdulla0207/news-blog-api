@@ -1,6 +1,7 @@
 package com.company.entity;
 
 import com.company.enums.ArticleStatusEnum;
+import com.company.enums.ModeratorActionEnum;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -39,6 +40,18 @@ public class ArticleEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private ProfileEntity publisher;
 
+    @Column(name = "author_id")
+    private Integer authorId;
+    @JoinColumn(name = "author_id", insertable = false, updatable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    private ProfileEntity author;
+
+    @Column(name = "moderator_id")
+    private Integer moderatorId;
+    @JoinColumn(name = "moderator_id", insertable = false, updatable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    private ProfileEntity moderator;
+
     @Column(name = "category_id")
     private Integer categoryId;
     @JoinColumn(name = "category_id", insertable = false, updatable = false)
@@ -60,6 +73,10 @@ public class ArticleEntity {
     @Column(name = "article_status")
     @Enumerated(EnumType.STRING)
     private ArticleStatusEnum articleStatus;
+
+    @Column(name = "moderator_action")
+    @Enumerated(EnumType.STRING)
+    private ModeratorActionEnum moderatorAction;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     @Column(name = "published_at")

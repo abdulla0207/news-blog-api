@@ -33,19 +33,28 @@ public class ArticleController {
     @PostMapping("/")
     public ResponseEntity<?> createPost(@RequestBody ArticleDTO articleDTO, HttpServletRequest request){
         JwtUtil.checkForRole(request, ProfileRoleEnum.WRITER);
-
-        ArticleDTO res = articleService.createPost(articleDTO);
+        Integer writerId = JwtUtil.getIdFromHeader(request);
+        ArticleDTO res = articleService.createPost(articleDTO, writerId);
         return ResponseEntity.ok(res);
     }
 
-    @GetMapping("/review")
-    public ResponseEntity<?> getArticlesForReview(HttpServletRequest request, @RequestParam(name = "page") int page,
+    @GetMapping("/publish")
+    public ResponseEntity<?> getArticlesForPublish(HttpServletRequest request, @RequestParam(name = "page") int page,
                                                               @RequestParam(name = "size") int size){
         JwtUtil.checkForRole(request, ProfileRoleEnum.PUBLISHER);
 
-        Page<ArticleDTO> getArticlePaginationList = articleService.getArticlesForReview(page, size);
+        Page<ArticleDTO> getArticlePaginationList = articleService.getArticlesForPublish(page, size);
 
         return ResponseEntity.ok(getArticlePaginationList);
+    }
+
+    @GetMapping("/review")
+    public ResponseEntity<?> getArticleForReview(HttpServletRequest request, @RequestParam(name = "page") int page,
+                                                 @RequestParam(name = "size") int size){
+        JwtUtil.checkForRole(request, ProfileRoleEnum.MODERATOR);
+
+        Page<ArticleDTO> response = articleService.getArticleForReview(page, size);
+        return ResponseEntity.ok(response);
     }
 
     /** GET "/article/" request is sent to the API with the page and size(size mainly the same number) from Parameters
@@ -140,7 +149,8 @@ public class ArticleController {
     @PutMapping("/status/{uuid}")
     public ResponseEntity<String> changeStatus(@PathVariable String uuid, HttpServletRequest request){
         JwtUtil.checkForRole(request, ProfileRoleEnum.PUBLISHER);
-        String response = articleService.changeStatus(uuid);
+        Integer publisherId = JwtUtil.getIdFromHeader(request);
+        String response = articleService.changeStatus(uuid, publisherId);
 
         return ResponseEntity.ok(response);
     }

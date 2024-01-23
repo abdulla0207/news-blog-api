@@ -4,26 +4,22 @@ import com.company.dto.ArticleDTO;
 import com.company.entity.ArticleEntity;
 import com.company.entity.CategoryEntity;
 import com.company.enums.ArticleStatusEnum;
+import com.company.enums.ModeratorActionEnum;
 import com.company.exception.ArticleCreateException;
 import com.company.exception.ItemNotFoundException;
 import com.company.repository.ArticleRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
@@ -38,7 +34,7 @@ public class ArticleService {
         this.articleRepository = articleRepository;
         this.categoryService = categoryService;
     }
-    public ArticleDTO createPost(ArticleDTO articleDTO) {
+    public ArticleDTO createPost(ArticleDTO articleDTO, int writerId) {
         if(articleDTO.titleUz().isEmpty() || articleDTO.titleUz().isBlank())
             throw new ArticleCreateException("Article Title in Uzbek should be filled");
         if(articleDTO.titleEn().isEmpty() || articleDTO.titleEn().isBlank())
@@ -55,7 +51,8 @@ public class ArticleService {
             throw new ArticleCreateException("Article description in English cannot be empty");
 
         ArticleEntity article = toEntity(articleDTO);
-
+        article.setAuthorId(writerId);
+        article.setModeratorAction(ModeratorActionEnum.NOT_REVIEWED);
         ArticleDTO resDTO = toDto(article);
         articleRepository.save(article);
         return resDTO;
@@ -81,14 +78,7 @@ public class ArticleService {
         Pageable pageable = PageRequest.of(page, size);
         Page<ArticleEntity> pageAllArticle =articleRepository.findAll(pageable);
 
-        List<ArticleEntity> content = pageAllArticle.getContent();
-        long totalElements = pageAllArticle.getTotalElements();
-
-        List<ArticleDTO> articleDTOS = toDtoList(content);
-
-        Page<ArticleDTO> res = new PageImpl<>(articleDTOS, pageable, totalElements);
-
-        return res;
+        return returnPagination(pageAllArticle, pageable);
     }
 
     private List<ArticleDTO> toDtoList(List<ArticleEntity> articleEntities){
@@ -102,10 +92,10 @@ public class ArticleService {
         return res;
     }
 
-    public Page<ArticleDTO> getArticlesForReview(int page, int size) {
+    public Page<ArticleDTO> getArticlesForPublish(int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
 
-        Page<ArticleEntity> articlesForReview = articleRepository.getArticlesForReview(pageRequest);
+        Page<ArticleEntity> articlesForReview = articleRepository.getArticlesForPublish(pageRequest);
 
         Stream<ArticleEntity> articleEntityStream = articlesForReview.get();
         long totalElements = articlesForReview.getTotalElements();
@@ -119,13 +109,7 @@ public class ArticleService {
 
         Page<ArticleEntity> articlesOrderByPublishedDate = articleRepository.findArticlesByPublishedDate(pageable);
 
-        Stream<ArticleEntity> articleEntityStream = articlesOrderByPublishedDate.get();
-        long totalElements = articlesOrderByPublishedDate.getTotalElements();
-        List<ArticleDTO> response = articleEntityStream.map(this::toDto).toList();
-
-        Page<ArticleDTO> articleDTOS = new PageImpl<>(response, pageable, totalElements);
-
-        return articleDTOS;
+        return returnPagination(articlesOrderByPublishedDate, pageable);
     }
 
     public String deleteById(String uuid) {
@@ -173,7 +157,7 @@ public class ArticleService {
     }
 
     private ArticleDTO toDto(ArticleEntity article) {
-        ArticleDTO articleDTO = new ArticleDTO(
+        return new ArticleDTO(
                 article.getUuid(),
                 article.getTitleUz(),
                 article.getTitleEn(),
@@ -189,7 +173,6 @@ public class ArticleService {
                 article.getRegionId(),
                 article.getArticleTypeId()
         );
-        return articleDTO;
     }
 
     public Page<ArticleDTO> findArticlesOrderedByTitleUz(int page, int size) {
@@ -197,15 +180,8 @@ public class ArticleService {
 
         Page<ArticleEntity> articlesByTitle = articleRepository.findArticlesByTitle(of);
 
-        Stream<ArticleEntity> articleEntityStream = articlesByTitle.get();
 
-        List<ArticleDTO> articleDTOS = articleEntityStream.map(this::toDto).toList();
-
-        long totalElements = articlesByTitle.getTotalElements();
-
-        Page<ArticleDTO> response = new PageImpl<>(articleDTOS, of, totalElements);
-
-        return response;
+        return returnPagination(articlesByTitle, of);
     }
 
     public List<ArticleDTO> searchArticlesByTitleUz(String titleUz){
@@ -218,24 +194,15 @@ public class ArticleService {
     public Page<ArticleDTO> getArticlesByCategory(String key, int page, int size) {
         CategoryEntity category = categoryService.getCategoryByKey(key);
 
-        Pageable pageable = PageRequest.of(page, size);
+        PageRequest pageable = PageRequest.of(page, size);
 
         Page<ArticleEntity> articleEntities = articleRepository.findArticleEntitiesByCategory_Key(pageable, category.getKey());
 
-        long totalElements = articleEntities.getTotalElements();
-
-        Stream<ArticleEntity> articleEntityStream = articleEntities.get();
-
-
-        List<ArticleDTO> responseDTO = articleEntityStream.map(this::toDto).toList();
-
-        Page<ArticleDTO> responsePage = new PageImpl<>(responseDTO, pageable, totalElements);
-
-        return responsePage;
+        return returnPagination(articleEntities, pageable);
     }
 
 
-    public String changeStatus(String id) {
+    public String changeStatus(String id, Integer publisherId) {
         Optional<ArticleEntity> byId = articleRepository.findById(id);
 
         if(byId.isEmpty())
@@ -244,9 +211,29 @@ public class ArticleService {
         ArticleEntity articleEntity = byId.get();
 
         articleEntity.setArticleStatus(ArticleStatusEnum.PUBLISHED);
+        articleEntity.setPublisherId(publisherId);
 
         articleRepository.save(articleEntity);
 
         return "Article Published";
     }
+
+    public Page<ArticleDTO> getArticleForReview(int page, int size) {
+        PageRequest of = PageRequest.of(page, size);
+
+        Page<ArticleEntity> articlesByTitle = articleRepository.getArticlesForReview(of);
+
+        return returnPagination(articlesByTitle, of);
+    }
+
+    private Page<ArticleDTO> returnPagination(Page<ArticleEntity> entities, Pageable of){
+        Stream<ArticleEntity> articleEntityStream = entities.get();
+
+        List<ArticleDTO> articleDTOS = articleEntityStream.map(this::toDto).toList();
+
+        long totalElements = entities.getTotalElements();
+
+        return new PageImpl<>(articleDTOS, of, totalElements);
+    }
+
 }

@@ -2,6 +2,7 @@ package com.company.repository;
 
 import com.company.entity.ArticleEntity;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -19,7 +20,7 @@ public interface ArticleRepository extends JpaRepository<ArticleEntity, String> 
     Page<ArticleEntity> findArticlesByPublishedDate(Pageable pageable);
 
     @Query("select a from ArticleEntity as a where a.articleStatus=com.company.enums.ArticleStatusEnum.NOT_PUBLISHED")
-    Page<ArticleEntity> getArticlesForReview(Pageable pageable);
+    Page<ArticleEntity> getArticlesForPublish(Pageable pageable);
 
     @Query("select a from ArticleEntity as a order by a.titleUz")
     Page<ArticleEntity> findArticlesByTitle(Pageable pageable);
@@ -29,4 +30,7 @@ public interface ArticleRepository extends JpaRepository<ArticleEntity, String> 
     List<ArticleEntity> findArticleEntitiesByTitleUzLikeIgnoreCase(String titleUz);
 
     Page<ArticleEntity> findArticleEntitiesByCategory_Key(Pageable pageable, String key);
+
+    @Query("select a from ArticleEntity as a where a.moderatorAction=com.company.enums.ModeratorActionEnum.NOT_REVIEWED")
+    Page<ArticleEntity> getArticlesForReview(PageRequest of);
 }
