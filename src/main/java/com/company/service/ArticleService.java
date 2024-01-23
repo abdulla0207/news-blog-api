@@ -139,7 +139,7 @@ public class ArticleService {
     }
 
     @Transactional
-    public String updateById(String uuid, ArticleDTO articleDTO) {
+    public String updateById(String uuid, ArticleDTO articleDTO, Integer currentUserId) {
         Optional<ArticleEntity> findById = articleRepository.findById(uuid);
 
         if(findById.isEmpty())

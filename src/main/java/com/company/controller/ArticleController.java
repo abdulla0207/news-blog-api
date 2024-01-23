@@ -73,10 +73,13 @@ public class ArticleController {
     /** PUT "/article/UUID" request is send with uuid, and new object with new values of fields
      * Calls the service method to update by sending UUID and OBJECT
      * Method returns Ok result
+     *
      */
     @PutMapping("/{uuid}")
-    public ResponseEntity<?> updateById(@PathVariable String uuid, @RequestBody ArticleDTO articleDTO){
-        String response = articleService.updateById(uuid, articleDTO);
+    public ResponseEntity<?> updateById(@PathVariable String uuid, @RequestBody ArticleDTO articleDTO,
+                                        HttpServletRequest request){
+        Integer currentUserId = JwtUtil.getIdFromHeader(request);
+        String response = articleService.updateById(uuid, articleDTO, currentUserId);
 
         return ResponseEntity.ok(response);
     }
@@ -141,6 +144,4 @@ public class ArticleController {
 
         return ResponseEntity.ok(response);
     }
-
-    @GetMapping("/")
 }

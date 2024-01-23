@@ -33,9 +33,11 @@ public class ArticleEntity {
     @Column(name = "content_en", columnDefinition = "text")
     private String contentEn;
 
+    @Column(name = "publisher_id")
+    private Integer publisherId;
     @JoinColumn(name = "publisher_id", insertable = false, updatable = false)
     @ManyToOne(fetch = FetchType.LAZY)
-    private ProfileEntity profile;
+    private ProfileEntity publisher;
 
     @Column(name = "category_id")
     private Integer categoryId;
