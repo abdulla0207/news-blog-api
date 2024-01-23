@@ -202,7 +202,7 @@ public class ArticleService {
     }
 
 
-    public String changeStatus(String id, Integer publisherId) {
+    public String changeStatus(String id, Integer publisherId, ArticleStatusEnum statusEnum) {
         Optional<ArticleEntity> byId = articleRepository.findById(id);
 
         if(byId.isEmpty())
@@ -210,7 +210,7 @@ public class ArticleService {
 
         ArticleEntity articleEntity = byId.get();
 
-        articleEntity.setArticleStatus(ArticleStatusEnum.PUBLISHED);
+        articleEntity.setArticleStatus(statusEnum);
         articleEntity.setPublisherId(publisherId);
 
         articleRepository.save(articleEntity);
@@ -236,4 +236,18 @@ public class ArticleService {
         return new PageImpl<>(articleDTOS, of, totalElements);
     }
 
+    public String updateModeratorAction(String articleId, ModeratorActionEnum moderatorAction, Integer moderatorId) {
+        Optional<ArticleEntity> byId = articleRepository.findById(articleId);
+        if (byId.isEmpty())
+            throw new ItemNotFoundException("Article Not Found");
+
+        ArticleEntity articleEntity = byId.get();
+
+        articleEntity.setModeratorAction(moderatorAction);
+        articleEntity.setModeratorId(moderatorId);
+
+        articleRepository.save(articleEntity);
+
+        return "Article Updated";
+    }
 }

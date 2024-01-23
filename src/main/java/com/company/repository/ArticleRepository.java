@@ -19,7 +19,8 @@ public interface ArticleRepository extends JpaRepository<ArticleEntity, String> 
     @Query("select a from ArticleEntity as a order by a.publishedAt")
     Page<ArticleEntity> findArticlesByPublishedDate(Pageable pageable);
 
-    @Query("select a from ArticleEntity as a where a.articleStatus=com.company.enums.ArticleStatusEnum.NOT_PUBLISHED")
+    @Query("select a from ArticleEntity as a where a.articleStatus=com.company.enums.ArticleStatusEnum.NOT_PUBLISHED " +
+            "and a.moderatorAction=com.company.enums.ModeratorActionEnum.APPROVE")
     Page<ArticleEntity> getArticlesForPublish(Pageable pageable);
 
     @Query("select a from ArticleEntity as a order by a.titleUz")

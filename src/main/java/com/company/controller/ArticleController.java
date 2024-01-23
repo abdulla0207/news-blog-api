@@ -1,9 +1,12 @@
 package com.company.controller;
 
 import com.company.dto.ArticleDTO;
+import com.company.enums.ArticleStatusEnum;
+import com.company.enums.ModeratorActionEnum;
 import com.company.enums.ProfileRoleEnum;
 import com.company.service.ArticleService;
 import com.company.util.JwtUtil;
+import io.jsonwebtoken.Jwt;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -54,6 +57,16 @@ public class ArticleController {
         JwtUtil.checkForRole(request, ProfileRoleEnum.MODERATOR);
 
         Page<ArticleDTO> response = articleService.getArticleForReview(page, size);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/review/{articleId}")
+    public ResponseEntity<?> updateModeratorAction(@PathVariable String articleId, HttpServletRequest request,
+                                                   @RequestParam(name = "moderator_action")ModeratorActionEnum moderatorAction){
+        JwtUtil.checkForRole(request, ProfileRoleEnum.MODERATOR);
+        Integer moderatorId = JwtUtil.getIdFromHeader(request);
+
+        String response = articleService.updateModeratorAction(articleId, moderatorAction, moderatorId);
         return ResponseEntity.ok(response);
     }
 
@@ -147,10 +160,11 @@ public class ArticleController {
     }
 
     @PutMapping("/status/{uuid}")
-    public ResponseEntity<String> changeStatus(@PathVariable String uuid, HttpServletRequest request){
+    public ResponseEntity<String> changeStatus(@PathVariable String uuid, HttpServletRequest request,
+                                               @RequestParam(name = "article_status")ArticleStatusEnum articleStatusEnum){
         JwtUtil.checkForRole(request, ProfileRoleEnum.PUBLISHER);
         Integer publisherId = JwtUtil.getIdFromHeader(request);
-        String response = articleService.changeStatus(uuid, publisherId);
+        String response = articleService.changeStatus(uuid, publisherId, articleStatusEnum);
 
         return ResponseEntity.ok(response);
     }
