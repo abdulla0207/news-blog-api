@@ -26,12 +26,13 @@ public interface ArticleRepository extends JpaRepository<ArticleEntity, String> 
     @Query("select a from ArticleEntity as a order by a.titleUz")
     Page<ArticleEntity> findArticlesByTitle(Pageable pageable);
 
-
-
     List<ArticleEntity> findArticleEntitiesByTitleUzLikeIgnoreCase(String titleUz);
 
     Page<ArticleEntity> findArticleEntitiesByCategory_Key(Pageable pageable, String key);
 
     @Query("select a from ArticleEntity as a where a.moderatorAction=com.company.enums.ModeratorActionEnum.NOT_REVIEWED")
     Page<ArticleEntity> getArticlesForReview(PageRequest of);
+
+    @Query("select a from ArticleEntity as a where a.articleTypeId=?1 order by a.createdAt desc limit 5")
+    List<ArticleEntity> findLastFiveByType(int typeId);
 }

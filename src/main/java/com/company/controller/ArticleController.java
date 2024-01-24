@@ -1,6 +1,7 @@
 package com.company.controller;
 
 import com.company.dto.ArticleDTO;
+import com.company.dto.ArticleShortViewInfoDTO;
 import com.company.enums.ArticleStatusEnum;
 import com.company.enums.ModeratorActionEnum;
 import com.company.enums.ProfileRoleEnum;
@@ -165,6 +166,12 @@ public class ArticleController {
         JwtUtil.checkForRole(request, ProfileRoleEnum.PUBLISHER);
         Integer publisherId = JwtUtil.getIdFromHeader(request);
         String response = articleService.changeStatus(uuid, publisherId, articleStatusEnum);
+
+        return ResponseEntity.ok(response);
+    }
+    @GetMapping("/last_five/by-type/{typeId}")
+    public ResponseEntity<?> getLastFiveByType(@PathVariable int typeId){
+        List<ArticleShortViewInfoDTO> response = articleService.getLastFiveByType(typeId);
 
         return ResponseEntity.ok(response);
     }

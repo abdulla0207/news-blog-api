@@ -1,10 +1,12 @@
 package com.company.service;
 
 import com.company.dto.ArticleDTO;
+import com.company.dto.ArticleShortViewInfoDTO;
 import com.company.entity.ArticleEntity;
 import com.company.entity.CategoryEntity;
 import com.company.enums.ArticleStatusEnum;
 import com.company.enums.ModeratorActionEnum;
+import com.company.exception.AppForbiddenException;
 import com.company.exception.ArticleCreateException;
 import com.company.exception.ItemNotFoundException;
 import com.company.repository.ArticleRepository;
@@ -131,6 +133,9 @@ public class ArticleService {
 
         ArticleEntity article = findById.get();
 
+        if(!article.getAuthorId().equals(currentUserId))
+            throw new AppForbiddenException("Method not allowed");
+
         article.setContentUz(articleDTO.contentUz());
         article.setContentEn(articleDTO.contentEn());
         article.setTitleUz(articleDTO.titleUz());
@@ -139,6 +144,8 @@ public class ArticleService {
         article.setDescriptionUz(articleDTO.descriptionUz());
         article.setArticleStatus(articleDTO.articleStatus());
         article.setVisible(articleDTO.visible());
+        article.setModeratorAction(ModeratorActionEnum.NOT_REVIEWED);
+        article.setArticleStatus(ArticleStatusEnum.NOT_PUBLISHED);
 
         articleRepository.save(article);
 
@@ -249,5 +256,11 @@ public class ArticleService {
         articleRepository.save(articleEntity);
 
         return "Article Updated";
+    }
+
+    public List<ArticleShortViewInfoDTO> getLastFiveByType(int typeId){
+        List<ArticleEntity> entities = articleRepository.findLastFiveByType(typeId);
+
+
     }
 }

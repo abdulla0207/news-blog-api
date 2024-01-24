@@ -92,7 +92,7 @@ public class AuthorizationService {
     private String mailMessage(String name, String surname, String token) {
         StringBuilder builder = new StringBuilder();
         builder.append("Hello ");
-        builder.append(name);
+        builder.append(name).append(" ");
         builder.append(surname);
         builder.append(".\n Please verify your account: ");
         builder.append("http://localhost:8080/api/auth/confirm?token=").append(token);

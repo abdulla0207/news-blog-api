@@ -48,7 +48,8 @@ public class JwtUtil {
 
     public static Integer getIdFromHeader(HttpServletRequest request){
         try {
-            return (Integer) request.getAttribute("id");
+            Integer userId = (Integer) request.getAttribute("id");
+            return userId;
         }catch (RuntimeException e){
             throw new TokenNotValidException("Unauthorized");
         }
