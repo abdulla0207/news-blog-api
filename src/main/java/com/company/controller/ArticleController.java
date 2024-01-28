@@ -3,6 +3,7 @@ package com.company.controller;
 import com.company.dto.ArticleDTO;
 import com.company.dto.ArticleShortViewInfoDTO;
 import com.company.enums.ArticleStatusEnum;
+import com.company.enums.LanguageEnum;
 import com.company.enums.ModeratorActionEnum;
 import com.company.enums.ProfileRoleEnum;
 import com.company.service.ArticleService;
@@ -170,9 +171,12 @@ public class ArticleController {
         return ResponseEntity.ok(response);
     }
     @GetMapping("/last_five/by-type/{typeId}")
-    public ResponseEntity<?> getLastFiveByType(@PathVariable int typeId){
-        List<ArticleShortViewInfoDTO> response = articleService.getLastFiveByType(typeId);
+    public ResponseEntity<?> getLastFiveByType(@PathVariable int typeId, @RequestParam(name = "lang", defaultValue = "ENGLISH")LanguageEnum languageEnum){
+        List<ArticleShortViewInfoDTO> response = articleService.getLastFiveByType(typeId, languageEnum);
 
         return ResponseEntity.ok(response);
     }
+
+
+
 }

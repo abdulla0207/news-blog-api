@@ -1,6 +1,7 @@
 package com.company.repository;
 
 import com.company.entity.ArticleEntity;
+import com.company.enums.ArticleStatusEnum;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -33,6 +34,8 @@ public interface ArticleRepository extends JpaRepository<ArticleEntity, String> 
     @Query("select a from ArticleEntity as a where a.moderatorAction=com.company.enums.ModeratorActionEnum.NOT_REVIEWED")
     Page<ArticleEntity> getArticlesForReview(PageRequest of);
 
-    @Query("select a from ArticleEntity as a where a.articleTypeId=?1 order by a.createdAt desc limit 5")
+    @Query("select a from ArticleEntity as a where a.articleTypeId=?1 and a.articleStatus=com.company.enums.ArticleStatusEnum.PUBLISHED order by a.createdAt desc limit 5")
     List<ArticleEntity> findLastFiveByType(int typeId);
+
+    List<ArticleEntity> getTop8ByArticleStatusAndUuidNotInOrderByCreatedAt(ArticleStatusEnum status, List<String> uuid);
 }
