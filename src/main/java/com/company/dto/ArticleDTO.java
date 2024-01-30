@@ -8,17 +8,15 @@ import java.time.LocalDateTime;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record ArticleDTO(
         String uuid,
-        String titleUz,
-        String titleEn,
-        String descriptionUz,
-        String descriptionEn,
-        String contentUz,
-        String contentEn,
+        String title,
+        String description,
+        String content,
         ArticleStatusEnum articleStatus,
         LocalDateTime createdAt,
         LocalDateTime publishedAt,
         boolean visible,
         int categoryId,
         int regionId,
+        int languageId,
         int articleTypeId
 ) {}

@@ -19,20 +19,20 @@ public class ArticleEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String uuid;
 
-    @Column(name = "title_uz")
-    private String titleUz;
-    @Column(name = "title_en")
-    private String titleEn;
+    @Column(name = "title")
+    private String title;
 
-    @Column(name = "description_uz")
-    private String descriptionUz;
-    @Column(name = "description_en")
-    private String descriptionEn;
+    @Column(name = "description")
+    private String description;
 
-    @Column(name = "content_uz", columnDefinition = "text")
-    private String contentUz;
-    @Column(name = "content_en", columnDefinition = "text")
-    private String contentEn;
+    @Column(name = "content", columnDefinition = "text")
+    private String content;
+
+    @Column(name = "language_id")
+    private Integer languageId;
+    @JoinColumn(name = "language_id", insertable = false, updatable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    private LanguageEntity language;
 
     @Column(name = "publisher_id")
     private Integer publisherId;

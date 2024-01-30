@@ -6,6 +6,7 @@ import com.company.enums.ArticleStatusEnum;
 import com.company.enums.LanguageEnum;
 import com.company.enums.ModeratorActionEnum;
 import com.company.enums.ProfileRoleEnum;
+import com.company.mapper.ArticleShortViewInfo;
 import com.company.service.ArticleService;
 import com.company.util.JwtUtil;
 import io.jsonwebtoken.Jwt;
@@ -76,8 +77,9 @@ public class ArticleController {
      * This method sends the values to service and returns the list of articles
      */
     @GetMapping("/")
-    public ResponseEntity<?> getArticlePagination(@RequestParam("page") int page, @RequestParam("size") int size){
-        Page<ArticleDTO> getArticlePaginationList = articleService.getArticlePagination(page, size);
+    public ResponseEntity<?> getArticlePagination(@RequestParam(name = "language", defaultValue = "uz") String langCode,
+                                                  @RequestParam("page") int page, @RequestParam("size") int size){
+        Page<ArticleDTO> getArticlePaginationList = articleService.getArticlePagination(langCode, page, size);
 
         return ResponseEntity.ok(getArticlePaginationList);
     }
@@ -123,17 +125,18 @@ public class ArticleController {
      * Gets all articles, filters articles by published date and applies pagination,
      */
     @GetMapping("/order/published-date/")
-    public ResponseEntity<?> getArticlesOrderedByPublishedDate(@RequestParam("page") int page, @RequestParam("size") int size){
-        Page<ArticleDTO> response = articleService.findAllArticleByPublishedDate(page, size);
+    public ResponseEntity<?> getArticlesOrderedByPublishedDate(@RequestParam(name = "language") String language, @RequestParam("page") int page, @RequestParam("size") int size){
+        Page<ArticleDTO> response = articleService.findAllArticleByPublishedDate(page, size, language);
         return ResponseEntity.ok(response);
     }
 
     /** GET "/article/order/title" request is send to API with page and size
      * Gets all articles, filters articles by TITLE and applies pagination
      */
-    @GetMapping("/order/title")
-    public ResponseEntity<?> getArticlesByOrderedByTitle(@RequestParam("page") int page, @RequestParam("size") int size){
-        Page<ArticleDTO> response = articleService.findArticlesOrderedByTitleUz(page, size);
+    @GetMapping("/order/title/")
+    public ResponseEntity<?> getArticlesByOrderedByTitle(@RequestParam("page") int page, @RequestParam("size") int size,
+                                                         @RequestParam(name = "language", defaultValue = "uz") String language){
+        Page<ArticleDTO> response = articleService.findArticlesOrderedByTitleUz(page, size, language);
 
         return ResponseEntity.ok(response);
     }
@@ -142,9 +145,10 @@ public class ArticleController {
      * This method gets the title from the URI query parameter and sends
      *the value to service to GET article by title from DB.
      */
-    @GetMapping("/search")
-    public ResponseEntity<?> searchArticlesByTitleUz(@RequestParam("title") String title){
-        List<ArticleDTO> articleDTOS = articleService.searchArticlesByTitleUz(title);
+    @GetMapping("/search/")
+    public ResponseEntity<?> searchArticlesByTitle(@RequestParam("title") String title,
+                                                   @RequestParam(name = "language", defaultValue = "uz") String language){
+        List<ArticleDTO> articleDTOS = articleService.searchArticlesByTitle(title, language);
 
         return ResponseEntity.ok(articleDTOS);
     }
@@ -153,10 +157,10 @@ public class ArticleController {
      * This method gets articles by category's key and applies pagination
      */
     @GetMapping("/category/{key}")
-    public ResponseEntity<?> getArticlesByCategory(@PathVariable String key,
+    public ResponseEntity<?> getArticlesByCategory(@RequestParam(name = "language", defaultValue = "uz") String language, @PathVariable String key,
                                                    @RequestParam("page") int page,
                                                    @RequestParam("size") int size){
-        Page<ArticleDTO> articleDTOS = articleService.getArticlesByCategory(key, page, size);
+        Page<ArticleDTO> articleDTOS = articleService.getArticlesByCategory(key, page, size, language);
 
         return ResponseEntity.ok(articleDTOS);
     }
@@ -171,12 +175,10 @@ public class ArticleController {
         return ResponseEntity.ok(response);
     }
     @GetMapping("/last_five/by-type/{typeId}")
-    public ResponseEntity<?> getLastFiveByType(@PathVariable int typeId, @RequestParam(name = "lang", defaultValue = "ENGLISH")LanguageEnum languageEnum){
-        List<ArticleShortViewInfoDTO> response = articleService.getLastFiveByType(typeId, languageEnum);
+    public ResponseEntity<?> getLastFiveByType(@PathVariable int typeId, @RequestParam(name = "language", defaultValue = "uz") String language){
+        List<ArticleShortViewInfo> response = articleService.getLastFiveByType(typeId, language);
 
         return ResponseEntity.ok(response);
     }
-
-
 
 }

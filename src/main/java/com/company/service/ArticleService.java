@@ -10,6 +10,8 @@ import com.company.enums.ModeratorActionEnum;
 import com.company.exception.AppForbiddenException;
 import com.company.exception.ArticleCreateException;
 import com.company.exception.ItemNotFoundException;
+import com.company.mapper.ArticleShortViewInfo;
+import com.company.mapper.IArticleShortViewInfo;
 import com.company.repository.ArticleRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,20 +40,13 @@ public class ArticleService {
         this.categoryService = categoryService;
     }
     public ArticleDTO createPost(ArticleDTO articleDTO, int writerId) {
-        if (articleDTO.titleUz().isEmpty() || articleDTO.titleUz().isBlank())
-            throw new ArticleCreateException("Article Title in Uzbek should be filled");
-        if (articleDTO.titleEn().isEmpty() || articleDTO.titleEn().isBlank())
-            throw new ArticleCreateException("Article Title in English should be filled");
+        if (articleDTO.title().isEmpty() || articleDTO.title().isBlank())
+            throw new ArticleCreateException("Article Title should be filled");
+        if (articleDTO.content().isEmpty() || articleDTO.content().isBlank())
+            throw new ArticleCreateException("Article Content cannot be empty");
 
-        if (articleDTO.contentUz().isEmpty() || articleDTO.contentUz().isBlank())
-            throw new ArticleCreateException("Article Content in Uzbek cannot be empty");
-        if (articleDTO.contentEn().isEmpty() || articleDTO.contentEn().isBlank())
-            throw new ArticleCreateException("Article Content in English cannot be empty");
-
-        if (articleDTO.descriptionUz().isEmpty() || articleDTO.descriptionUz().isBlank())
-            throw new ArticleCreateException("Article description in Uzbek cannot be empty");
-        if (articleDTO.descriptionEn().isEmpty() || articleDTO.descriptionEn().isBlank())
-            throw new ArticleCreateException("Article description in English cannot be empty");
+        if (articleDTO.description().isEmpty() || articleDTO.description().isBlank())
+            throw new ArticleCreateException("Article description cannot be empty");
 
         ArticleEntity article = toEntity(articleDTO);
         article.setAuthorId(writerId);
@@ -61,11 +56,21 @@ public class ArticleService {
         return resDTO;
     }
 
-    public Page<ArticleDTO> getArticlePagination(int page, int size) {
+    public Page<ArticleDTO> getArticlePagination(String languageCode, int page, int size) {
+        int languageId = getLanguageIdByCode(languageCode);
         Pageable pageable = PageRequest.of(page, size);
-        Page<ArticleEntity> pageAllArticle =articleRepository.findAll(pageable);
+        Page<ArticleEntity> pageAllArticle =articleRepository.findAllByLanguageCode(languageId, pageable);
 
         return returnPagination(pageAllArticle, pageable);
+    }
+
+    private int getLanguageIdByCode(String languageCode) {
+        if("uz".equalsIgnoreCase(languageCode))
+            return 1;
+        else if("en".equalsIgnoreCase(languageCode))
+            return 2;
+        else
+            throw new IllegalArgumentException("Unsupported Language Code");
     }
 
     public Page<ArticleDTO> getArticlesForPublish(int page, int size) {
@@ -80,10 +85,11 @@ public class ArticleService {
         return new PageImpl<>(responseList, pageRequest, totalElements);
     }
 
-    public Page<ArticleDTO> findAllArticleByPublishedDate(int page, int size){
+    public Page<ArticleDTO> findAllArticleByPublishedDate(int page, int size, String languageCode){
         Pageable pageable = PageRequest.of(page, size);
 
-        Page<ArticleEntity> articlesOrderByPublishedDate = articleRepository.findArticlesByPublishedDate(pageable);
+        int languageId = getLanguageIdByCode(languageCode);
+        Page<ArticleEntity> articlesOrderByPublishedDate = articleRepository.findArticlesByPublishedDate(pageable, languageId);
 
         return returnPagination(articlesOrderByPublishedDate, pageable);
     }
@@ -110,12 +116,9 @@ public class ArticleService {
         if(!article.getAuthorId().equals(currentUserId))
             throw new AppForbiddenException("Method not allowed");
 
-        article.setContentUz(articleDTO.contentUz());
-        article.setContentEn(articleDTO.contentEn());
-        article.setTitleUz(articleDTO.titleUz());
-        article.setTitleEn(articleDTO.titleEn());
-        article.setDescriptionEn(articleDTO.descriptionEn());
-        article.setDescriptionUz(articleDTO.descriptionUz());
+        article.setContent(articleDTO.content());
+        article.setTitle(articleDTO.title());
+        article.setDescription(articleDTO.description());
         article.setArticleStatus(articleDTO.articleStatus());
         article.setVisible(articleDTO.visible());
         article.setModeratorAction(ModeratorActionEnum.NOT_REVIEWED);
@@ -137,28 +140,31 @@ public class ArticleService {
         return toDto(article);
     }
 
-    public Page<ArticleDTO> findArticlesOrderedByTitleUz(int page, int size) {
+    public Page<ArticleDTO> findArticlesOrderedByTitleUz(int page, int size, String languageCode) {
         PageRequest of = PageRequest.of(page, size);
 
-        Page<ArticleEntity> articlesByTitle = articleRepository.findArticlesByTitle(of);
+        int languageId = getLanguageIdByCode(languageCode);
+        Page<ArticleEntity> articlesByTitle = articleRepository.findArticlesByTitle(of, languageId);
 
 
         return returnPagination(articlesByTitle, of);
     }
 
-    public List<ArticleDTO> searchArticlesByTitleUz(String titleUz){
-        titleUz = "%" + titleUz + "%";
-        List<ArticleEntity> articleEntities = articleRepository.findArticleEntitiesByTitleUzLikeIgnoreCase(titleUz);
+    public List<ArticleDTO> searchArticlesByTitle(String title, String languageCode){
+        int languageId = getLanguageIdByCode(languageCode);
+        title = "%" + title + "%";
+        List<ArticleEntity> articleEntities = articleRepository.findArticleEntitiesByTitleLikeIgnoreCaseAndLanguageId(title, languageId);
 
         return toDtoList(articleEntities);
     }
 
-    public Page<ArticleDTO> getArticlesByCategory(String key, int page, int size) {
+    public Page<ArticleDTO> getArticlesByCategory(String key, int page, int size, String language) {
+        int languageId = getLanguageIdByCode(language);
         CategoryEntity category = categoryService.getCategoryByKey(key);
 
         PageRequest pageable = PageRequest.of(page, size);
 
-        Page<ArticleEntity> articleEntities = articleRepository.findArticleEntitiesByCategory_Key(pageable, category.getKey());
+        Page<ArticleEntity> articleEntities = articleRepository.findArticleEntitiesByCategory_KeyAndLanguageId(pageable, category.getKey(), languageId);
 
         return returnPagination(articleEntities, pageable);
     }
@@ -203,13 +209,22 @@ public class ArticleService {
         return "Article Updated";
     }
 
-    public List<ArticleShortViewInfoDTO> getLastFiveByType(int typeId, LanguageEnum languageEnum){
-        List<ArticleEntity> entities = articleRepository.findLastFiveByType(typeId);
+    public List<ArticleShortViewInfo> getLastFiveByType(int typeId, String language){
+        int languageId = getLanguageIdByCode(language);
+        List<IArticleShortViewInfo> entities = articleRepository.findLastFiveByType(typeId, languageId);
 
         if(entities.isEmpty())
             throw new ItemNotFoundException("Articles Not Found");
-
-        return toShortArticleInfo(entities, languageEnum);
+        List<ArticleShortViewInfo> response = new ArrayList<>();
+        for(IArticleShortViewInfo entity : entities){
+            ArticleShortViewInfo articleShortViewInfo = new ArticleShortViewInfo();
+            articleShortViewInfo.setDescription(entity.getDescription());
+            articleShortViewInfo.setTitle(entity.getTitle());
+            articleShortViewInfo.setUuid(entity.getUuid());
+            articleShortViewInfo.setPublishedDate(entity.getPublishedDate());
+            response.add(articleShortViewInfo);
+        }
+        return response;
     }
 
     private Page<ArticleDTO> returnPagination(Page<ArticleEntity> entities, Pageable of){
@@ -225,18 +240,16 @@ public class ArticleService {
     private ArticleDTO toDto(ArticleEntity article) {
         return new ArticleDTO(
                 article.getUuid(),
-                article.getTitleUz(),
-                article.getTitleEn(),
-                article.getDescriptionUz(),
-                article.getDescriptionEn(),
-                article.getContentUz(),
-                article.getContentEn(),
+                article.getTitle(),
+                article.getDescription(),
+                article.getContent(),
                 article.getArticleStatus(),
                 article.getCreatedAt(),
                 article.getPublishedAt(),
                 article.isVisible(),
                 article.getCategoryId(),
                 article.getRegionId(),
+                article.getLanguageId(),
                 article.getArticleTypeId()
         );
     }
@@ -254,12 +267,9 @@ public class ArticleService {
 
     private ArticleEntity toEntity(ArticleDTO articleDTO){
         ArticleEntity article = new ArticleEntity();
-        article.setTitleUz(articleDTO.titleUz());
-        article.setTitleEn(articleDTO.titleEn());
-        article.setContentUz(articleDTO.contentUz());
-        article.setContentEn(articleDTO.contentEn());
-        article.setDescriptionUz(articleDTO.descriptionUz());
-        article.setDescriptionEn(articleDTO.descriptionEn());
+        article.setTitle(articleDTO.title());
+        article.setContent(articleDTO.content());
+        article.setDescription(articleDTO.description());
         article.setArticleStatus(ArticleStatusEnum.NOT_PUBLISHED);
         article.setVisible(true);
         article.setCreatedAt(LocalDateTime.now());
@@ -268,24 +278,4 @@ public class ArticleService {
         return article;
     }
 
-    private List<ArticleShortViewInfoDTO> toShortArticleInfo(List<ArticleEntity> entities, LanguageEnum languageEnum){
-        List<ArticleShortViewInfoDTO> response = new ArrayList<>();
-        entities.forEach(articleEntity -> {
-            String[] articleValues = new String[2];
-            switch (languageEnum){
-                case UZBEK: articleValues[0]= articleEntity.getTitleUz();
-                    articleValues[1] = articleEntity.getDescriptionUz();
-                    break;
-                case ENGLISH: articleValues[0]= articleEntity.getTitleEn();
-                    articleValues[1] = articleEntity.getDescriptionEn();
-                    break;
-            }
-            ArticleShortViewInfoDTO holder = new ArticleShortViewInfoDTO(articleEntity.getUuid(),
-                    articleValues[0], articleValues[1], articleEntity.getPublishedAt());
-
-            response.add(holder);
-        });
-
-        return response;
-    }
 }
