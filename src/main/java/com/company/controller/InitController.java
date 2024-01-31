@@ -5,7 +5,11 @@ import com.company.enums.ProfileRoleEnum;
 import com.company.enums.ProfileStatusEnum;
 import com.company.exception.ItemAlreadyExistsException;
 import com.company.repository.ProfileRepository;
+import com.company.service.ConfirmationTokenService;
+import com.company.service.EmailService;
 import com.company.util.MD5Util;
+import com.company.util.MailUtil;
+import com.company.util.TokenUtil;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -48,7 +52,6 @@ public class InitController {
         profileEntity.setUpdatedAt(LocalDateTime.now());
         profileEntity.setSurname("admin");
         profileRepository.save(profileEntity);
-
-        return "Admin created";
+        return "Created";
     }
 }

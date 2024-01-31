@@ -11,6 +11,8 @@ import com.company.exception.*;
 import com.company.repository.ProfileRepository;
 import com.company.util.JwtUtil;
 import com.company.util.MD5Util;
+import com.company.util.MailUtil;
+import com.company.util.TokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -56,26 +58,16 @@ public class AuthorizationService {
 
         profileRepository.save(profileEntity);
 
-        String token = saveTokenForUser(profileEntity.getId());
+        String token = TokenUtil.saveTokenForUser(profileEntity.getId(), tokenService);
 
         // Sending verification mail to users email.
-        String message = mailMessage(registrationDTO.name(), registrationDTO.surname(), token);
+        String message = MailUtil.mailMessage(registrationDTO.name(), registrationDTO.surname(), token);
 
         emailService.sendMail(registrationDTO.email(), message);
         return token;
     }
 
-    private String saveTokenForUser(Integer id) {
-        String token = UUID.randomUUID().toString();
-        ConfirmationTokenEntity tokenEntity = new ConfirmationTokenEntity();
-        tokenEntity.setProfileId(id);
-        tokenEntity.setToken(token);
-        tokenEntity.setCreatedAt(LocalDateTime.now());
-        tokenEntity.setExpiresAt(LocalDateTime.now().plusMinutes(15));
-        tokenService.saveConfirmationToken(tokenEntity);
 
-        return token;
-    }
 
     private void checkRegistrationDTO(RegistrationDTO registrationDTO){
         if(registrationDTO.name().isEmpty() || registrationDTO.name().isBlank())
@@ -87,16 +79,6 @@ public class AuthorizationService {
                     " and the length should be at least 8 letters");
         if(!registrationDTO.phoneNumber().matches("[+]998[0-9]{9}"))
             throw new ProfileCreateException("Phone number should be in the following format: +998 xx xxx-xx-xx");
-    }
-
-    private String mailMessage(String name, String surname, String token) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("Hello ");
-        builder.append(name).append(" ");
-        builder.append(surname);
-        builder.append(".\n Please verify your account: ");
-        builder.append("http://localhost:8080/api/auth/confirm?token=").append(token);
-        return builder.toString();
     }
 
     public AuthResponseDTO login(LoginDTO loginDTO) {
@@ -111,8 +93,8 @@ public class AuthorizationService {
             throw new RuntimeException("Profile is blocked");
 
         if(profileEntity.getStatus().equals(ProfileStatusEnum.NOT_ACTIVE)){
-            String token = saveTokenForUser(profileEntity.getId());
-            String message = mailMessage(profileEntity.getName(), profileEntity.getSurname(), token);
+            String token = TokenUtil.saveTokenForUser(profileEntity.getId(), tokenService);
+            String message = MailUtil.mailMessage(profileEntity.getName(), profileEntity.getSurname(), token);
 
             emailService.sendMail(profileEntity.getEmail(), message);
             AuthResponseDTO responseDTO = new AuthResponseDTO();

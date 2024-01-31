@@ -1,15 +1,12 @@
 package com.company.controller;
 
 import com.company.dto.ArticleDTO;
-import com.company.dto.ArticleShortViewInfoDTO;
 import com.company.enums.ArticleStatusEnum;
-import com.company.enums.LanguageEnum;
 import com.company.enums.ModeratorActionEnum;
 import com.company.enums.ProfileRoleEnum;
 import com.company.mapper.ArticleShortViewInfo;
 import com.company.service.ArticleService;
 import com.company.util.JwtUtil;
-import io.jsonwebtoken.Jwt;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

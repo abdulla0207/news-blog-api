@@ -1,11 +1,9 @@
 package com.company.service;
 
 import com.company.dto.ArticleDTO;
-import com.company.dto.ArticleShortViewInfoDTO;
 import com.company.entity.ArticleEntity;
 import com.company.entity.CategoryEntity;
 import com.company.enums.ArticleStatusEnum;
-import com.company.enums.LanguageEnum;
 import com.company.enums.ModeratorActionEnum;
 import com.company.exception.AppForbiddenException;
 import com.company.exception.ArticleCreateException;
@@ -89,7 +87,7 @@ public class ArticleService {
         Pageable pageable = PageRequest.of(page, size);
 
         int languageId = getLanguageIdByCode(languageCode);
-        Page<ArticleEntity> articlesOrderByPublishedDate = articleRepository.findArticlesByPublishedDate(pageable, languageId);
+        Page<ArticleEntity> articlesOrderByPublishedDate = articleRepository.findArticlesByPublishedDate(languageId, pageable);
 
         return returnPagination(articlesOrderByPublishedDate, pageable);
     }

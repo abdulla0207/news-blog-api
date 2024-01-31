@@ -21,14 +21,14 @@ public interface ArticleRepository extends JpaRepository<ArticleEntity, String> 
     @Query("SELECT a FROM ArticleEntity a WHERE a.languageId = ?1 ORDER BY a.createdAt DESC")
     Page<ArticleEntity> findAllByLanguageCode(int languageId, Pageable pageable);
 
-    @Query("select a from ArticleEntity as a where a.languageId = ?2 order by a.publishedAt")
-    Page<ArticleEntity> findArticlesByPublishedDate(Pageable pageable, int languageId);
+    @Query("select a from ArticleEntity as a where a.languageId = :langId order by a.publishedAt")
+    Page<ArticleEntity> findArticlesByPublishedDate(int langId, Pageable pageable);
 
     @Query("select a from ArticleEntity as a where a.articleStatus=com.company.enums.ArticleStatusEnum.NOT_PUBLISHED " +
             "and a.moderatorAction=com.company.enums.ModeratorActionEnum.APPROVE")
     Page<ArticleEntity> getArticlesForPublish(Pageable pageable);
 
-    @Query("select a from ArticleEntity as a where a.languageId = ?2 order by a.title")
+    @Query("select a from ArticleEntity as a where a.languageId = :langId order by a.title")
     Page<ArticleEntity> findArticlesByTitle(Pageable pageable, int langId);
 
 

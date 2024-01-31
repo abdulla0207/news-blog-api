@@ -55,6 +55,7 @@ public class ProfileService {
             throw new ProfileCreateException("User with this phone number already exists");
         ProfileEntity entity = toEntity(profileDTO);
         entity.setParentId(adminId);
+        entity.setRole(profileDTO.roleEnum());
         profileRepository.save(entity);
         return profileDTO;
     }
@@ -138,6 +139,7 @@ public class ProfileService {
     }
 
     public String updateByProfile(ProfileDTO profileDTO, int tokenId) {
+
         int b = profileRepository.updateByAll(profileDTO.name(), profileDTO.surname(), tokenId);
 
         if(b <=0)
