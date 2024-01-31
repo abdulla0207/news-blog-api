@@ -18,12 +18,12 @@ public interface CategoryRepository extends JpaRepository<CategoryEntity, Intege
 
     @Modifying
     @Transactional
-    @Query("update CategoryEntity set nameUz=?1, nameEn = ?2, slag = ?3, visible = ?4 where id = ?5")
+    @Query("update CategoryEntity set nameUz=?1, nameEn = ?2, slag = ?3, isVisible = ?4 where id = ?5")
     int updateCategory(String nameUz, String nameEn, String slag, boolean visible, int id);
 
     @Query("select c from CategoryEntity as c")
     Page<CategoryEntity> findCategoriesPagination(PageRequest of);
 
-    @Query("select a from CategoryEntity as a where a.visible=true")
+    @Query("select a from CategoryEntity as a where a.isVisible=true")
     List<CategoryEntity> findAllWhereVisibleIsTrue();
 }

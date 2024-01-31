@@ -19,8 +19,6 @@ public class CategoryEntity {
     private String nameUz;
     @Column(name = "name_en")
     private String nameEn;
-    @Column
-    private boolean visible;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     // KEY field - is to get by category key, not id and name

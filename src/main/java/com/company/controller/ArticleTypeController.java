@@ -33,7 +33,7 @@ public class ArticleTypeController {
         return ResponseEntity.ok(responseDTO);
     }
 
-    @PutMapping("update/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<?> updateById(@PathVariable int id, @RequestBody ArticleTypeDTO dto, HttpServletRequest request){
         JwtUtil.checkForRole(request, ProfileRoleEnum.ADMIN);
         ArticleTypeDTO responseDTO = articleTypeService.updateById(id, dto);

@@ -53,7 +53,7 @@ public class CategoryController {
     /** PUT "/category/KEY_EXAMPLE" request is send to API controller method
      * It receives key of specific category and a new category object with updated fields
      */
-    @PutMapping("/{key}")
+    @PutMapping("/")
     public ResponseEntity<?> updateCategoryById(@RequestParam("id") int id, @RequestBody CategoryDTO categoryDTO, HttpServletRequest request){
         JwtUtil.checkForRole(request, ProfileRoleEnum.ADMIN);
         String response = categoryService.updateCategoryByKey(categoryDTO, id);
@@ -71,7 +71,7 @@ public class CategoryController {
     }
 
     @GetMapping("/language")
-    public ResponseEntity<?> getByLanguage(@RequestParam LanguageEnum languageEnum){
+    public ResponseEntity<?> getByLanguage(@RequestParam("language") String languageEnum){
         List<CategoryByLanguageDTO> response = categoryService.getByLanguage(languageEnum);
 
         return ResponseEntity.ok(response);

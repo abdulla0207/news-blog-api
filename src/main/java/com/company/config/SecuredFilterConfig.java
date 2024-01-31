@@ -21,7 +21,8 @@ public class SecuredFilterConfig {
         bean.setFilter(tokenFilterConfig);
         bean.addUrlPatterns("/api/profiles/*",
                 "/api/article/types/*",
-                "/api/regions/*");
+                "/api/regions/*",
+                "/api/categories/*");
         return bean;
     }
 }

@@ -61,7 +61,7 @@ public class RegionController {
     }
 
     @GetMapping("/language")
-    public ResponseEntity<List<RegionByLanguageDTO>> getListByLanguage(@RequestParam(name = "lang")LanguageEnum languageEnum){
+    public ResponseEntity<List<RegionByLanguageDTO>> getListByLanguage(@RequestParam(name = "lang")String languageEnum){
         List<RegionByLanguageDTO> responseList = regionService.getListByLanguage(languageEnum);
 
         return ResponseEntity.ok(responseList);

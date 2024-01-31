@@ -50,7 +50,6 @@ public class CategoryService {
 
         CategoryEntity entity = toEntity(categoryDTO);
         entity.setSlag(newSlag);
-
         categoryRepository.save(entity);
         return "Category created";
     }
@@ -75,7 +74,7 @@ public class CategoryService {
         entity.setNameUz(categoryDTO.nameUz());
         entity.setNameEn(categoryDTO.nameEn());
         entity.setCreatedAt(LocalDateTime.now());
-
+        entity.setVisible(categoryDTO.visible());
         return entity;
     }
 
@@ -115,15 +114,16 @@ public class CategoryService {
         return "Category has been deleted";
     }
 
-    public List<CategoryByLanguageDTO> getByLanguage(LanguageEnum languageEnum) {
+    public List<CategoryByLanguageDTO> getByLanguage(String languageEnum) {
         List<CategoryEntity> allWhereVisibleIsTrue = categoryRepository.findAllWhereVisibleIsTrue();
 
         List<CategoryByLanguageDTO> response = new ArrayList<>();
         allWhereVisibleIsTrue.forEach(categoryEntity -> {
             String name = null;
             switch (languageEnum){
-                case UZBEK -> name = categoryEntity.getNameUz();
-                case ENGLISH -> name = categoryEntity.getNameEn();
+                case "uz" -> name = categoryEntity.getNameUz();
+                case "en" -> name = categoryEntity.getNameEn();
+                default -> throw new IllegalArgumentException("Wrong language");
             }
             response.add(new CategoryByLanguageDTO(categoryEntity.getId(), name,
                     categoryEntity.isVisible(), categoryEntity.getKey(), categoryEntity.getSlag()));

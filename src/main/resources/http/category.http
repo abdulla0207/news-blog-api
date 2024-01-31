@@ -6,3 +6,7 @@ Content-Type: application/json
   "nameEn": "World markets",
   "visible": true
 }
+
+###
+
+GET localhost:8080/api/categories/language?language=uz

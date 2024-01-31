@@ -86,15 +86,15 @@ public class RegionService {
         return "Region has been deleted";
     }
 
-    public List<RegionByLanguageDTO> getListByLanguage(LanguageEnum languageEnum) {
+    public List<RegionByLanguageDTO> getListByLanguage(String languageEnum) {
         List<RegionEntity> allWhereVisibleIsTrue = regionRepository.findAllWhereVisibleIsTrue();
 
         List<RegionByLanguageDTO> responseList = new ArrayList<>();
         allWhereVisibleIsTrue.forEach(regionEntity -> {
             String name = null;
             switch (languageEnum){
-                case UZBEK -> name = regionEntity.getNameUz();
-                case ENGLISH -> name = regionEntity.getNameEn();
+                case "uz" -> name = regionEntity.getNameUz();
+                case "en" -> name = regionEntity.getNameEn();
             }
             RegionByLanguageDTO region = new RegionByLanguageDTO(regionEntity.getId(), regionEntity.getKey(), name);
             responseList.add(region);
