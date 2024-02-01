@@ -20,7 +20,11 @@ public class SecuredFilterConfig {
         FilterRegistrationBean bean = new FilterRegistrationBean();
         bean.setFilter(tokenFilterConfig);
         bean.addUrlPatterns("/api/profiles/*",
-                "/api/article/types/*",
+                "/api/articles/writer/*",
+                "/api/articles/publisher/*",
+                "/api/articles/moderator/*",
+                "/api/articles/admin/*",
+                "/api/articles/user/*",
                 "/api/regions/*",
                 "/api/categories/*");
         return bean;

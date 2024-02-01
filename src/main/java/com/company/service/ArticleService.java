@@ -1,6 +1,7 @@
 package com.company.service;
 
 import com.company.dto.ArticleDTO;
+import com.company.dto.ArticleShortDTO;
 import com.company.entity.ArticleEntity;
 import com.company.entity.CategoryEntity;
 import com.company.enums.ArticleStatusEnum;
@@ -128,7 +129,7 @@ public class ArticleService {
     }
 
     public ArticleDTO getById(String uuid) {
-        Optional<ArticleEntity> getById = articleRepository.findById(uuid);
+        Optional<ArticleEntity> getById = articleRepository.findByUuidAndArticleStatus(uuid, ArticleStatusEnum.PUBLISHED);
 
         if(getById.isEmpty())
             throw new ItemNotFoundException("Article not FOUND");
@@ -138,7 +139,7 @@ public class ArticleService {
         return toDto(article);
     }
 
-    public Page<ArticleDTO> findArticlesOrderedByTitleUz(int page, int size, String languageCode) {
+    public Page<ArticleDTO> findArticlesOrderedByTitle(int page, int size, String languageCode) {
         PageRequest of = PageRequest.of(page, size);
 
         int languageId = getLanguageIdByCode(languageCode);
@@ -151,7 +152,7 @@ public class ArticleService {
     public List<ArticleDTO> searchArticlesByTitle(String title, String languageCode){
         int languageId = getLanguageIdByCode(languageCode);
         title = "%" + title + "%";
-        List<ArticleEntity> articleEntities = articleRepository.findArticleEntitiesByTitleLikeIgnoreCaseAndLanguageId(title, languageId);
+        List<ArticleEntity> articleEntities = articleRepository.findArticleEntitiesByTitleLikeIgnoreCaseAndLanguageIdAndArticleStatus(title, languageId, ArticleStatusEnum.PUBLISHED);
 
         return toDtoList(articleEntities);
     }
@@ -178,6 +179,7 @@ public class ArticleService {
 
         articleEntity.setArticleStatus(statusEnum);
         articleEntity.setPublisherId(publisherId);
+        articleEntity.setPublishedAt(LocalDateTime.now());
 
         articleRepository.save(articleEntity);
 
@@ -207,21 +209,30 @@ public class ArticleService {
         return "Article Updated";
     }
 
-    public List<ArticleShortViewInfo> getLastFiveByType(int typeId, String language){
+    public List<ArticleShortDTO> getLastFiveByType(int typeId, String language){
         int languageId = getLanguageIdByCode(language);
         List<IArticleShortViewInfo> entities = articleRepository.findLastFiveByType(typeId, languageId);
 
         if(entities.isEmpty())
             throw new ItemNotFoundException("Articles Not Found");
-        List<ArticleShortViewInfo> response = new ArrayList<>();
+        List<ArticleShortDTO> response = new ArrayList<>();
         for(IArticleShortViewInfo entity : entities){
-            ArticleShortViewInfo articleShortViewInfo = new ArticleShortViewInfo();
-            articleShortViewInfo.setDescription(entity.getDescription());
-            articleShortViewInfo.setTitle(entity.getTitle());
-            articleShortViewInfo.setUuid(entity.getUuid());
-            articleShortViewInfo.setPublishedDate(entity.getPublishedDate());
-            response.add(articleShortViewInfo);
+            ArticleShortDTO holder = new ArticleShortDTO(entity.getUuid(), entity.getTitle(), entity.getDescription(), entity.getPublishedDate());
+            response.add(holder);
         }
+
+        return response;
+    }
+    public List<ArticleShortDTO> getLastEightNotIncludeId(List<String> uuid, String language) {
+        List<IArticleShortViewInfo> entities = articleRepository.getTop8ByArticleStatusAndUuidNotInOrderByCreatedAt(uuid, getLanguageIdByCode(language));
+
+        List<ArticleShortDTO> response = new ArrayList<>();
+
+        entities.forEach(entity ->{
+            ArticleShortDTO holder = new ArticleShortDTO(entity.getUuid(), entity.getTitle(), entity.getDescription(), entity.getPublishedDate());
+            response.add(holder);
+        });
+
         return response;
     }
 
@@ -272,8 +283,11 @@ public class ArticleService {
         article.setVisible(true);
         article.setCreatedAt(LocalDateTime.now());
         article.setCategoryId(articleDTO.categoryId());
-
+        article.setLanguageId(articleDTO.languageId());
+        article.setArticleTypeId(articleDTO.articleTypeId());
+        article.setRegionId(articleDTO.regionId());
         return article;
     }
+
 
 }

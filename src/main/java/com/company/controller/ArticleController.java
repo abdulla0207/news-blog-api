@@ -1,6 +1,7 @@
 package com.company.controller;
 
 import com.company.dto.ArticleDTO;
+import com.company.dto.ArticleShortDTO;
 import com.company.enums.ArticleStatusEnum;
 import com.company.enums.ModeratorActionEnum;
 import com.company.enums.ProfileRoleEnum;
@@ -33,7 +34,7 @@ public class ArticleController {
      * This method gets the object and sends it to service
      * It returns ok response with DTO object
      */
-    @PostMapping("/")
+    @PostMapping("/writer")
     public ResponseEntity<?> createPost(@RequestBody ArticleDTO articleDTO, HttpServletRequest request){
         JwtUtil.checkForRole(request, ProfileRoleEnum.WRITER);
         Integer writerId = JwtUtil.getIdFromHeader(request);
@@ -41,7 +42,7 @@ public class ArticleController {
         return ResponseEntity.ok(res);
     }
 
-    @GetMapping("/publish")
+    @GetMapping("/publisher/publish")
     public ResponseEntity<?> getArticlesForPublish(HttpServletRequest request, @RequestParam(name = "page") int page,
                                                               @RequestParam(name = "size") int size){
         JwtUtil.checkForRole(request, ProfileRoleEnum.PUBLISHER);
@@ -51,7 +52,7 @@ public class ArticleController {
         return ResponseEntity.ok(getArticlePaginationList);
     }
 
-    @GetMapping("/review")
+    @GetMapping("/moderator/review")
     public ResponseEntity<?> getArticleForReview(HttpServletRequest request, @RequestParam(name = "page") int page,
                                                  @RequestParam(name = "size") int size){
         JwtUtil.checkForRole(request, ProfileRoleEnum.MODERATOR);
@@ -60,7 +61,7 @@ public class ArticleController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/review/{articleId}")
+    @PutMapping("/moderator/review/{articleId}")
     public ResponseEntity<?> updateModeratorAction(@PathVariable String articleId, HttpServletRequest request,
                                                    @RequestParam(name = "moderator_action")ModeratorActionEnum moderatorAction){
         JwtUtil.checkForRole(request, ProfileRoleEnum.MODERATOR);
@@ -73,10 +74,11 @@ public class ArticleController {
     /** GET "/article/" request is sent to the API with the page and size(size mainly the same number) from Parameters
      * This method sends the values to service and returns the list of articles
      */
-    @GetMapping("/")
-    public ResponseEntity<?> getArticlePagination(@RequestParam(name = "language", defaultValue = "uz") String langCode,
-                                                  @RequestParam("page") int page, @RequestParam("size") int size){
-        Page<ArticleDTO> getArticlePaginationList = articleService.getArticlePagination(langCode, page, size);
+    @GetMapping("/admin/")
+    public ResponseEntity<?> getArticlePagination(@RequestHeader(name = "Accept-Language", defaultValue = "uz") String language,
+                                                  @RequestParam("page") int page, @RequestParam("size") int size, HttpServletRequest request){
+        JwtUtil.checkForRole(request, ProfileRoleEnum.ADMIN);
+        Page<ArticleDTO> getArticlePaginationList = articleService.getArticlePagination(language, page, size);
 
         return ResponseEntity.ok(getArticlePaginationList);
     }
@@ -85,7 +87,7 @@ public class ArticleController {
      * It gets the uuid, calls the service method by sending uuid and gets the result of String
      * Method returns Ok result.
      */
-    @DeleteMapping("/{uuid}")
+    @DeleteMapping("/moderator/{uuid}")
     public ResponseEntity<?> deleteById(@PathVariable String uuid, HttpServletRequest request){
         JwtUtil.checkForRole(request, ProfileRoleEnum.MODERATOR);
         String response = articleService.deleteById(uuid);
@@ -98,7 +100,7 @@ public class ArticleController {
      * Method returns Ok result
      *
      */
-    @PutMapping("/{uuid}")
+    @PutMapping("/writer/{uuid}")
     public ResponseEntity<?> updateById(@PathVariable String uuid, @RequestBody ArticleDTO articleDTO,
                                         HttpServletRequest request){
         Integer currentUserId = JwtUtil.getIdFromHeader(request);
@@ -122,7 +124,8 @@ public class ArticleController {
      * Gets all articles, filters articles by published date and applies pagination,
      */
     @GetMapping("/order/published-date/")
-    public ResponseEntity<?> getArticlesOrderedByPublishedDate(@RequestParam(name = "language") String language, @RequestParam("page") int page, @RequestParam("size") int size){
+    public ResponseEntity<?> getArticlesOrderedByPublishedDate(@RequestHeader(name = "Accept-Language", defaultValue = "uz") String language,
+                                                               @RequestParam("page") int page, @RequestParam("size") int size){
         Page<ArticleDTO> response = articleService.findAllArticleByPublishedDate(page, size, language);
         return ResponseEntity.ok(response);
     }
@@ -131,9 +134,9 @@ public class ArticleController {
      * Gets all articles, filters articles by TITLE and applies pagination
      */
     @GetMapping("/order/title/")
-    public ResponseEntity<?> getArticlesByOrderedByTitle(@RequestParam("page") int page, @RequestParam("size") int size,
-                                                         @RequestParam(name = "language", defaultValue = "uz") String language){
-        Page<ArticleDTO> response = articleService.findArticlesOrderedByTitleUz(page, size, language);
+    public ResponseEntity<?> getArticlesOrderedByTitle(@RequestParam("page") int page, @RequestParam("size") int size,
+                                                         @RequestHeader(name = "Accept-Language", defaultValue = "uz") String language){
+        Page<ArticleDTO> response = articleService.findArticlesOrderedByTitle(page, size, language);
 
         return ResponseEntity.ok(response);
     }
@@ -144,7 +147,7 @@ public class ArticleController {
      */
     @GetMapping("/search/")
     public ResponseEntity<?> searchArticlesByTitle(@RequestParam("title") String title,
-                                                   @RequestParam(name = "language", defaultValue = "uz") String language){
+                                                   @RequestHeader(name = "Accept-Language", defaultValue = "uz") String language){
         List<ArticleDTO> articleDTOS = articleService.searchArticlesByTitle(title, language);
 
         return ResponseEntity.ok(articleDTOS);
@@ -154,7 +157,7 @@ public class ArticleController {
      * This method gets articles by category's key and applies pagination
      */
     @GetMapping("/category/{key}")
-    public ResponseEntity<?> getArticlesByCategory(@RequestParam(name = "language", defaultValue = "uz") String language, @PathVariable String key,
+    public ResponseEntity<?> getArticlesByCategory(@RequestHeader(name = "Accept-Language", defaultValue = "uz") String language, @PathVariable String key,
                                                    @RequestParam("page") int page,
                                                    @RequestParam("size") int size){
         Page<ArticleDTO> articleDTOS = articleService.getArticlesByCategory(key, page, size, language);
@@ -162,7 +165,7 @@ public class ArticleController {
         return ResponseEntity.ok(articleDTOS);
     }
 
-    @PutMapping("/status/{uuid}")
+    @PutMapping("/publisher/status/{uuid}")
     public ResponseEntity<String> changeStatus(@PathVariable String uuid, HttpServletRequest request,
                                                @RequestParam(name = "article_status")ArticleStatusEnum articleStatusEnum){
         JwtUtil.checkForRole(request, ProfileRoleEnum.PUBLISHER);
@@ -171,10 +174,17 @@ public class ArticleController {
 
         return ResponseEntity.ok(response);
     }
-    @GetMapping("/last_five/by-type/{typeId}")
-    public ResponseEntity<?> getLastFiveByType(@PathVariable int typeId, @RequestParam(name = "language", defaultValue = "uz") String language){
-        List<ArticleShortViewInfo> response = articleService.getLastFiveByType(typeId, language);
+    @GetMapping("/last-five/by-type/{typeId}")
+    public ResponseEntity<?> getLastFiveByType(@PathVariable int typeId, @RequestHeader(name = "Accept-Language", defaultValue = "uz") String language){
+        List<ArticleShortDTO> response = articleService.getLastFiveByType(typeId, language);
 
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/last-eight")
+    public ResponseEntity<?> getLastEightNotIncludeId(@RequestParam(name = "uuid") List<String> uuid,
+                                                      @RequestHeader(name = "Accept-Language", defaultValue = "uz") String language){
+        List<ArticleShortDTO> response = articleService.getLastEightNotIncludeId(uuid, language);
         return ResponseEntity.ok(response);
     }
 

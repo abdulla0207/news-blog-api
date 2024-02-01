@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -28,11 +29,10 @@ public interface ArticleRepository extends JpaRepository<ArticleEntity, String> 
             "and a.moderatorAction=com.company.enums.ModeratorActionEnum.APPROVE")
     Page<ArticleEntity> getArticlesForPublish(Pageable pageable);
 
-    @Query("select a from ArticleEntity as a where a.languageId = :langId order by a.title")
+    @Query("select a from ArticleEntity as a where a.languageId = :langId and a.articleStatus = com.company.enums.ArticleStatusEnum.PUBLISHED order by a.title")
     Page<ArticleEntity> findArticlesByTitle(Pageable pageable, int langId);
 
-
-    List<ArticleEntity> findArticleEntitiesByTitleLikeIgnoreCaseAndLanguageId(String title, int languageId);
+    List<ArticleEntity> findArticleEntitiesByTitleLikeIgnoreCaseAndLanguageIdAndArticleStatus(String title, int languageId, ArticleStatusEnum articleStatusEnum);
 
     Page<ArticleEntity> findArticleEntitiesByCategory_KeyAndLanguageId(Pageable pageable, String key, int languageId);
 
@@ -42,6 +42,8 @@ public interface ArticleRepository extends JpaRepository<ArticleEntity, String> 
     List<IArticleShortViewInfo> findLastFiveByType(int typeId, int languageId);
 
     @Query(value = "select a.id, a.title, a.description, a.published_date from article as a " +
-            "where a.status = ?1 and a.id not in(?2) order by a.created_date desc limit 8", nativeQuery = true)
-    List<IArticleShortViewInfo> getTop8ByArticleStatusAndUuidNotInOrderByCreatedAt(ArticleStatusEnum status, List<String> uuid);
+            "where a.status = 'PUBLISHED' and a.id not in(?1) and a.language_id = ?2 order by a.created_date desc limit 8", nativeQuery = true)
+    List<IArticleShortViewInfo> getTop8ByArticleStatusAndUuidNotInOrderByCreatedAt(List<String> uuid, int languageId);
+
+    Optional<ArticleEntity> findByUuidAndArticleStatus(String id, ArticleStatusEnum articleStatusEnum);
 }
