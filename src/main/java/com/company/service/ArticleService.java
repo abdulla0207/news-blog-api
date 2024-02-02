@@ -8,7 +8,6 @@ import com.company.entity.CategoryEntity;
 import com.company.enums.ArticleStatusEnum;
 import com.company.enums.ModeratorActionEnum;
 import com.company.exception.AppForbiddenException;
-import com.company.exception.ArticleCreateException;
 import com.company.exception.ItemNotFoundException;
 import com.company.mapper.IArticleShortViewInfo;
 import com.company.repository.ArticleRepository;
@@ -282,6 +281,5 @@ public class ArticleService {
         article.setRegionId(articleDTO.regionId());
         return article;
     }
-
 
 }
