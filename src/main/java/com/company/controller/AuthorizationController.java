@@ -2,9 +2,9 @@ package com.company.controller;
 
 import com.company.dto.authentication.AuthResponseDTO;
 import com.company.dto.authentication.LoginDTO;
-import com.company.dto.RegistrationDTO;
+import com.company.dto.authentication.RegistrationDTO;
 import com.company.service.AuthorizationService;
-import lombok.Getter;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,14 +25,14 @@ public class AuthorizationController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> registration(@RequestBody RegistrationDTO registrationDTO){
+    public ResponseEntity<?> registration(@Valid @RequestBody RegistrationDTO registrationDTO){
         String response = authorizationService.signup(registrationDTO);
 
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO){
+    public ResponseEntity<?> login(@Valid @RequestBody LoginDTO loginDTO){
         AuthResponseDTO responseDTO = authorizationService.login(loginDTO);
 
         return ResponseEntity.ok(responseDTO);

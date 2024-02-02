@@ -1,7 +1,8 @@
-package com.company.dto;
+package com.company.dto.article;
 
 import com.company.enums.ArticleStatusEnum;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 

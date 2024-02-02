@@ -1,14 +1,15 @@
 package com.company.controller;
 
-import com.company.dto.ArticleDTO;
-import com.company.dto.ArticleShortDTO;
+import com.company.dto.article.ArticleCreateDTO;
+import com.company.dto.article.ArticleDTO;
+import com.company.dto.article.ArticleShortDTO;
 import com.company.enums.ArticleStatusEnum;
 import com.company.enums.ModeratorActionEnum;
 import com.company.enums.ProfileRoleEnum;
-import com.company.mapper.ArticleShortViewInfo;
 import com.company.service.ArticleService;
 import com.company.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +36,7 @@ public class ArticleController {
      * It returns ok response with DTO object
      */
     @PostMapping("/writer")
-    public ResponseEntity<?> createPost(@RequestBody ArticleDTO articleDTO, HttpServletRequest request){
+    public ResponseEntity<?> createPost(@Valid @RequestBody ArticleCreateDTO articleDTO, HttpServletRequest request){
         JwtUtil.checkForRole(request, ProfileRoleEnum.WRITER);
         Integer writerId = JwtUtil.getIdFromHeader(request);
         ArticleDTO res = articleService.createPost(articleDTO, writerId);
@@ -101,7 +102,7 @@ public class ArticleController {
      *
      */
     @PutMapping("/writer/{uuid}")
-    public ResponseEntity<?> updateById(@PathVariable String uuid, @RequestBody ArticleDTO articleDTO,
+    public ResponseEntity<?> updateById(@PathVariable String uuid, @RequestBody ArticleCreateDTO articleDTO,
                                         HttpServletRequest request){
         Integer currentUserId = JwtUtil.getIdFromHeader(request);
         String response = articleService.updateById(uuid, articleDTO, currentUserId);

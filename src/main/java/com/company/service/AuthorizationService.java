@@ -1,6 +1,6 @@
 package com.company.service;
 
-import com.company.dto.RegistrationDTO;
+import com.company.dto.authentication.RegistrationDTO;
 import com.company.dto.authentication.AuthResponseDTO;
 import com.company.dto.authentication.LoginDTO;
 import com.company.entity.ConfirmationTokenEntity;
@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class AuthorizationService {

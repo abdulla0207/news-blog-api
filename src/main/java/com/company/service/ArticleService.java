@@ -1,7 +1,8 @@
 package com.company.service;
 
-import com.company.dto.ArticleDTO;
-import com.company.dto.ArticleShortDTO;
+import com.company.dto.article.ArticleCreateDTO;
+import com.company.dto.article.ArticleDTO;
+import com.company.dto.article.ArticleShortDTO;
 import com.company.entity.ArticleEntity;
 import com.company.entity.CategoryEntity;
 import com.company.enums.ArticleStatusEnum;
@@ -9,7 +10,6 @@ import com.company.enums.ModeratorActionEnum;
 import com.company.exception.AppForbiddenException;
 import com.company.exception.ArticleCreateException;
 import com.company.exception.ItemNotFoundException;
-import com.company.mapper.ArticleShortViewInfo;
 import com.company.mapper.IArticleShortViewInfo;
 import com.company.repository.ArticleRepository;
 import jakarta.transaction.Transactional;
@@ -38,16 +38,8 @@ public class ArticleService {
         this.articleRepository = articleRepository;
         this.categoryService = categoryService;
     }
-    public ArticleDTO createPost(ArticleDTO articleDTO, int writerId) {
-        if (articleDTO.title().isEmpty() || articleDTO.title().isBlank())
-            throw new ArticleCreateException("Article Title should be filled");
-        if (articleDTO.content().isEmpty() || articleDTO.content().isBlank())
-            throw new ArticleCreateException("Article Content cannot be empty");
-
-        if (articleDTO.description().isEmpty() || articleDTO.description().isBlank())
-            throw new ArticleCreateException("Article description cannot be empty");
-
-        ArticleEntity article = toEntity(articleDTO);
+    public ArticleDTO createPost(ArticleCreateDTO articleCreateDTO, int writerId) {
+        ArticleEntity article = toEntity(articleCreateDTO);
         article.setAuthorId(writerId);
         article.setModeratorAction(ModeratorActionEnum.NOT_REVIEWED);
         ArticleDTO resDTO = toDto(article);
@@ -104,7 +96,7 @@ public class ArticleService {
     }
 
     @Transactional
-    public String updateById(String uuid, ArticleDTO articleDTO, Integer currentUserId) {
+    public String updateById(String uuid, ArticleCreateDTO articleDTO, Integer currentUserId) {
         Optional<ArticleEntity> findById = articleRepository.findById(uuid);
 
         if(findById.isEmpty())
@@ -118,8 +110,10 @@ public class ArticleService {
         article.setContent(articleDTO.content());
         article.setTitle(articleDTO.title());
         article.setDescription(articleDTO.description());
-        article.setArticleStatus(articleDTO.articleStatus());
-        article.setVisible(articleDTO.visible());
+        article.setRegionId(articleDTO.regionId());
+        article.setCategoryId(articleDTO.categoryId());
+        article.setLanguageId(articleDTO.languageId());
+        article.setArticleTypeId(articleDTO.articleTypeId());
         article.setModeratorAction(ModeratorActionEnum.NOT_REVIEWED);
         article.setArticleStatus(ArticleStatusEnum.NOT_PUBLISHED);
 
@@ -274,7 +268,7 @@ public class ArticleService {
         return res;
     }
 
-    private ArticleEntity toEntity(ArticleDTO articleDTO){
+    private ArticleEntity toEntity(ArticleCreateDTO articleDTO){
         ArticleEntity article = new ArticleEntity();
         article.setTitle(articleDTO.title());
         article.setContent(articleDTO.content());
