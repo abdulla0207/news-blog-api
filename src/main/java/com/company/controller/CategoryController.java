@@ -1,12 +1,14 @@
 package com.company.controller;
 
 import com.company.dto.CategoryByLanguageDTO;
+import com.company.dto.CategoryCreateDTO;
 import com.company.dto.CategoryDTO;
 import com.company.enums.LanguageEnum;
 import com.company.enums.ProfileRoleEnum;
 import com.company.service.CategoryService;
 import com.company.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +33,7 @@ public class CategoryController {
      * It sends to service method and returns a response entity
      **/
     @PostMapping("/")
-    public ResponseEntity<?> createCategory(@RequestBody CategoryDTO categoryDTO, HttpServletRequest request){
+    public ResponseEntity<?> createCategory(@Valid @RequestBody CategoryCreateDTO categoryDTO, HttpServletRequest request){
         JwtUtil.checkForRole(request, ProfileRoleEnum.ADMIN);
         String response = categoryService.createCategory(categoryDTO);
 

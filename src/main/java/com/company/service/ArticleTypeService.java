@@ -1,5 +1,6 @@
 package com.company.service;
 
+import com.company.dto.ArticleTypeCreateDTO;
 import com.company.dto.ArticleTypeDTO;
 import com.company.dto.ArticleTypeByLanguageDTO;
 import com.company.entity.ArticleTypeEntity;
@@ -28,8 +29,7 @@ public class ArticleTypeService {
         this.articleTypeRepository = articleTypeRepository;
     }
 
-    public ArticleTypeDTO create(ArticleTypeDTO articleTypeDTO) {
-        checkDTO(articleTypeDTO);
+    public ArticleTypeDTO create(ArticleTypeCreateDTO articleTypeDTO) {
 
         ArticleTypeEntity entity = toEntity(articleTypeDTO);
 
@@ -44,7 +44,7 @@ public class ArticleTypeService {
         return dto;
     }
 
-    private ArticleTypeEntity toEntity(ArticleTypeDTO articleTypeDTO) {
+    private ArticleTypeEntity toEntity(ArticleTypeCreateDTO articleTypeDTO) {
         ArticleTypeEntity articleTypeEntity = new ArticleTypeEntity();
         articleTypeEntity.setCreatedAt(LocalDateTime.now());
         articleTypeEntity.setNameUz(articleTypeDTO.nameUz());

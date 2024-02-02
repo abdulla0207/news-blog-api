@@ -1,6 +1,7 @@
 package com.company.service;
 
 import com.company.dto.CategoryByLanguageDTO;
+import com.company.dto.CategoryCreateDTO;
 import com.company.dto.CategoryDTO;
 import com.company.entity.CategoryEntity;
 import com.company.entity.RegionEntity;
@@ -38,11 +39,7 @@ public class CategoryService {
         return categoryEntity.get();
     }
 
-    public String createCategory(CategoryDTO categoryDTO) {
-        if(categoryDTO.nameUz().isEmpty() || categoryDTO.nameUz().isBlank())
-            throw new CategoryCreateException("Name of the category in Uzbek should be filled");
-        if(categoryDTO.nameEn().isEmpty() || categoryDTO.nameEn().isBlank())
-            throw new CategoryCreateException("Name of the category in English should be filled");
+    public String createCategory(CategoryCreateDTO categoryDTO) {
         String[] s = categoryDTO.nameEn().toLowerCase().split(" ");
 
         String newSlag = String.join("_", s);
@@ -69,7 +66,7 @@ public class CategoryService {
     }
 
 
-    private CategoryEntity toEntity(CategoryDTO categoryDTO){
+    private CategoryEntity toEntity(CategoryCreateDTO categoryDTO){
         CategoryEntity entity = new CategoryEntity();
         entity.setNameUz(categoryDTO.nameUz());
         entity.setNameEn(categoryDTO.nameEn());

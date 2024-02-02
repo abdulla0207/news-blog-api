@@ -1,5 +1,6 @@
 package com.company.controller;
 
+import com.company.dto.ArticleTypeCreateDTO;
 import com.company.dto.ArticleTypeDTO;
 import com.company.dto.ArticleTypeByLanguageDTO;
 import com.company.enums.LanguageEnum;
@@ -7,6 +8,7 @@ import com.company.enums.ProfileRoleEnum;
 import com.company.service.ArticleTypeService;
 import com.company.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.data.domain.Page;
@@ -26,7 +28,7 @@ public class ArticleTypeController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<?> create(@RequestBody ArticleTypeDTO articleTypeDTO, HttpServletRequest request){
+    public ResponseEntity<?> create(@Valid @RequestBody ArticleTypeCreateDTO articleTypeDTO, HttpServletRequest request){
         JwtUtil.checkForRole(request, ProfileRoleEnum.ADMIN);
 
         ArticleTypeDTO responseDTO = articleTypeService.create(articleTypeDTO);
