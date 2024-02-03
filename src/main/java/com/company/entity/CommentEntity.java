@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "comment")
@@ -30,11 +32,14 @@ public class CommentEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private ProfileEntity profile;
 
-    @Column(name = "reply_id")
-    private String replyId;
+    @Column(name = "parent_comment_id")
+    private String parentCommentId;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reply_id", insertable = false, updatable = false)
-    private CommentEntity commentEntity;
+    @JoinColumn(name = "parent_comment_id")
+    private CommentEntity parentComment;
+
+    @OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL)
+    private List<CommentEntity> replies = new ArrayList<>();
 
     @Column
     private boolean visible;
