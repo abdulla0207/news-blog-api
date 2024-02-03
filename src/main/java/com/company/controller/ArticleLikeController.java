@@ -1,12 +1,15 @@
 package com.company.controller;
 
 import com.company.dto.article.ArticleLikeDTO;
+import com.company.dto.article.ArticleShortDTO;
 import com.company.service.ArticleLikeService;
 import com.company.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/article/like")
@@ -49,6 +52,14 @@ public class ArticleLikeController {
                                                     @RequestParam(name = "article-id") String articleId){
         Integer idFromHeader = JwtUtil.getIdFromHeader(request);
         ArticleLikeDTO response = articleLikeService.hasUserLikedOrDisliked(articleId, idFromHeader);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/user/likes")
+    public ResponseEntity<?> getLikedArticlesForUser(HttpServletRequest request){
+        Integer idFromHeader = JwtUtil.getIdFromHeader(request);
+        List<ArticleShortDTO> response = articleLikeService.getLikedArticlesForUser(idFromHeader);
 
         return ResponseEntity.ok(response);
     }

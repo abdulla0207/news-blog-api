@@ -2,22 +2,18 @@ package com.company.entity;
 
 import com.company.enums.LikeStatusEnum;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "article_like")
-@Getter
-@Setter
-public class ArticleLikeEntity {
+@Table(name = "comment_like")
+public class CommentLikeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String uuid;
 
     @Column(name = "article_id")
-    private String articleUuid;
+    private String articleId;
     @JoinColumn(name = "article_id", insertable = false, updatable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private ArticleEntity articleEntity;
@@ -26,11 +22,10 @@ public class ArticleLikeEntity {
     private Integer userId;
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
     @ManyToOne(fetch = FetchType.LAZY)
-    private ProfileEntity profileEntity;
+    private ProfileEntity profile;
 
-    @Column(name = "created_at")
+    @Column(name = "created_date")
     private LocalDateTime createdAt;
-
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private LikeStatusEnum likeStatusEnum;

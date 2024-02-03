@@ -1,6 +1,8 @@
 package com.company.service;
 
 import com.company.dto.article.ArticleLikeDTO;
+import com.company.dto.article.ArticleShortDTO;
+import com.company.entity.ArticleEntity;
 import com.company.entity.ArticleLikeEntity;
 import com.company.enums.LikeStatusEnum;
 import com.company.exception.ItemNotFoundException;
@@ -9,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -81,6 +85,21 @@ public class ArticleLikeService {
         ArticleLikeEntity entity = byArticleIdAndUserId.get();
 
         ArticleLikeDTO response = new ArticleLikeDTO(entity.getUuid(), entity.getLikeStatusEnum());
+
+        return response;
+    }
+
+    public List<ArticleShortDTO> getLikedArticlesForUser(Integer idFromHeader) {
+        List<ArticleEntity> articlesByUserAndStatus = articleLikeRepository.findArticlesByUserAndStatus(idFromHeader, LikeStatusEnum.LIKE);
+
+        List<ArticleShortDTO> response = new ArrayList<>();
+
+        articlesByUserAndStatus.forEach(articleEntity -> {
+            ArticleShortDTO shortDTO = new ArticleShortDTO(articleEntity.getUuid(), articleEntity.getTitle(),
+                    articleEntity.getDescription(), articleEntity.getPublishedAt());
+
+            response.add(shortDTO);
+        });
 
         return response;
     }

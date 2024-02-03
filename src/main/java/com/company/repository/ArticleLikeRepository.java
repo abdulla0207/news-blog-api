@@ -1,10 +1,13 @@
 package com.company.repository;
 
+import com.company.entity.ArticleEntity;
 import com.company.entity.ArticleLikeEntity;
+import com.company.enums.LikeStatusEnum;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -14,4 +17,7 @@ public interface ArticleLikeRepository extends JpaRepository<ArticleLikeEntity, 
     Optional<ArticleLikeEntity> findByArticleIdAndUserId(String articleId, Integer idFromHeader);
 
     void deleteArticleLikeEntityByArticleUuidAndUserId(String articleId, Integer userId);
+
+    @Query("SELECT a FROM ArticleEntity a JOIN ArticleLikeEntity l ON a.uuid = l.articleUuid WHERE l.userId = ?1 AND l.likeStatusEnum = ?2")
+    List<ArticleEntity> findArticlesByUserAndStatus(Integer userId, LikeStatusEnum likeStatusEnum);
 }
