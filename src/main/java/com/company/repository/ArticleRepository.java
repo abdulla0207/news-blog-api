@@ -35,11 +35,15 @@ public interface ArticleRepository extends JpaRepository<ArticleEntity, String> 
 
     @Query("select a from ArticleEntity as a where a.moderatorAction=com.company.enums.ModeratorActionEnum.NOT_REVIEWED")
     Page<ArticleEntity> getArticlesForReview(PageRequest of);
-    @Query("select a.uuid, a.title, a.description, a.publishedAt from ArticleEntity as a where a.articleTypeId=?1 and a.articleStatus=com.company.enums.ArticleStatusEnum.PUBLISHED and a.languageId=?2 order by a.createdAt desc limit 5")
+    @Query("SELECT new com.company.mapper.ArticleShortViewInfo(a.uuid, a.title, a.description, a.publishedAt) " +
+            "FROM ArticleEntity a " +
+            "WHERE a.articleTypeId = ?1 AND a.articleStatus = com.company.enums.ArticleStatusEnum.PUBLISHED AND a.languageId = ?2 " +
+            "ORDER BY a.createdAt DESC limit 5")
     List<IArticleShortViewInfo> findLastFiveByType(int typeId, int languageId);
 
-    @Query(value = "select a.id, a.title, a.description, a.published_date from article as a " +
-            "where a.status = 'PUBLISHED' and a.id not in(?1) and a.language_id = ?2 order by a.created_date desc limit 8", nativeQuery = true)
+    @Query(value = "select new com.company.mapper.ArticleShortViewInfo(a.uuid, a.title, a.description, a.publishedAt) from ArticleEntity as a " +
+            "where a.articleStatus = com.company.enums.ArticleStatusEnum.PUBLISHED" +
+            " and a.uuid not in(?1) and a.languageId = ?2 order by a.createdAt desc limit 8")
     List<IArticleShortViewInfo> getTop8ByArticleStatusAndUuidNotInOrderByCreatedAt(List<String> uuid, int languageId);
 
     Optional<ArticleEntity> findByUuidAndArticleStatus(String id, ArticleStatusEnum articleStatusEnum);

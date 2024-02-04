@@ -2,6 +2,7 @@ package com.company.controller;
 
 import com.company.dto.comment.CommentDTO;
 import com.company.dto.comment.CommentFullDTO;
+import com.company.dto.comment.CommentReplyDTO;
 import com.company.service.CommentService;
 import com.company.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/comment")
@@ -22,7 +25,7 @@ public class CommentController {
         this.commentService = commentService;
     }
 
-    @PostMapping("/{articleId}")
+    @PostMapping("/user/{articleId}")
     public ResponseEntity<CommentDTO> createComment(HttpServletRequest request, @Valid @RequestBody CommentDTO commentDTO, @PathVariable(name = "articleId") String articleId){
         Integer idFromHeader = JwtUtil.getIdFromHeader(request);
 
@@ -30,8 +33,16 @@ public class CommentController {
 
         return ResponseEntity.ok(response);
     }
+    @PostMapping("/user/reply/{parentId}/{articleId}")
+    public ResponseEntity<CommentReplyDTO> replyComment(@PathVariable(name = "parentId") String parentId, @Valid @RequestBody CommentDTO commentDTO, HttpServletRequest request,
+                                                            @PathVariable(name = "articleId") String articleId){
+        Integer userId = JwtUtil.getIdFromHeader(request);
+        CommentReplyDTO response = commentService.replyComment(parentId, userId, commentDTO, articleId);
 
-    @PutMapping("/update/{commentId}")
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/user/update/{commentId}")
     public ResponseEntity<CommentDTO> updateComment(HttpServletRequest request, @Valid @RequestBody CommentDTO commentDTO, @PathVariable(name = "commentId") String commentId){
 
         Integer userId = JwtUtil.getIdFromHeader(request);
@@ -41,7 +52,7 @@ public class CommentController {
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/delete/{commentId}")
+    @DeleteMapping("/user/delete/{commentId}")
     public ResponseEntity<String> deleteById(HttpServletRequest request,
                                         @PathVariable(name = "commentId") String commentId){
 
@@ -54,6 +65,12 @@ public class CommentController {
     public ResponseEntity<Page<CommentFullDTO>> getCommentsForSpecificArticle(@PathVariable(name = "articleId") String articleId, @RequestParam(name = "page") int page,
                                                                               @RequestParam(name = "size") int size){
         Page<CommentFullDTO> response = commentService.getCommentsForArticle(articleId, page, size);
+
+        return ResponseEntity.ok(response);
+    }
+    @GetMapping("/replied/comments/{commentId}")
+    public ResponseEntity<?> getRepliedCommentsForComment(@PathVariable(name = "commentId") String commentId){
+        List<CommentFullDTO> response = commentService.getRepliedCommentsForComment(commentId);
 
         return ResponseEntity.ok(response);
     }

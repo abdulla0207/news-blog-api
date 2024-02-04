@@ -26,7 +26,8 @@ public class SecuredFilterConfig {
                 "/api/articles/admin/*",
                 "/api/articles/user/*",
                 "/api/regions/*",
-                "/api/categories/*");
+                "/api/categories/*",
+                "/api/comment/user/*");
         return bean;
     }
 }

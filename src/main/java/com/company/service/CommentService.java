@@ -2,12 +2,14 @@ package com.company.service;
 
 import com.company.dto.comment.CommentDTO;
 import com.company.dto.comment.CommentFullDTO;
+import com.company.dto.comment.CommentReplyDTO;
 import com.company.dto.comment.ProfileForCommentDTO;
 import com.company.entity.CommentEntity;
 import com.company.enums.ProfileRoleEnum;
 import com.company.exception.AppForbiddenException;
 import com.company.exception.ItemNotFoundException;
 import com.company.mapper.CommentFullInfoMapper;
+import com.company.mapper.ICommentFullInfoMapper;
 import com.company.repository.CommentRepository;
 import com.company.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -82,17 +84,16 @@ public class CommentService {
         if(!entity.getUserId().equals(commentUserId))
             throw new AppForbiddenException("Method Not Allowed");
 
-        JwtUtil.checkForRole(request, ProfileRoleEnum.ADMIN);
-
         commentRepository.deleteById(commentId);
+
         return "Comment Deleted";
     }
 
     public Page<CommentFullDTO> getCommentsForArticle(String articleId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<CommentFullInfoMapper> entities = commentRepository.findAllByArticleId(articleId, pageable);
+        Page<ICommentFullInfoMapper> entities = commentRepository.findAllByArticleId(articleId, pageable);
 
-        Stream<CommentFullInfoMapper> streamEntities = entities.get();
+        Stream<ICommentFullInfoMapper> streamEntities = entities.get();
 
         List<CommentFullDTO> dtos = streamEntities.map(this::toDto).toList();
         long totalElements = entities.getTotalElements();
@@ -100,11 +101,34 @@ public class CommentService {
         return new PageImpl<>(dtos, pageable, totalElements);
     }
 
-    private CommentFullDTO toDto(CommentFullInfoMapper entity){
+    private CommentFullDTO toDto(ICommentFullInfoMapper entity){
         ProfileForCommentDTO profile = new ProfileForCommentDTO(entity.getUserId(), entity.getUserName(), entity.getUserSurname());
         CommentFullDTO commentFullDTO = new CommentFullDTO(entity.getUuid(), entity.getContent(),
                 entity.getCreatedAt(), entity.getUpdatedAt(), profile);
 
         return commentFullDTO;
+    }
+
+    public List<CommentFullDTO> getRepliedCommentsForComment(String commentId) {
+        List<ICommentFullInfoMapper> entities = commentRepository.findRepliedCommentsForComment(commentId);
+
+        List<CommentFullDTO> response = entities.stream().map(this::toDto).toList();
+
+        return response;
+    }
+
+    public CommentReplyDTO replyComment(String parentId, Integer userId, CommentDTO commentDTO, String articleId) {
+        CommentEntity entity = new CommentEntity();
+
+        entity.setContent(commentDTO.content());
+        entity.setParentCommentId(parentId);
+        entity.setUserId(userId);
+        entity.setCreatedAt(LocalDateTime.now());
+        entity.setVisible(true);
+        entity.setArticleId(articleId);
+
+        commentRepository.save(entity);
+
+        return new CommentReplyDTO(entity.getUuid(), entity.getContent(), entity.getArticleId(), entity.getUserId(), entity.getCreatedAt(), entity.getParentCommentId());
     }
 }

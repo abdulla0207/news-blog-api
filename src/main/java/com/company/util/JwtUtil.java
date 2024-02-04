@@ -66,10 +66,12 @@ public class JwtUtil {
         }
     }
 
-    public static void checkForRole(HttpServletRequest request, ProfileRoleEnum roleEnum){
+    public static boolean checkForRole(HttpServletRequest request, ProfileRoleEnum roleEnum){
             ProfileRoleEnum adminRole = (ProfileRoleEnum) request.getAttribute("role");
             if(!adminRole.equals(roleEnum)){
                 throw new AppForbiddenException("Method Not Allowed");
             }
+
+            return true;
     }
 }

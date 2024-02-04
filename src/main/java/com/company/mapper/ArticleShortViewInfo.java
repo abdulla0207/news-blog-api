@@ -7,6 +7,12 @@ public class ArticleShortViewInfo implements IArticleShortViewInfo{
     private String title;
     private String description;
     private LocalDateTime publishedDate;
+    public ArticleShortViewInfo(String uuid, String title, String description, LocalDateTime publishedDate) {
+        this.uuid = uuid;
+        this.title = title;
+        this.description = description;
+        this.publishedDate = publishedDate;
+    }
 
     public String getUuid() {
         return uuid;

@@ -35,7 +35,7 @@ public class CommentEntity {
     @Column(name = "parent_comment_id")
     private String parentCommentId;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_comment_id")
+    @JoinColumn(name = "parent_comment_id", insertable = false, updatable = false)
     private CommentEntity parentComment;
 
     @OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL)

@@ -4,7 +4,6 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 
-@Getter
 public record CommentFullDTO(
         String uuid,
         String content,
