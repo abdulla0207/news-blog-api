@@ -2,6 +2,7 @@ package com.company.repository;
 
 import com.company.entity.ArticleEntity;
 import com.company.enums.ArticleStatusEnum;
+import com.company.enums.LikeStatusEnum;
 import com.company.mapper.IArticleShortViewInfo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -47,4 +48,7 @@ public interface ArticleRepository extends JpaRepository<ArticleEntity, String> 
     List<IArticleShortViewInfo> getTop8ByArticleStatusAndUuidNotInOrderByCreatedAt(List<String> uuid, int languageId);
 
     Optional<ArticleEntity> findByUuidAndArticleStatus(String id, ArticleStatusEnum articleStatusEnum);
+
+    @Query("SELECT a FROM ArticleEntity a JOIN ArticleLikeEntity l ON a.uuid = l.articleUuid WHERE l.userId = ?1 AND l.likeStatusEnum = ?2")
+    List<ArticleEntity> findArticlesByUserAndStatus(Integer userId, LikeStatusEnum likeStatusEnum);
 }

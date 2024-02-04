@@ -17,7 +17,4 @@ public interface ArticleLikeRepository extends JpaRepository<ArticleLikeEntity, 
     Optional<ArticleLikeEntity> findByArticleIdAndUserId(String articleId, Integer idFromHeader);
 
     void deleteArticleLikeEntityByArticleUuidAndUserId(String articleId, Integer userId);
-
-    @Query("SELECT a FROM ArticleEntity a JOIN ArticleLikeEntity l ON a.uuid = l.articleUuid WHERE l.userId = ?1 AND l.likeStatusEnum = ?2")
-    List<ArticleEntity> findArticlesByUserAndStatus(Integer userId, LikeStatusEnum likeStatusEnum);
 }

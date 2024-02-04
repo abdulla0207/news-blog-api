@@ -6,6 +6,7 @@ import com.company.dto.article.ArticleShortDTO;
 import com.company.entity.ArticleEntity;
 import com.company.entity.CategoryEntity;
 import com.company.enums.ArticleStatusEnum;
+import com.company.enums.LikeStatusEnum;
 import com.company.enums.ModeratorActionEnum;
 import com.company.exception.AppForbiddenException;
 import com.company.exception.ItemNotFoundException;
@@ -282,4 +283,9 @@ public class ArticleService {
         return article;
     }
 
+    public List<ArticleEntity> findArticlesByUserAndStatus(Integer idFromHeader, LikeStatusEnum likeStatusEnum) {
+        List<ArticleEntity> entities = articleRepository.findArticlesByUserAndStatus(idFromHeader, likeStatusEnum);
+
+        return entities;
+    }
 }

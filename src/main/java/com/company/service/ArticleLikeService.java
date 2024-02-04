@@ -19,9 +19,12 @@ import java.util.Optional;
 public class ArticleLikeService {
     private final ArticleLikeRepository articleLikeRepository;
 
+    private final ArticleService articleService;
+
     @Autowired
-    public ArticleLikeService(ArticleLikeRepository articleLikeRepository){
+    public ArticleLikeService(ArticleLikeRepository articleLikeRepository, ArticleService articleService){
         this.articleLikeRepository = articleLikeRepository;
+        this.articleService = articleService;
     }
     public String likeArticle(String articleId, Integer idFromHeader) {
         Optional<ArticleLikeEntity> byArticleIdAndUserId = articleLikeRepository.findByArticleIdAndUserId(articleId, idFromHeader);
@@ -90,7 +93,7 @@ public class ArticleLikeService {
     }
 
     public List<ArticleShortDTO> getLikedArticlesForUser(Integer idFromHeader) {
-        List<ArticleEntity> articlesByUserAndStatus = articleLikeRepository.findArticlesByUserAndStatus(idFromHeader, LikeStatusEnum.LIKE);
+        List<ArticleEntity> articlesByUserAndStatus = articleService.findArticlesByUserAndStatus(idFromHeader, LikeStatusEnum.LIKE);
 
         List<ArticleShortDTO> response = new ArrayList<>();
 
