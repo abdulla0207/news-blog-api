@@ -2,6 +2,7 @@ package com.company.controller;
 
 import com.company.dto.article.ArticleCreateDTO;
 import com.company.dto.article.ArticleDTO;
+import com.company.dto.article.ArticleFullDTO;
 import com.company.dto.article.ArticleShortDTO;
 import com.company.enums.ArticleStatusEnum;
 import com.company.enums.ModeratorActionEnum;
@@ -10,6 +11,7 @@ import com.company.service.ArticleService;
 import com.company.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -189,4 +191,18 @@ public class ArticleController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/language/{uuid}")
+    public ResponseEntity<?> getArticleByIdAndLanguage(@PathVariable(name = "uuid") String uuid, @RequestHeader(name = "Accept-Language", defaultValue = "uz") String language){
+        ArticleFullDTO response = articleService.getArticlesByIdAndLanguage(uuid, language);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/viewed/weekly")
+    public ResponseEntity<?> getMostViewedArticlesInAWeek(@RequestHeader(name = "Accept-Language", defaultValue = "uz") String language,
+                                                          @RequestParam("page") int page, @RequestParam("size") int size){
+        Page<ArticleShortDTO> response = articleService.getMostViewedArticleInAWeek(language, page, size);
+
+        return ResponseEntity.ok(response);
+    }
 }

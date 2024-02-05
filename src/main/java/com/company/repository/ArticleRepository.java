@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,4 +52,11 @@ public interface ArticleRepository extends JpaRepository<ArticleEntity, String> 
 
     @Query("SELECT a FROM ArticleEntity a JOIN ArticleLikeEntity l ON a.uuid = l.articleUuid WHERE l.userId = ?1 AND l.likeStatusEnum = ?2")
     List<ArticleEntity> findArticlesByUserAndStatus(Integer userId, LikeStatusEnum likeStatusEnum);
+
+
+    @Query("select a from ArticleEntity as a where a.uuid = ?1 and a.languageId = ?2")
+    Optional<ArticleEntity> findArticlesByIdAndLanguageId(String uuid, int languageId);
+
+    @Query("select a from ArticleEntity as a where a.languageId=?1 and a.publishedAt between ?2 and ?3 order by a.viewCount desc")
+    Page<ArticleEntity> getMostViewedArticleInAWeek(int languageId, LocalDateTime startOfWeek, LocalDateTime endOfWeek, PageRequest pageable);
 }

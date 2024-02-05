@@ -106,4 +106,11 @@ public class ArticleLikeService {
 
         return response;
     }
+
+    public int getLikesForArticles(String articleId, LikeStatusEnum likeStatusEnum) {
+        int likeCount = articleLikeRepository.countLikeStatusForSpecificArticle(articleId, likeStatusEnum);
+
+
+        return likeCount;
+    }
 }

@@ -13,6 +13,9 @@ public record ArticleFullDTO(
         String content,
         LocalDateTime published_date,
         RegionByLanguageDTO region,
-        CategoryByLanguageDTO category
+        CategoryByLanguageDTO category,
+        int likeCount,
+        int dislikeCount,
+        int viewCount
         ) {
 }

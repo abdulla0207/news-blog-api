@@ -1,7 +1,10 @@
 package com.company.service;
 
+import com.company.dto.CategoryByLanguageDTO;
+import com.company.dto.RegionByLanguageDTO;
 import com.company.dto.article.ArticleCreateDTO;
 import com.company.dto.article.ArticleDTO;
+import com.company.dto.article.ArticleFullDTO;
 import com.company.dto.article.ArticleShortDTO;
 import com.company.entity.ArticleEntity;
 import com.company.entity.CategoryEntity;
@@ -20,7 +23,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -32,11 +38,13 @@ public class ArticleService {
 
     private final CategoryService categoryService;
 
+    private final ArticleLikeService articleLikeService;
+
     @Autowired
-    public ArticleService(ArticleRepository articleRepository, CategoryService categoryService){
-        System.out.println("In constr" + getClass().getSimpleName());
+    public ArticleService(ArticleRepository articleRepository, CategoryService categoryService, ArticleLikeService articleLikeService){
         this.articleRepository = articleRepository;
         this.categoryService = categoryService;
+        this.articleLikeService = articleLikeService;
     }
     public ArticleDTO createPost(ArticleCreateDTO articleCreateDTO, int writerId) {
         ArticleEntity article = toEntity(articleCreateDTO);
@@ -284,8 +292,62 @@ public class ArticleService {
     }
 
     public List<ArticleEntity> findArticlesByUserAndStatus(Integer idFromHeader, LikeStatusEnum likeStatusEnum) {
-        List<ArticleEntity> entities = articleRepository.findArticlesByUserAndStatus(idFromHeader, likeStatusEnum);
 
-        return entities;
+        return articleRepository.findArticlesByUserAndStatus(idFromHeader, likeStatusEnum);
+    }
+
+    public ArticleFullDTO getArticlesByIdAndLanguage(String uuid, String language) {
+        int languageId = getLanguageIdByCode(language);
+
+        Optional<ArticleEntity> articlesByIdAndLanguageId = articleRepository.findArticlesByIdAndLanguageId(uuid, languageId);
+        if(articlesByIdAndLanguageId.isEmpty())
+            throw new ItemNotFoundException("Article Not Found");
+
+        ArticleEntity articleEntity = articlesByIdAndLanguageId.get();
+        String regionName = "";
+        String categoryName = "";
+        if(languageId == 1) {
+            regionName = articleEntity.getRegion().getNameUz();
+            categoryName = articleEntity.getCategory().getNameUz();
+        }else{
+            regionName = articleEntity.getRegion().getNameEn();
+            categoryName = articleEntity.getCategory().getNameEn();
+        }
+
+        int articleLikeCount = articleLikeService.getLikesForArticles(uuid, LikeStatusEnum.LIKE);
+        int articleDislikeCount = articleLikeService.getLikesForArticles(uuid, LikeStatusEnum.DISLIKE);
+        RegionByLanguageDTO region = new RegionByLanguageDTO(articleEntity.getRegion().getId(),articleEntity.getRegion().getKey(), regionName);
+        CategoryByLanguageDTO categoryByLanguageDTO = new CategoryByLanguageDTO(articleEntity.getCategory().getId(), categoryName, articleEntity.getCategory().isVisible(),
+                articleEntity.getCategory().getKey(), articleEntity.getCategory().getSlag());
+
+        ArticleFullDTO response = new ArticleFullDTO(articleEntity.getUuid(), articleEntity.getTitle(),articleEntity.getDescription(),articleEntity.getContent(),
+                articleEntity.getPublishedAt(), region, categoryByLanguageDTO, articleLikeCount, articleDislikeCount, articleEntity.getViewCount());
+
+        return response;
+    }
+
+    public Page<ArticleShortDTO> getMostViewedArticleInAWeek(String language, int page, int size) {
+        int languageId = getLanguageIdByCode(language);
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startOfWeek = now.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).with(LocalTime.MIN);
+        LocalDateTime endOfWeek = now.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).with(LocalTime.MAX);
+
+        PageRequest pageable = PageRequest.of(page, size);
+
+        Page<ArticleEntity> articleEntities = articleRepository.getMostViewedArticleInAWeek(languageId, startOfWeek, endOfWeek, pageable);
+
+        Stream<ArticleEntity> articleEntityStream = articleEntities.get();
+
+        List<ArticleShortDTO> response = new ArrayList<>();
+        articleEntityStream.forEach(articleEntity -> {
+            ArticleShortDTO holder = new ArticleShortDTO(articleEntity.getUuid(), articleEntity.getTitle(),articleEntity.getDescription(), articleEntity.getPublishedAt());
+
+            response.add(holder);
+        });
+
+        long totalElements = articleEntities.getTotalElements();
+
+
+        return new PageImpl<>(response, pageable, totalElements);
     }
 }

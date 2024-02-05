@@ -83,4 +83,6 @@ public class ArticleEntity {
     private LocalDateTime publishedAt;
     @Column
     private boolean visible;
+    @Column(name = "view_count")
+    private int viewCount;
 }

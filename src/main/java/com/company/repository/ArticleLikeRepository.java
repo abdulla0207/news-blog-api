@@ -17,4 +17,7 @@ public interface ArticleLikeRepository extends JpaRepository<ArticleLikeEntity, 
     Optional<ArticleLikeEntity> findByArticleIdAndUserId(String articleId, Integer idFromHeader);
 
     void deleteArticleLikeEntityByArticleUuidAndUserId(String articleId, Integer userId);
+
+    @Query("select count(a) from ArticleLikeEntity a where a.articleUuid=?1 and a.likeStatusEnum=?2")
+    int countLikeStatusForSpecificArticle(String articleId, LikeStatusEnum likeStatusEnum);
 }
