@@ -11,6 +11,7 @@ import com.company.service.ArticleService;
 import com.company.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,6 +24,7 @@ import java.util.List;
  * Article Controller is a Controller for Article entity manipulation.
  */
 
+@Slf4j
 @RestController
 @RequestMapping("/api/articles")
 public class ArticleController {

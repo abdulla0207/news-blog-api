@@ -5,6 +5,7 @@ import com.company.dto.authentication.LoginDTO;
 import com.company.dto.authentication.RegistrationDTO;
 import com.company.service.AuthorizationService;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
  * For creation of an account and registration
  */
 
+@Slf4j
 @RestController
 @RequestMapping("/api/auth")
 public class AuthorizationController {

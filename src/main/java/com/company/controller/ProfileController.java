@@ -5,6 +5,7 @@ import com.company.enums.ProfileRoleEnum;
 import com.company.service.ProfileService;
 import com.company.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
  * This will be only accessible in ADMIN page FOR ADMINS
  */
 
+@Slf4j
 @RestController
 @RequestMapping("/api/profiles")
 public class ProfileController {

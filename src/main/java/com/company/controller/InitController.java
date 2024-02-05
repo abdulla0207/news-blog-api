@@ -10,6 +10,7 @@ import com.company.service.EmailService;
 import com.company.util.MD5Util;
 import com.company.util.MailUtil;
 import com.company.util.TokenUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,6 +24,7 @@ import java.util.Optional;
  * It populates the local database with initial records for further usage
  */
 
+@Slf4j
 @RestController
 @RequestMapping("/api/init")
 // First creation of data
