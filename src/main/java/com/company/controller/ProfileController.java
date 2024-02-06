@@ -34,7 +34,7 @@ public class ProfileController {
     // This method decodes the headerToken to JwtDTO object and sends to create service
     @PostMapping("/")
     public ResponseEntity<?> create(HttpServletRequest request, @RequestBody ProfileDTO profileDTO){
-
+        log.info("create user {}", profileDTO);
         JwtUtil.checkForRole(request, ProfileRoleEnum.ADMIN);
         int id = JwtUtil.getIdFromHeader(request);
         ProfileDTO responseDTO = profileService.create(profileDTO, id);
@@ -47,6 +47,7 @@ public class ProfileController {
     // Method decodes the token and calls deleteById method that deletes profile by id
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteById(@PathVariable int id, HttpServletRequest request){
+        log.info("remove user {}", id);
         JwtUtil.checkForRole(request, ProfileRoleEnum.ADMIN);
         String s = profileService.deleteById(id);
 
@@ -60,6 +61,7 @@ public class ProfileController {
     @GetMapping("/")
     public ResponseEntity<?> getList(HttpServletRequest request,
                                      @RequestParam("page") int page, @RequestParam("size") int size){
+        log.info("get user list");
         JwtUtil.checkForRole(request, ProfileRoleEnum.ADMIN);
 
         Page<ProfileDTO> profileList = profileService.getProfileList(page, size);
@@ -72,6 +74,7 @@ public class ProfileController {
     // Decodes headerToken, and sends all properties to service method to Update specific profile
     @PutMapping("/admin/{id}")
     public ResponseEntity<?> updateByAdmin(@RequestBody ProfileDTO profileDTO, @PathVariable int id, HttpServletRequest request){
+        log.info("update user for admin {}", id);
         JwtUtil.checkForRole(request, ProfileRoleEnum.ADMIN);
 
         String response = profileService.update(profileDTO, id);
@@ -84,6 +87,7 @@ public class ProfileController {
     // It decodes the token and calls updateByProfile method from service
     @PutMapping("/edit")
     public ResponseEntity<?> updateByProfile(@RequestBody ProfileDTO profileDTO, HttpServletRequest request){
+        log.info("update user for user {}", profileDTO);
         int tokenId = JwtUtil.getIdFromHeader(request);
 
         String response  = profileService.updateByProfile(profileDTO, tokenId);

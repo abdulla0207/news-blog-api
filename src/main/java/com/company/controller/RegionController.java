@@ -27,6 +27,7 @@ public class RegionController {
 
     @PostMapping("/")
     public ResponseEntity<RegionDTO> create(HttpServletRequest request, @RequestBody RegionDTO regionDTO){
+        log.info("Create region {}", regionDTO);
         JwtUtil.checkForRole(request, ProfileRoleEnum.ADMIN);
 
         RegionDTO response = regionService.create(regionDTO);
@@ -37,6 +38,7 @@ public class RegionController {
     @PutMapping("/update/{id}")
     public ResponseEntity<RegionDTO> updateById(@PathVariable(name = "id") int id,
                                                 HttpServletRequest request, @RequestBody RegionDTO regionDTO){
+        log.info("update region {}", regionDTO);
         JwtUtil.checkForRole(request, ProfileRoleEnum.ADMIN);
 
         RegionDTO response = regionService.updateById(id, regionDTO);
@@ -46,6 +48,7 @@ public class RegionController {
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteById(@PathVariable(name = "id") int id, HttpServletRequest request){
+        log.info("Remove region {}", id);
         JwtUtil.checkForRole(request, ProfileRoleEnum.ADMIN);
 
         String response = regionService.deleteById(id);
@@ -55,6 +58,7 @@ public class RegionController {
 
     @GetMapping("/")
     public ResponseEntity<List<RegionDTO>> getList(HttpServletRequest request){
+        log.info("Get region list");
         JwtUtil.checkForRole(request, ProfileRoleEnum.ADMIN);
 
         List<RegionDTO> response = regionService.getList();
@@ -64,6 +68,7 @@ public class RegionController {
 
     @GetMapping("/language")
     public ResponseEntity<List<RegionByLanguageDTO>> getListByLanguage(@RequestParam(name = "lang")String languageEnum){
+        log.info("get region list by language");
         List<RegionByLanguageDTO> responseList = regionService.getListByLanguage(languageEnum);
 
         return ResponseEntity.ok(responseList);

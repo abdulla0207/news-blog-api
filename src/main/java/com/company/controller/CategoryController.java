@@ -49,6 +49,7 @@ public class CategoryController {
      */
     @GetMapping("/")
     public ResponseEntity<?> getCategoryList(@RequestParam("page") int page, @RequestParam("size") int size, HttpServletRequest request){
+        log.info("Get category list");
         JwtUtil.checkForRole(request, ProfileRoleEnum.ADMIN);
         Page<CategoryDTO> categoryEntities = categoryService.getCategoriesPagination(page, size);
 
@@ -60,6 +61,7 @@ public class CategoryController {
      */
     @PutMapping("/")
     public ResponseEntity<?> updateCategoryById(@RequestParam("id") int id, @RequestBody CategoryDTO categoryDTO, HttpServletRequest request){
+        log.info("update category {}", id);
         JwtUtil.checkForRole(request, ProfileRoleEnum.ADMIN);
         String response = categoryService.updateCategoryByKey(categoryDTO, id);
 
@@ -68,6 +70,7 @@ public class CategoryController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteById(@PathVariable(name = "id") int id, HttpServletRequest request){
+        log.info("delete category {}", id);
         JwtUtil.checkForRole(request, ProfileRoleEnum.ADMIN);
 
         String response = categoryService.deleteById(id);
@@ -77,6 +80,7 @@ public class CategoryController {
 
     @GetMapping("/language")
     public ResponseEntity<?> getByLanguage(@RequestParam("language") String languageEnum){
+        log.info("get categories by language");
         List<CategoryByLanguageDTO> response = categoryService.getByLanguage(languageEnum);
 
         return ResponseEntity.ok(response);

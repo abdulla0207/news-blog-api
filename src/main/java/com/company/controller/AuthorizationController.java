@@ -28,6 +28,7 @@ public class AuthorizationController {
 
     @PostMapping("/signup")
     public ResponseEntity<?> registration(@Valid @RequestBody RegistrationDTO registrationDTO){
+        log.info("Registration {}", registrationDTO);
         String response = authorizationService.signup(registrationDTO);
 
         return ResponseEntity.ok(response);
@@ -35,6 +36,7 @@ public class AuthorizationController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginDTO loginDTO){
+        log.info("Log in {}", loginDTO);
         AuthResponseDTO responseDTO = authorizationService.login(loginDTO);
 
         return ResponseEntity.ok(responseDTO);
@@ -42,6 +44,7 @@ public class AuthorizationController {
 
     @GetMapping("/confirm")
     public ResponseEntity<String> confirm(@RequestParam("token") String token){
+        log.info("confirmation token");
         String response = authorizationService.confirmToken(token);
 
         return ResponseEntity.ok(response);

@@ -29,6 +29,7 @@ public class CommentController {
 
     @PostMapping("/user/{articleId}")
     public ResponseEntity<CommentDTO> createComment(HttpServletRequest request, @Valid @RequestBody CommentDTO commentDTO, @PathVariable(name = "articleId") String articleId){
+        log.info("Create Comment {}", commentDTO);
         Integer idFromHeader = JwtUtil.getIdFromHeader(request);
 
         CommentDTO response = commentService.createComment(idFromHeader, articleId, commentDTO);
@@ -38,6 +39,7 @@ public class CommentController {
     @PostMapping("/user/reply/{parentId}/{articleId}")
     public ResponseEntity<CommentReplyDTO> replyComment(@PathVariable(name = "parentId") String parentId, @Valid @RequestBody CommentDTO commentDTO, HttpServletRequest request,
                                                             @PathVariable(name = "articleId") String articleId){
+        log.info("Reply to Comment {}", commentDTO);
         Integer userId = JwtUtil.getIdFromHeader(request);
         CommentReplyDTO response = commentService.replyComment(parentId, userId, commentDTO, articleId);
 
@@ -46,7 +48,7 @@ public class CommentController {
 
     @PutMapping("/user/update/{commentId}")
     public ResponseEntity<CommentDTO> updateComment(HttpServletRequest request, @Valid @RequestBody CommentDTO commentDTO, @PathVariable(name = "commentId") String commentId){
-
+        log.info("Update comment content {}", commentDTO);
         Integer userId = JwtUtil.getIdFromHeader(request);
 
         CommentDTO response = commentService.updateComment(userId, commentDTO, commentId);
@@ -57,7 +59,7 @@ public class CommentController {
     @DeleteMapping("/user/delete/{commentId}")
     public ResponseEntity<String> deleteById(HttpServletRequest request,
                                         @PathVariable(name = "commentId") String commentId){
-
+        log.info("delete comment {}", commentId);
         String response = commentService.deleteById(commentId, request);
 
         return ResponseEntity.ok(response);
@@ -66,12 +68,14 @@ public class CommentController {
     @GetMapping("/{articleId}")
     public ResponseEntity<Page<CommentFullDTO>> getCommentsForSpecificArticle(@PathVariable(name = "articleId") String articleId, @RequestParam(name = "page") int page,
                                                                               @RequestParam(name = "size") int size){
+        log.info("get comments for article");
         Page<CommentFullDTO> response = commentService.getCommentsForArticle(articleId, page, size);
 
         return ResponseEntity.ok(response);
     }
     @GetMapping("/replied/comments/{commentId}")
     public ResponseEntity<?> getRepliedCommentsForComment(@PathVariable(name = "commentId") String commentId){
+        log.info("get replied comments for comment");
         List<CommentFullDTO> response = commentService.getRepliedCommentsForComment(commentId);
 
         return ResponseEntity.ok(response);

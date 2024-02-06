@@ -19,8 +19,9 @@ public class CommentLikeController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<?> likeArticle(HttpServletRequest request,
+    public ResponseEntity<?> likeComment(HttpServletRequest request,
                                          @RequestParam(name = "comment-id") String commentId){
+        log.info("create like for comment {}", commentId);
         Integer idFromHeader = JwtUtil.getIdFromHeader(request);
         String response = commentLikeService.likeComment(commentId, idFromHeader);
 
@@ -28,7 +29,8 @@ public class CommentLikeController {
     }
 
     @PostMapping("/dislike")
-    public ResponseEntity<?> dislikeArticle(HttpServletRequest request, @RequestParam(name = "comment-id") String commentId){
+    public ResponseEntity<?> dislikeComment(HttpServletRequest request, @RequestParam(name = "comment-id") String commentId){
+        log.info("create dislike for comment {}", commentId);
         Integer idFromHeader = JwtUtil.getIdFromHeader(request);
         String response = commentLikeService.dislikeComment(commentId, idFromHeader);
 
@@ -38,6 +40,7 @@ public class CommentLikeController {
     @DeleteMapping("/remove")
     public ResponseEntity<?> removeLikeDislikeFromComment(HttpServletRequest request,
                                                           @RequestParam(name = "comment-id") String commentId){
+        log.info("remove like or dislike {}", commentId);
         Integer idFromHeader = JwtUtil.getIdFromHeader(request);
         String response = commentLikeService.removeLikeDislikeFromComment(idFromHeader, commentId);
 

@@ -16,6 +16,8 @@ import com.company.exception.ItemNotFoundException;
 import com.company.mapper.IArticleShortViewInfo;
 import com.company.repository.ArticleRepository;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -32,6 +34,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+@Slf4j
 @Service
 public class ArticleService {
     private final ArticleRepository articleRepository;
@@ -47,12 +50,18 @@ public class ArticleService {
         this.articleLikeService = articleLikeService;
     }
     public ArticleDTO createPost(ArticleCreateDTO articleCreateDTO, int writerId) {
-        ArticleEntity article = toEntity(articleCreateDTO);
-        article.setAuthorId(writerId);
-        article.setModeratorAction(ModeratorActionEnum.NOT_REVIEWED);
-        ArticleDTO resDTO = toDto(article);
-        articleRepository.save(article);
-        return resDTO;
+        try{
+            ArticleEntity article = toEntity(articleCreateDTO);
+            article.setAuthorId(writerId);
+            article.setModeratorAction(ModeratorActionEnum.NOT_REVIEWED);
+            ArticleDTO resDTO = toDto(article);
+            articleRepository.save(article);
+            return resDTO;
+        }catch (Exception e){
+            log.error("Error creating article in service: {}", e.getMessage());
+            throw new ServiceException("Error creating article in service");
+        }
+
     }
 
     public Page<ArticleDTO> getArticlePagination(String languageCode, int page, int size) {

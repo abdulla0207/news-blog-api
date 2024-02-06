@@ -31,6 +31,7 @@ public class ArticleTypeController {
 
     @PostMapping("/")
     public ResponseEntity<?> create(@Valid @RequestBody ArticleTypeCreateDTO articleTypeDTO, HttpServletRequest request){
+        log.info("create article type {}", articleTypeDTO);
         JwtUtil.checkForRole(request, ProfileRoleEnum.ADMIN);
 
         ArticleTypeDTO responseDTO = articleTypeService.create(articleTypeDTO);
@@ -39,6 +40,7 @@ public class ArticleTypeController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateById(@PathVariable int id, @RequestBody ArticleTypeDTO dto, HttpServletRequest request){
+        log.info("update article type by id {}", dto);
         JwtUtil.checkForRole(request, ProfileRoleEnum.ADMIN);
         ArticleTypeDTO responseDTO = articleTypeService.updateById(id, dto);
 
@@ -48,6 +50,7 @@ public class ArticleTypeController {
     @GetMapping("/")
     public ResponseEntity<?> getList(HttpServletRequest request, @RequestParam(name = "page") int page,
                                      @RequestParam(name = "size") int size){
+        log.info("Get list of Article Types");
         JwtUtil.checkForRole(request, ProfileRoleEnum.ADMIN);
         Page<ArticleTypeDTO> articleDTOS = articleTypeService.getList(page, size);
 
@@ -56,6 +59,7 @@ public class ArticleTypeController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteById(@PathVariable int id, HttpServletRequest request){
+        log.info("delete article type {}", id);
         JwtUtil.checkForRole(request,ProfileRoleEnum.ADMIN);
 
         String response = articleTypeService.deleteById(id);
@@ -65,6 +69,7 @@ public class ArticleTypeController {
 
     @GetMapping("/language")
     public ResponseEntity<?> getListByLanguage(@RequestParam(name = "lang", defaultValue = "ENGLISH") LanguageEnum lang){
+        log.info("get list of article types by language");
         List<ArticleTypeByLanguageDTO> dtos = articleTypeService.getListByLanguage(lang);
 
         return ResponseEntity.ok(dtos);

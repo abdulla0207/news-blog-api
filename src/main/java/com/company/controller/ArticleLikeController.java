@@ -26,6 +26,7 @@ public class ArticleLikeController {
     @PostMapping("/like")
     public ResponseEntity<?> likeArticle(HttpServletRequest request,
                                          @RequestParam(name = "article-id") String articleId){
+        log.info("article is liked {}", articleId);
         Integer idFromHeader = JwtUtil.getIdFromHeader(request);
         String response = articleLikeService.likeArticle(articleId, idFromHeader);
 
@@ -34,6 +35,7 @@ public class ArticleLikeController {
     @PostMapping("/unlike")
     public ResponseEntity<?> unlikeArticle(HttpServletRequest request,
                                            @RequestParam(name = "article-id") String articleId){
+        log.info("article disliked {}", articleId);
         Integer idFromHeader = JwtUtil.getIdFromHeader(request);
         String response = articleLikeService.dislikeArticle(articleId, idFromHeader);
 
@@ -43,6 +45,7 @@ public class ArticleLikeController {
     @DeleteMapping("/remove")
     public ResponseEntity<?> removeLikeDislikeFromArticle(HttpServletRequest request,
                                                           @RequestParam(name = "article-id") String articleId){
+        log.info("article like or dislike removed");
         Integer idFromHeader = JwtUtil.getIdFromHeader(request);
         String response = articleLikeService.removeLikeDislikeFromArticle(idFromHeader, articleId);
 
@@ -60,6 +63,7 @@ public class ArticleLikeController {
 
     @GetMapping("/user/likes")
     public ResponseEntity<?> getLikedArticlesForUser(HttpServletRequest request){
+        log.info("get liked articles for user");
         Integer idFromHeader = JwtUtil.getIdFromHeader(request);
         List<ArticleShortDTO> response = articleLikeService.getLikedArticlesForUser(idFromHeader);
 
