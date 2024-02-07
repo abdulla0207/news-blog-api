@@ -61,12 +61,5 @@ public class ArticleLikeController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/user/likes")
-    public ResponseEntity<?> getLikedArticlesForUser(HttpServletRequest request){
-        log.info("get liked articles for user");
-        Integer idFromHeader = JwtUtil.getIdFromHeader(request);
-        List<ArticleShortDTO> response = articleLikeService.getLikedArticlesForUser(idFromHeader);
 
-        return ResponseEntity.ok(response);
-    }
 }

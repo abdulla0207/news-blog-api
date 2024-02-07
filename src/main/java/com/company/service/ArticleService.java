@@ -41,13 +41,13 @@ public class ArticleService {
 
     private final CategoryService categoryService;
 
-    private final ArticleLikeService articleLikeService;
+    @Autowired
+    private ArticleLikeService articleLikeService;
 
     @Autowired
-    public ArticleService(ArticleRepository articleRepository, CategoryService categoryService, ArticleLikeService articleLikeService){
+    public ArticleService(ArticleRepository articleRepository, CategoryService categoryService){
         this.articleRepository = articleRepository;
         this.categoryService = categoryService;
-        this.articleLikeService = articleLikeService;
     }
     public ArticleDTO createPost(ArticleCreateDTO articleCreateDTO, int writerId) {
         try{
@@ -101,6 +101,20 @@ public class ArticleService {
         Page<ArticleEntity> articlesOrderByPublishedDate = articleRepository.findArticlesByPublishedDate(languageId, pageable);
 
         return returnPagination(articlesOrderByPublishedDate, pageable);
+    }
+    public List<ArticleShortDTO> getLikedArticlesForUser(Integer idFromHeader) {
+        List<ArticleEntity> articlesByUserAndStatus = articleRepository.findArticlesByUserAndStatus(idFromHeader, LikeStatusEnum.LIKE);
+
+        List<ArticleShortDTO> response = new ArrayList<>();
+
+        articlesByUserAndStatus.forEach(articleEntity -> {
+            ArticleShortDTO shortDTO = new ArticleShortDTO(articleEntity.getUuid(), articleEntity.getTitle(),
+                    articleEntity.getDescription(), articleEntity.getPublishedAt());
+
+            response.add(shortDTO);
+        });
+
+        return response;
     }
 
     public String deleteById(String uuid) {

@@ -28,7 +28,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/articles")
 public class ArticleController {
-    private final ArticleService articleService;
+    private ArticleService articleService;
 
     @Autowired
     public ArticleController(ArticleService articleService){
@@ -141,6 +141,14 @@ public class ArticleController {
                                                                @RequestParam("page") int page, @RequestParam("size") int size){
         log.info("Get Articles order by published date");
         Page<ArticleDTO> response = articleService.findAllArticleByPublishedDate(page, size, language);
+        return ResponseEntity.ok(response);
+    }
+    @GetMapping("/user/likes")
+    public ResponseEntity<?> getLikedArticlesForUser(HttpServletRequest request){
+        log.info("get liked articles for user");
+        Integer idFromHeader = JwtUtil.getIdFromHeader(request);
+        List<ArticleShortDTO> response = articleService.getLikedArticlesForUser(idFromHeader);
+
         return ResponseEntity.ok(response);
     }
 

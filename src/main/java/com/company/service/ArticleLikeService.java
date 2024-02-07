@@ -21,12 +21,9 @@ import java.util.Optional;
 public class ArticleLikeService {
     private final ArticleLikeRepository articleLikeRepository;
 
-    private final ArticleService articleService;
-
     @Autowired
-    public ArticleLikeService(ArticleLikeRepository articleLikeRepository, ArticleService articleService){
+    public ArticleLikeService(ArticleLikeRepository articleLikeRepository){
         this.articleLikeRepository = articleLikeRepository;
-        this.articleService = articleService;
     }
     public String likeArticle(String articleId, Integer idFromHeader) {
         Optional<ArticleLikeEntity> byArticleIdAndUserId = articleLikeRepository.findByArticleIdAndUserId(articleId, idFromHeader);
@@ -94,21 +91,6 @@ public class ArticleLikeService {
         ArticleLikeEntity entity = byArticleIdAndUserId.get();
 
         ArticleLikeDTO response = new ArticleLikeDTO(entity.getUuid(), entity.getLikeStatusEnum());
-
-        return response;
-    }
-
-    public List<ArticleShortDTO> getLikedArticlesForUser(Integer idFromHeader) {
-        List<ArticleEntity> articlesByUserAndStatus = articleService.findArticlesByUserAndStatus(idFromHeader, LikeStatusEnum.LIKE);
-
-        List<ArticleShortDTO> response = new ArrayList<>();
-
-        articlesByUserAndStatus.forEach(articleEntity -> {
-            ArticleShortDTO shortDTO = new ArticleShortDTO(articleEntity.getUuid(), articleEntity.getTitle(),
-                    articleEntity.getDescription(), articleEntity.getPublishedAt());
-
-            response.add(shortDTO);
-        });
 
         return response;
     }
