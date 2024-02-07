@@ -13,12 +13,14 @@ import com.company.util.JwtUtil;
 import com.company.util.MD5Util;
 import com.company.util.MailUtil;
 import com.company.util.TokenUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class AuthorizationService {
     private final ProfileRepository profileRepository;
@@ -36,6 +38,7 @@ public class AuthorizationService {
         Optional<ProfileEntity> byEmail = profileRepository.findByEmail(registrationDTO.email());
         Optional<ProfileEntity> byPhoneNumber = profileRepository.findByPhoneNumber(registrationDTO.phoneNumber());
         if(byEmail.isPresent() || byPhoneNumber.isPresent()){
+            log.info("User with email or phone number exist");
             throw new EmailException("Profile with this email or phone number already exist");
         }
 
@@ -84,12 +87,16 @@ public class AuthorizationService {
         Optional<ProfileEntity> getProfile = profileRepository.findByEmailAndPhoneNumberAndPassword(loginDTO.getEmail(),
                 loginDTO.getPhoneNumber(), MD5Util.encode(loginDTO.getPassword()));
 
-        if(getProfile.isEmpty())
+        if(getProfile.isEmpty()) {
+            log.info("Email, phone number or password is incorrect");
             throw new ItemNotFoundException("Email, phone number or password is incorrect");
+        }
 
         ProfileEntity profileEntity = getProfile.get();
-        if(profileEntity.getStatus().equals(ProfileStatusEnum.BLOCKED))
+        if(profileEntity.getStatus().equals(ProfileStatusEnum.BLOCKED)) {
+            log.info("Account blocked");
             throw new RuntimeException("Profile is blocked");
+        }
 
         if(profileEntity.getStatus().equals(ProfileStatusEnum.NOT_ACTIVE)){
             String token = TokenUtil.saveTokenForUser(profileEntity.getId(), tokenService);
@@ -112,18 +119,24 @@ public class AuthorizationService {
 
     public String confirmToken(String token){
         Optional<ConfirmationTokenEntity> token1 = tokenService.getToken(token);
-        if(token1.isEmpty())
+        if(token1.isEmpty()) {
+            log.warn("Token not found");
             throw new ItemNotFoundException("Token not found");
+        }
 
         ConfirmationTokenEntity tokenEntity = token1.get();
 
-        if(tokenEntity.getConfirmedAt() != null)
+        if(tokenEntity.getConfirmedAt() != null) {
+            log.info("Account already confirmed");
             throw new TokenAlreadyConfirmedException("Account already Confirmed");
+        }
 
         LocalDateTime expiresAt = tokenEntity.getExpiresAt();
 
-        if(expiresAt.isBefore(LocalDateTime.now()))
+        if(expiresAt.isBefore(LocalDateTime.now())) {
+            log.info("Token expired");
             throw new TokenNotValidException("Token Expired");
+        }
 
         tokenService.setConfirmedAt(token);
         profileRepository.activateProfileStatus(tokenEntity.getProfileEntity().getEmail());

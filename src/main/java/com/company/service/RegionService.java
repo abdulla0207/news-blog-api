@@ -7,6 +7,7 @@ import com.company.enums.LanguageEnum;
 import com.company.exception.ItemNotFoundException;
 import com.company.exception.RegionCreateException;
 import com.company.repository.RegionRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.cache.spi.Region;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class RegionService {
     private final RegionRepository regionRepository;
@@ -25,7 +27,6 @@ public class RegionService {
         this.regionRepository = regionRepository;
     }
     public RegionDTO create(RegionDTO regionDTO) {
-        checkDTO(regionDTO);
 
         RegionEntity entity = mapToEntity(regionDTO);
 
@@ -49,20 +50,13 @@ public class RegionService {
         return regionEntity;
     }
 
-    private void checkDTO(RegionDTO regionDTO) {
-        if(regionDTO.nameUz().isBlank() || regionDTO.nameUz().isEmpty())
-            throw new RegionCreateException("Name Uz should be filled");
-        if(regionDTO.nameEn().isBlank() || regionDTO.nameEn().isEmpty())
-            throw new RegionCreateException("Name En should be filled");
-        if(regionDTO.key().isBlank() || regionDTO.key().isEmpty())
-            throw new RegionCreateException("Key of the object should be filled");
-    }
-
     public RegionDTO updateById(int id, RegionDTO regionDTO) {
         Optional<RegionEntity> byId = regionRepository.findById(id);
 
-        if(byId.isEmpty())
+        if(byId.isEmpty()) {
+            log.warn("Region not found {}", id);
             throw new ItemNotFoundException("Region with this id not found");
+        }
 
         RegionEntity regionEntity = byId.get();
 
@@ -79,8 +73,10 @@ public class RegionService {
 
     public String deleteById(int id) {
         Optional<RegionEntity> byId = regionRepository.findById(id);
-        if(byId.isEmpty())
+        if(byId.isEmpty()) {
+            log.warn("Region not found {}", id);
             throw new ItemNotFoundException("Region with this id not found");
+        }
 
         regionRepository.deleteById(id);
         return "Region has been deleted";
@@ -95,6 +91,10 @@ public class RegionService {
             switch (languageEnum){
                 case "uz" -> name = regionEntity.getNameUz();
                 case "en" -> name = regionEntity.getNameEn();
+                default -> {
+                    log.warn("Wrong language");
+                    throw new IllegalArgumentException("Wrong language");
+                }
             }
             RegionByLanguageDTO region = new RegionByLanguageDTO(regionEntity.getId(), regionEntity.getKey(), name);
             responseList.add(region);

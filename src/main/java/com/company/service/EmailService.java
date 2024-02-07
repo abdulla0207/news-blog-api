@@ -3,12 +3,14 @@ package com.company.service;
 import com.company.exception.EmailException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class EmailService implements EmailSender{
 
@@ -31,6 +33,7 @@ public class EmailService implements EmailSender{
             mimeMessageHelper.setFrom("abdulla.ermatov0407@gmail.com");
             javaMailSender.send(mimeMessage);
         }catch (MessagingException e){
+            log.warn("Email not send {}", toAccount);
             throw new EmailException("Email Not Send");
         }
     }

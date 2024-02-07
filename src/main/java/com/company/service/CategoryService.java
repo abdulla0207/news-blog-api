@@ -9,6 +9,7 @@ import com.company.enums.LanguageEnum;
 import com.company.exception.CategoryCreateException;
 import com.company.exception.ItemNotFoundException;
 import com.company.repository.CategoryRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class CategoryService {
 
@@ -33,8 +35,10 @@ public class CategoryService {
     public CategoryEntity getCategoryByKey(String key) {
         Optional<CategoryEntity> categoryEntity = categoryRepository.findCategoryEntityByKey(key);
 
-        if(categoryEntity.isEmpty())
+        if(categoryEntity.isEmpty()) {
+            log.warn("Category not found {}", key);
             throw new ItemNotFoundException("Category not found");
+        }
 
         return categoryEntity.get();
     }
@@ -59,8 +63,10 @@ public class CategoryService {
         int i = categoryRepository.updateCategory(categoryDTO.nameUz(), categoryDTO.nameEn(),
                 newSlag, categoryDTO.visible(), id);
 
-        if(i <= 0)
+        if(i <= 0) {
+            log.warn("Category not found with key {}", newSlag);
             throw new ItemNotFoundException("Category not found with this keyword");
+        }
 
         return "Updated";
     }
@@ -104,8 +110,10 @@ public class CategoryService {
 
     public String deleteById(int id) {
         Optional<CategoryEntity> byId = categoryRepository.findById(id);
-        if(byId.isEmpty())
+        if(byId.isEmpty()) {
+            log.warn("Category not found with id {}", id);
             throw new ItemNotFoundException("Category with this id not found");
+        }
 
         categoryRepository.deleteById(id);
         return "Category has been deleted";
@@ -120,7 +128,10 @@ public class CategoryService {
             switch (languageEnum){
                 case "uz" -> name = categoryEntity.getNameUz();
                 case "en" -> name = categoryEntity.getNameEn();
-                default -> throw new IllegalArgumentException("Wrong language");
+                default -> {
+                    log.warn("Wrong language");
+                    throw new IllegalArgumentException("Wrong language");
+                }
             }
             response.add(new CategoryByLanguageDTO(categoryEntity.getId(), name,
                     categoryEntity.isVisible(), categoryEntity.getKey(), categoryEntity.getSlag()));

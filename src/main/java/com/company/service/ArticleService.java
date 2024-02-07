@@ -78,6 +78,7 @@ public class ArticleService {
         else if("en".equalsIgnoreCase(languageCode))
             return 2;
         else
+            log.warn("Unsupported Language code");
             throw new IllegalArgumentException("Unsupported Language Code");
     }
 
@@ -105,8 +106,10 @@ public class ArticleService {
     public String deleteById(String uuid) {
         Optional<ArticleEntity> findById = articleRepository.findById(uuid);
 
-        if(findById.isEmpty())
+        if(findById.isEmpty()) {
+            log.warn("Article does not exist {}", uuid);
             throw new ItemNotFoundException("Article with the ID not found in DB");
+        }
 
         articleRepository.deleteById(uuid);
         return "Article deleted";
@@ -116,13 +119,17 @@ public class ArticleService {
     public String updateById(String uuid, ArticleCreateDTO articleDTO, Integer currentUserId) {
         Optional<ArticleEntity> findById = articleRepository.findById(uuid);
 
-        if(findById.isEmpty())
+        if(findById.isEmpty()) {
+            log.warn("Article does not exist {}", uuid);
             throw new ItemNotFoundException("Article not found");
+        }
 
         ArticleEntity article = findById.get();
 
-        if(!article.getAuthorId().equals(currentUserId))
+        if(!article.getAuthorId().equals(currentUserId)) {
+            log.warn("Wrong user tried updating article {}", currentUserId);
             throw new AppForbiddenException("Method not allowed");
+        }
 
         article.setContent(articleDTO.content());
         article.setTitle(articleDTO.title());
@@ -142,8 +149,10 @@ public class ArticleService {
     public ArticleDTO getById(String uuid) {
         Optional<ArticleEntity> getById = articleRepository.findByUuidAndArticleStatus(uuid, ArticleStatusEnum.PUBLISHED);
 
-        if(getById.isEmpty())
+        if(getById.isEmpty()) {
+            log.warn("Article not found {}", uuid);
             throw new ItemNotFoundException("Article not FOUND");
+        }
 
         ArticleEntity article = getById.get();
 
@@ -183,8 +192,10 @@ public class ArticleService {
     public String changeStatus(String id, Integer publisherId, ArticleStatusEnum statusEnum) {
         Optional<ArticleEntity> byId = articleRepository.findById(id);
 
-        if(byId.isEmpty())
+        if(byId.isEmpty()) {
+            log.warn("Article not Found {}", id);
             throw new ItemNotFoundException("Article not found. Wrong ID");
+        }
 
         ArticleEntity articleEntity = byId.get();
 
@@ -207,8 +218,10 @@ public class ArticleService {
 
     public String updateModeratorAction(String articleId, ModeratorActionEnum moderatorAction, Integer moderatorId) {
         Optional<ArticleEntity> byId = articleRepository.findById(articleId);
-        if (byId.isEmpty())
+        if (byId.isEmpty()) {
+            log.warn("Article not found {}", articleId);
             throw new ItemNotFoundException("Article Not Found");
+        }
 
         ArticleEntity articleEntity = byId.get();
 
@@ -224,8 +237,10 @@ public class ArticleService {
         int languageId = getLanguageIdByCode(language);
         List<IArticleShortViewInfo> entities = articleRepository.findLastFiveByType(typeId, languageId);
 
-        if(entities.isEmpty())
+        if(entities.isEmpty()) {
+            log.warn("Article not found by type id {}", typeId);
             throw new ItemNotFoundException("Articles Not Found");
+        }
         List<ArticleShortDTO> response = new ArrayList<>();
         for(IArticleShortViewInfo entity : entities){
             ArticleShortDTO holder = new ArticleShortDTO(entity.getUuid(), entity.getTitle(), entity.getDescription(), entity.getPublishedDate());
@@ -309,8 +324,10 @@ public class ArticleService {
         int languageId = getLanguageIdByCode(language);
 
         Optional<ArticleEntity> articlesByIdAndLanguageId = articleRepository.findArticlesByIdAndLanguageId(uuid, languageId);
-        if(articlesByIdAndLanguageId.isEmpty())
+        if(articlesByIdAndLanguageId.isEmpty()) {
+            log.warn("Article not found by id and language id {} {}", uuid, languageId);
             throw new ItemNotFoundException("Article Not Found");
+        }
 
         ArticleEntity articleEntity = articlesByIdAndLanguageId.get();
         String regionName = "";

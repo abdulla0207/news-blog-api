@@ -3,11 +3,12 @@ package com.company.dto.authentication;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import lombok.extern.slf4j.Slf4j;
 
 public record RegistrationDTO(
-        @NotBlank
+        @NotBlank(message = "Name of the user should be filled")
         String name,
-        @NotBlank
+        @NotBlank(message = "Surname of the user must be filled")
         String surname,
         @Email(message = "The format of email is wrong")
         String email,

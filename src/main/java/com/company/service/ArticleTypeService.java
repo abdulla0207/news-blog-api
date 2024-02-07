@@ -8,6 +8,7 @@ import com.company.enums.LanguageEnum;
 import com.company.exception.ArticleTypeCreationException;
 import com.company.exception.ItemNotFoundException;
 import com.company.repository.ArticleTypeRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class ArticleTypeService {
     private final ArticleTypeRepository articleTypeRepository;
@@ -69,8 +71,10 @@ public class ArticleTypeService {
     public ArticleTypeDTO updateById(int id, ArticleTypeDTO dto) {
         Optional<ArticleTypeEntity> byId = articleTypeRepository.findById(id);
 
-        if(byId.isEmpty())
+        if(byId.isEmpty()) {
+            log.warn("Article Type not found {}", id);
             throw new ItemNotFoundException("Article Type with id " + id + " not found");
+        }
 
         ArticleTypeEntity entity = byId.get();
 
@@ -115,8 +119,10 @@ public class ArticleTypeService {
     public String deleteById(int id) {
         Optional<ArticleTypeEntity> byId = articleTypeRepository.findById(id);
 
-        if(byId.isEmpty())
+        if(byId.isEmpty()) {
+            log.warn("Article Type not found {}", id);
             throw new ItemNotFoundException("Article Type with this id not found");
+        }
 
         articleTypeRepository.deleteById(id);
 

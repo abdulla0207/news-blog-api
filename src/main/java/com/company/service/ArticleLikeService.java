@@ -7,6 +7,7 @@ import com.company.entity.ArticleLikeEntity;
 import com.company.enums.LikeStatusEnum;
 import com.company.exception.ItemNotFoundException;
 import com.company.repository.ArticleLikeRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class ArticleLikeService {
     private final ArticleLikeRepository articleLikeRepository;
@@ -68,8 +70,10 @@ public class ArticleLikeService {
 
     public String removeLikeDislikeFromArticle(Integer idFromHeader, String articleId) {
         Optional<ArticleLikeEntity> byArticleIdAndUserId = articleLikeRepository.findByArticleIdAndUserId(articleId, idFromHeader);
-        if(byArticleIdAndUserId.isEmpty())
+        if(byArticleIdAndUserId.isEmpty()) {
+            log.warn("Article is not liked or disliked for the user");
             throw new ItemNotFoundException("Article is not liked or disliked for this user");
+        }
 
         articleLikeRepository.deleteArticleLikeEntityByArticleUuidAndUserId(articleId, idFromHeader);
         ArticleLikeEntity entity = byArticleIdAndUserId.get();
@@ -82,8 +86,10 @@ public class ArticleLikeService {
     public ArticleLikeDTO hasUserLikedOrDisliked(String articleId, Integer idFromHeader) {
         Optional<ArticleLikeEntity> byArticleIdAndUserId = articleLikeRepository.findByArticleIdAndUserId(articleId, idFromHeader);
 
-        if(byArticleIdAndUserId.isEmpty())
+        if(byArticleIdAndUserId.isEmpty()) {
+            log.warn("Article not liked for the user yet {}", idFromHeader);
             throw new ItemNotFoundException("No action yet");
+        }
 
         ArticleLikeEntity entity = byArticleIdAndUserId.get();
 
@@ -109,7 +115,6 @@ public class ArticleLikeService {
 
     public int getLikesForArticles(String articleId, LikeStatusEnum likeStatusEnum) {
         int likeCount = articleLikeRepository.countLikeStatusForSpecificArticle(articleId, likeStatusEnum);
-
 
         return likeCount;
     }

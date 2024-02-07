@@ -6,9 +6,11 @@ import com.company.exception.AppForbiddenException;
 import com.company.exception.TokenNotValidException;
 import io.jsonwebtoken.*;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Date;
 
+@Slf4j
 public class JwtUtil {
 
     private static final String secretKey = "newsblogsecret";
@@ -51,6 +53,7 @@ public class JwtUtil {
             Integer userId = (Integer) request.getAttribute("id");
             return userId;
         }catch (RuntimeException e){
+            log.warn("Id of unauthorized user");
             throw new TokenNotValidException("Unauthorized");
         }
     }
@@ -69,6 +72,7 @@ public class JwtUtil {
     public static boolean checkForRole(HttpServletRequest request, ProfileRoleEnum roleEnum){
             ProfileRoleEnum adminRole = (ProfileRoleEnum) request.getAttribute("role");
             if(!adminRole.equals(roleEnum)){
+                log.warn("User Role not Allowed");
                 throw new AppForbiddenException("Method Not Allowed");
             }
 

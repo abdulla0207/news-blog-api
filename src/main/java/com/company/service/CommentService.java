@@ -13,11 +13,14 @@ import com.company.mapper.ICommentFullInfoMapper;
 import com.company.repository.CommentRepository;
 import com.company.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -25,6 +28,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+@Slf4j
 @Service
 public class CommentService {
 
@@ -53,13 +57,17 @@ public class CommentService {
     public CommentDTO updateComment(Integer userId, CommentDTO commentDTO, String commentId) {
         Optional<CommentEntity> byId = commentRepository.findById(commentId);
 
-        if(byId.isEmpty())
+        if(byId.isEmpty()) {
+            log.warn("Comment not found {}", commentId);
             throw new ItemNotFoundException("Comment not found");
+        }
 
         CommentEntity entity = byId.get();
 
-        if(!entity.getUserId().equals(userId))
+        if(!entity.getUserId().equals(userId)) {
+            log.warn("Wrong user tried to update comment {}", userId);
             throw new AppForbiddenException("Method not Allowed");
+        }
 
         entity.setUpdatedAt(LocalDateTime.now());
         entity.setContent(commentDTO.content());
@@ -72,17 +80,22 @@ public class CommentService {
         return response;
     }
 
+    @Transactional
+    @Modifying
     public String deleteById(String commentId, HttpServletRequest request) {
         Optional<CommentEntity> byId = commentRepository.findById(commentId);
         Integer commentUserId = JwtUtil.getIdFromHeader(request);
 
-        if(byId.isEmpty())
+        if(byId.isEmpty()) {
+            log.warn("Comment not found with id {}", commentId);
             throw new ItemNotFoundException("Comment Not Found");
-
+        }
         CommentEntity entity = byId.get();
 
-        if(!entity.getUserId().equals(commentUserId))
+        if(!entity.getUserId().equals(commentUserId)) {
+            log.warn("Wrong user tried to delete comment {}", commentUserId);
             throw new AppForbiddenException("Method Not Allowed");
+        }
 
         commentRepository.deleteById(commentId);
 
