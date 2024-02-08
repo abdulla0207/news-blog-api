@@ -13,17 +13,18 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 public class EmailService implements EmailSender{
-
     private final JavaMailSender javaMailSender;
+    private final ResourceMessageService resourceMessageService;
 
     @Autowired
-    public EmailService(JavaMailSender javaMailSender){
+    public EmailService(JavaMailSender javaMailSender, ResourceMessageService resourceMessageService){
         this.javaMailSender=javaMailSender;
+        this.resourceMessageService = resourceMessageService;
     }
 
     @Override
     @Async
-    public void sendMail(String toAccount, String text){
+    public void sendMail(String toAccount, String text, String lang){
         try{
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, "utf-8");
@@ -34,7 +35,7 @@ public class EmailService implements EmailSender{
             javaMailSender.send(mimeMessage);
         }catch (MessagingException e){
             log.warn("Email not send {}", toAccount);
-            throw new EmailException("Email Not Send");
+            throw new EmailException(resourceMessageService.getMessage("email.notification", lang));
         }
     }
 }

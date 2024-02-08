@@ -26,24 +26,25 @@ import java.util.Optional;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final ResourceMessageService resourceMessageService;
 
-    public CategoryService(CategoryRepository categoryRepository){
-        System.out.println("In constr" + getClass().getSimpleName());
+    public CategoryService(CategoryRepository categoryRepository, ResourceMessageService resourceMessageService){
         this.categoryRepository = categoryRepository;
+        this.resourceMessageService = resourceMessageService;
     }
 
-    public CategoryEntity getCategoryByKey(String key) {
+    public CategoryEntity getCategoryByKey(String key, String lang) {
         Optional<CategoryEntity> categoryEntity = categoryRepository.findCategoryEntityByKey(key);
 
         if(categoryEntity.isEmpty()) {
             log.warn("Category not found {}", key);
-            throw new ItemNotFoundException("Category not found");
+            throw new ItemNotFoundException(resourceMessageService.getMessage("category.not.found", lang));
         }
 
         return categoryEntity.get();
     }
 
-    public String createCategory(CategoryCreateDTO categoryDTO) {
+    public String createCategory(CategoryCreateDTO categoryDTO, String lang) {
         String[] s = categoryDTO.nameEn().toLowerCase().split(" ");
 
         String newSlag = String.join("_", s);
@@ -52,10 +53,10 @@ public class CategoryService {
         CategoryEntity entity = toEntity(categoryDTO);
         entity.setSlag(newSlag);
         categoryRepository.save(entity);
-        return "Category created";
+        return resourceMessageService.getMessage("category.create", lang);
     }
 
-    public String updateCategoryByKey(CategoryDTO categoryDTO, int id){
+    public String updateCategoryByKey(CategoryDTO categoryDTO, int id, String lang){
         String[] s = categoryDTO.nameEn().toLowerCase().split(" ");
 
         String newSlag = String.join("_", s);
@@ -65,10 +66,10 @@ public class CategoryService {
 
         if(i <= 0) {
             log.warn("Category not found with key {}", newSlag);
-            throw new ItemNotFoundException("Category not found with this keyword");
+            throw new ItemNotFoundException(resourceMessageService.getMessage("category.not.found", lang));
         }
 
-        return "Updated";
+        return resourceMessageService.getMessage("category.update", lang);
     }
 
 
@@ -108,15 +109,15 @@ public class CategoryService {
         return dto;
     }
 
-    public String deleteById(int id) {
+    public String deleteById(int id, String lang) {
         Optional<CategoryEntity> byId = categoryRepository.findById(id);
         if(byId.isEmpty()) {
             log.warn("Category not found with id {}", id);
-            throw new ItemNotFoundException("Category with this id not found");
+            throw new ItemNotFoundException(resourceMessageService.getMessage("category.not.found", lang));
         }
 
         categoryRepository.deleteById(id);
-        return "Category has been deleted";
+        return resourceMessageService.getMessage("category.delete", lang);
     }
 
     public List<CategoryByLanguageDTO> getByLanguage(String languageEnum) {

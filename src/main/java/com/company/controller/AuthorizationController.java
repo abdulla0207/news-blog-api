@@ -27,25 +27,25 @@ public class AuthorizationController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> registration(@Valid @RequestBody RegistrationDTO registrationDTO){
+    public ResponseEntity<?> registration(@Valid @RequestBody RegistrationDTO registrationDTO, @RequestHeader("Accept-Language") String lang){
         log.info("Registration {}", registrationDTO);
-        String response = authorizationService.signup(registrationDTO);
+        String response = authorizationService.signup(registrationDTO, lang);
 
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginDTO loginDTO){
+    public ResponseEntity<?> login(@Valid @RequestBody LoginDTO loginDTO, @RequestHeader("Accept-Language") String lang){
         log.info("Log in {}", loginDTO);
-        AuthResponseDTO responseDTO = authorizationService.login(loginDTO);
+        AuthResponseDTO responseDTO = authorizationService.login(loginDTO, lang);
 
         return ResponseEntity.ok(responseDTO);
     }
 
     @GetMapping("/confirm")
-    public ResponseEntity<String> confirm(@RequestParam("token") String token){
+    public ResponseEntity<String> confirm(@RequestParam("token") String token, @RequestHeader("Accept-Language") String lang){
         log.info("confirmation token");
-        String response = authorizationService.confirmToken(token);
+        String response = authorizationService.confirmToken(token, lang);
 
         return ResponseEntity.ok(response);
     }

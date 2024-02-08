@@ -33,11 +33,11 @@ public class ProfileController {
     //and the body object that should be created
     // This method decodes the headerToken to JwtDTO object and sends to create service
     @PostMapping("/")
-    public ResponseEntity<?> create(HttpServletRequest request, @RequestBody ProfileDTO profileDTO){
+    public ResponseEntity<?> create(HttpServletRequest request, @RequestBody ProfileDTO profileDTO, @RequestHeader("Accept-Language") String lang){
         log.info("create user {}", profileDTO);
         JwtUtil.checkForRole(request, ProfileRoleEnum.ADMIN);
         int id = JwtUtil.getIdFromHeader(request);
-        ProfileDTO responseDTO = profileService.create(profileDTO, id);
+        ProfileDTO responseDTO = profileService.create(profileDTO, id, lang);
 
         return ResponseEntity.ok(responseDTO);
     }
@@ -46,10 +46,10 @@ public class ProfileController {
     // id is received from URI and headerToken from the field of Authorization
     // Method decodes the token and calls deleteById method that deletes profile by id
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteById(@PathVariable int id, HttpServletRequest request){
+    public ResponseEntity<?> deleteById(@PathVariable int id, HttpServletRequest request, @RequestHeader("Accept-Language") String lang){
         log.info("remove user {}", id);
         JwtUtil.checkForRole(request, ProfileRoleEnum.ADMIN);
-        String s = profileService.deleteById(id);
+        String s = profileService.deleteById(id, lang);
 
         return ResponseEntity.ok(s);
     }
@@ -73,11 +73,12 @@ public class ProfileController {
     // Method gets profile object, id and headerToken
     // Decodes headerToken, and sends all properties to service method to Update specific profile
     @PutMapping("/admin/{id}")
-    public ResponseEntity<?> updateByAdmin(@RequestBody ProfileDTO profileDTO, @PathVariable int id, HttpServletRequest request){
+    public ResponseEntity<?> updateByAdmin(@RequestBody ProfileDTO profileDTO, @PathVariable int id, HttpServletRequest request,
+                                           @RequestHeader("Accept-Language") String lang){
         log.info("update user for admin {}", id);
         JwtUtil.checkForRole(request, ProfileRoleEnum.ADMIN);
 
-        String response = profileService.update(profileDTO, id);
+        String response = profileService.update(profileDTO, id, lang);
 
         return ResponseEntity.ok(response);
     }
@@ -86,11 +87,12 @@ public class ProfileController {
     // Method gets the update version of object and headerToken
     // It decodes the token and calls updateByProfile method from service
     @PutMapping("/edit")
-    public ResponseEntity<?> updateByProfile(@RequestBody ProfileDTO profileDTO, HttpServletRequest request){
+    public ResponseEntity<?> updateByProfile(@RequestBody ProfileDTO profileDTO, HttpServletRequest request,
+                                             @RequestHeader("Accept-Language") String lang){
         log.info("update user for user {}", profileDTO);
         int tokenId = JwtUtil.getIdFromHeader(request);
 
-        String response  = profileService.updateByProfile(profileDTO, tokenId);
+        String response  = profileService.updateByProfile(profileDTO, tokenId, lang);
 
         return ResponseEntity.ok(response);
     }

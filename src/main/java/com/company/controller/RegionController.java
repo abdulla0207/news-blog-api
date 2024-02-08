@@ -37,11 +37,12 @@ public class RegionController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<RegionDTO> updateById(@PathVariable(name = "id") int id,
-                                                HttpServletRequest request, @RequestBody RegionDTO regionDTO){
+                                                HttpServletRequest request, @RequestBody RegionDTO regionDTO,
+                                                @RequestHeader("Accept-Language") String lang){
         log.info("update region {}", regionDTO);
         JwtUtil.checkForRole(request, ProfileRoleEnum.ADMIN);
 
-        RegionDTO response = regionService.updateById(id, regionDTO);
+        RegionDTO response = regionService.updateById(id, regionDTO, lang);
 
         return ResponseEntity.ok(response);
     }

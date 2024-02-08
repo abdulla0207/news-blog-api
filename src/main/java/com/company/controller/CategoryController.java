@@ -36,9 +36,10 @@ public class CategoryController {
      * It sends to service method and returns a response entity
      **/
     @PostMapping("/")
-    public ResponseEntity<?> createCategory(@Valid @RequestBody CategoryCreateDTO categoryDTO, HttpServletRequest request){
+    public ResponseEntity<?> createCategory(@Valid @RequestBody CategoryCreateDTO categoryDTO, HttpServletRequest request,
+                                            @RequestHeader("Accept-Language") String lang){
         JwtUtil.checkForRole(request, ProfileRoleEnum.ADMIN);
-        String response = categoryService.createCategory(categoryDTO);
+        String response = categoryService.createCategory(categoryDTO, lang);
 
         return ResponseEntity.ok(response);
     }
@@ -60,20 +61,21 @@ public class CategoryController {
      * It receives key of specific category and a new category object with updated fields
      */
     @PutMapping("/")
-    public ResponseEntity<?> updateCategoryById(@RequestParam("id") int id, @RequestBody CategoryDTO categoryDTO, HttpServletRequest request){
+    public ResponseEntity<?> updateCategoryById(@RequestParam("id") int id, @RequestBody CategoryDTO categoryDTO, HttpServletRequest request,
+                                                @RequestHeader("Accept-Language") String lang){
         log.info("update category {}", id);
         JwtUtil.checkForRole(request, ProfileRoleEnum.ADMIN);
-        String response = categoryService.updateCategoryByKey(categoryDTO, id);
+        String response = categoryService.updateCategoryByKey(categoryDTO, id, lang);
 
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteById(@PathVariable(name = "id") int id, HttpServletRequest request){
+    public ResponseEntity<String> deleteById(@PathVariable(name = "id") int id, HttpServletRequest request, @RequestHeader("Accept-Language") String lang){
         log.info("delete category {}", id);
         JwtUtil.checkForRole(request, ProfileRoleEnum.ADMIN);
 
-        String response = categoryService.deleteById(id);
+        String response = categoryService.deleteById(id, lang);
 
         return ResponseEntity.ok(response);
     }

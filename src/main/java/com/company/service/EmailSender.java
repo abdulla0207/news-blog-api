@@ -2,5 +2,5 @@ package com.company.service;
 
 public interface EmailSender {
 
-    void sendMail(String to, String text);
+    void sendMail(String to, String text, String lang);
 }

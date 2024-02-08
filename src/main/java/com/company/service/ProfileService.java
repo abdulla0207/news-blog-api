@@ -28,23 +28,24 @@ import java.util.Optional;
 @Service
 public class ProfileService {
     private final ProfileRepository profileRepository;
+    private final ResourceMessageService resourceMessageService;
 
     @Autowired
-    public ProfileService(ProfileRepository profileRepository) {
+    public ProfileService(ProfileRepository profileRepository, ResourceMessageService resourceMessageService) {
         this.profileRepository = profileRepository;
+        this.resourceMessageService = resourceMessageService;
     }
 
-    // TODO: 4/14/2023 Make this method to be accessible only by admins
-    public ProfileDTO create(ProfileDTO profileDTO, int adminId) {
+    public ProfileDTO create(ProfileDTO profileDTO, int adminId, String lang) {
         Optional<ProfileEntity> byEmail = profileRepository.findByEmail(profileDTO.email());
         if (byEmail.isPresent()) {
             log.warn("User with email already exists {}", profileDTO.email());
-            throw new ProfileCreateException("User with this email already exists");
+            throw new ProfileCreateException(resourceMessageService.getMessage("user.email.exist", lang));
         }
         Optional<ProfileEntity> byPhoneNumber = profileRepository.findByPhoneNumber(profileDTO.phoneNumber());
         if (byPhoneNumber.isPresent()) {
             log.warn("User with phone number already exists {}", profileDTO.phoneNumber());
-            throw new ProfileCreateException("User with this phone number already exists");
+            throw new ProfileCreateException(resourceMessageService.getMessage("user.phone.exist", lang));
         }
         ProfileEntity entity = toEntity(profileDTO);
         entity.setParentId(adminId);
@@ -108,15 +109,15 @@ public class ProfileService {
         return profileEntity;
     }
 
-    public String deleteById(int id) {
+    public String deleteById(int id, String lang) {
         Optional<ProfileEntity> byId = profileRepository.findById(id);
 
         if (byId.isEmpty()) {
             log.warn("Profile not found {}", id);
-            throw new ItemNotFoundException("Profile with id " + id + " not found");
+            throw new ItemNotFoundException(resourceMessageService.getMessage("user.not.found", lang));
         }
         profileRepository.deleteById(id);
-        return "Profile deleted";
+        return resourceMessageService.getMessage("user.deleted", lang);
     }
 
     private ProfileEntity getById(int id) {
@@ -124,25 +125,25 @@ public class ProfileService {
         return byId.orElse(null);
     }
 
-    public String update(ProfileDTO profileDTO, int id) {
+    public String update(ProfileDTO profileDTO, int id, String lang) {
         int b = profileRepository.updateByAdminByProfileId(profileDTO.name(), profileDTO.surname(), profileDTO.roleEnum(), profileDTO.statusEnum(), id);
 
         if (b <= 0) {
             log.warn("Profile not updated");
-            throw new RuntimeException("Not updated");
+            throw new RuntimeException(resourceMessageService.getMessage("user.not.updated", lang));
         }
-        return "Profile Updated";
+        return resourceMessageService.getMessage("user.updated", lang);
     }
 
-    public String updateByProfile(ProfileDTO profileDTO, int tokenId) {
+    public String updateByProfile(ProfileDTO profileDTO, int tokenId, String lang) {
 
         int b = profileRepository.updateByAll(profileDTO.name(), profileDTO.surname(), tokenId);
 
         if(b <=0) {
             log.warn("Profile not updated");
-            throw new RuntimeException("User not updated");
+            throw new RuntimeException(resourceMessageService.getMessage("user.not.updated", lang));
         }
 
-        return "Profile Updated";
+        return resourceMessageService.getMessage("user.updated", lang);
     }
 }

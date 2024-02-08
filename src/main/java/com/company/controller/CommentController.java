@@ -47,20 +47,22 @@ public class CommentController {
     }
 
     @PutMapping("/user/update/{commentId}")
-    public ResponseEntity<CommentDTO> updateComment(HttpServletRequest request, @Valid @RequestBody CommentDTO commentDTO, @PathVariable(name = "commentId") String commentId){
+    public ResponseEntity<CommentDTO> updateComment(HttpServletRequest request, @Valid @RequestBody CommentDTO commentDTO, @PathVariable(name = "commentId") String commentId,
+                                                    @RequestHeader("Accept-Language") String lang){
         log.info("Update comment content {}", commentDTO);
         Integer userId = JwtUtil.getIdFromHeader(request);
 
-        CommentDTO response = commentService.updateComment(userId, commentDTO, commentId);
+        CommentDTO response = commentService.updateComment(userId, commentDTO, commentId, lang);
 
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/user/delete/{commentId}")
     public ResponseEntity<String> deleteById(HttpServletRequest request,
-                                        @PathVariable(name = "commentId") String commentId){
+                                        @PathVariable(name = "commentId") String commentId,
+                                             @RequestHeader("Accept-Language") String lang){
         log.info("delete comment {}", commentId);
-        String response = commentService.deleteById(commentId, request);
+        String response = commentService.deleteById(commentId, request, lang);
 
         return ResponseEntity.ok(response);
     }

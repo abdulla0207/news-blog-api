@@ -20,29 +20,32 @@ public class CommentLikeController {
 
     @PostMapping("/")
     public ResponseEntity<?> likeComment(HttpServletRequest request,
-                                         @RequestParam(name = "comment-id") String commentId){
+                                         @RequestParam(name = "comment-id") String commentId,
+                                         @RequestHeader("Accept-Language") String lang){
         log.info("create like for comment {}", commentId);
         Integer idFromHeader = JwtUtil.getIdFromHeader(request);
-        String response = commentLikeService.likeComment(commentId, idFromHeader);
+        String response = commentLikeService.likeComment(commentId, idFromHeader, lang);
 
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/dislike")
-    public ResponseEntity<?> dislikeComment(HttpServletRequest request, @RequestParam(name = "comment-id") String commentId){
+    public ResponseEntity<?> dislikeComment(HttpServletRequest request, @RequestParam(name = "comment-id") String commentId,
+                                            @RequestHeader("Accept-Language") String lang){
         log.info("create dislike for comment {}", commentId);
         Integer idFromHeader = JwtUtil.getIdFromHeader(request);
-        String response = commentLikeService.dislikeComment(commentId, idFromHeader);
+        String response = commentLikeService.dislikeComment(commentId, idFromHeader, lang);
 
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/remove")
     public ResponseEntity<?> removeLikeDislikeFromComment(HttpServletRequest request,
-                                                          @RequestParam(name = "comment-id") String commentId){
+                                                          @RequestParam(name = "comment-id") String commentId,
+                                                          @RequestHeader("Accept-Language") String lang){
         log.info("remove like or dislike {}", commentId);
         Integer idFromHeader = JwtUtil.getIdFromHeader(request);
-        String response = commentLikeService.removeLikeDislikeFromComment(idFromHeader, commentId);
+        String response = commentLikeService.removeLikeDislikeFromComment(idFromHeader, commentId, lang);
 
         return ResponseEntity.ok(response);
     }

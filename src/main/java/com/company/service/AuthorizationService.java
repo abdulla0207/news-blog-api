@@ -26,24 +26,23 @@ public class AuthorizationService {
     private final ProfileRepository profileRepository;
     private final EmailService emailService;
     private final ConfirmationTokenService tokenService;
+    private final ResourceMessageService resourceMessageService;
 
     @Autowired
     public AuthorizationService(ProfileRepository profileRepository, EmailService emailService,
-                                ConfirmationTokenService tokenService){
+                                ConfirmationTokenService tokenService, ResourceMessageService resourceMessageService){
         this.profileRepository = profileRepository;
         this.emailService = emailService;
         this.tokenService =tokenService;
+        this.resourceMessageService = resourceMessageService;
     }
-    public String signup(RegistrationDTO registrationDTO) {
+    public String signup(RegistrationDTO registrationDTO, String lang) {
         Optional<ProfileEntity> byEmail = profileRepository.findByEmail(registrationDTO.email());
         Optional<ProfileEntity> byPhoneNumber = profileRepository.findByPhoneNumber(registrationDTO.phoneNumber());
         if(byEmail.isPresent() || byPhoneNumber.isPresent()){
             log.info("User with email or phone number exist");
-            throw new EmailException("Profile with this email or phone number already exist");
+            throw new EmailException(resourceMessageService.getMessage("user.email.phone.exist", lang));
         }
-
-        //Validating the object that came from user side
-        checkRegistrationDTO(registrationDTO);
 
         //Creating an entity object by setting values from user side
         ProfileEntity profileEntity = new ProfileEntity();
@@ -65,44 +64,30 @@ public class AuthorizationService {
         // Sending verification mail to users email.
         String message = MailUtil.mailMessage(registrationDTO.name(), registrationDTO.surname(), token);
 
-        emailService.sendMail(registrationDTO.email(), message);
+        emailService.sendMail(registrationDTO.email(), message, lang);
         return token;
     }
 
-
-
-    private void checkRegistrationDTO(RegistrationDTO registrationDTO){
-        if(registrationDTO.name().isEmpty() || registrationDTO.name().isBlank())
-            throw new ProfileCreateException("Name is empty. Please indicate your name");
-        if(registrationDTO.surname().isEmpty() || registrationDTO.surname().isBlank())
-            throw new ProfileCreateException("Surname is empty. Please indicate your surname");
-        if(!registrationDTO.password().matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$"))
-            throw new ProfileCreateException("Password should have at least one number, one lowercase or uppercase character" +
-                    " and the length should be at least 8 letters");
-        if(!registrationDTO.phoneNumber().matches("[+]998[0-9]{9}"))
-            throw new ProfileCreateException("Phone number should be in the following format: +998 xx xxx-xx-xx");
-    }
-
-    public AuthResponseDTO login(LoginDTO loginDTO) {
+    public AuthResponseDTO login(LoginDTO loginDTO, String lang) {
         Optional<ProfileEntity> getProfile = profileRepository.findByEmailAndPhoneNumberAndPassword(loginDTO.getEmail(),
                 loginDTO.getPhoneNumber(), MD5Util.encode(loginDTO.getPassword()));
 
         if(getProfile.isEmpty()) {
             log.info("Email, phone number or password is incorrect");
-            throw new ItemNotFoundException("Email, phone number or password is incorrect");
+            throw new ItemNotFoundException(resourceMessageService.getMessage("user.login.field.incorrect", lang));
         }
 
         ProfileEntity profileEntity = getProfile.get();
         if(profileEntity.getStatus().equals(ProfileStatusEnum.BLOCKED)) {
             log.info("Account blocked");
-            throw new RuntimeException("Profile is blocked");
+            throw new RuntimeException(resourceMessageService.getMessage("user.blocked", lang));
         }
 
         if(profileEntity.getStatus().equals(ProfileStatusEnum.NOT_ACTIVE)){
             String token = TokenUtil.saveTokenForUser(profileEntity.getId(), tokenService);
             String message = MailUtil.mailMessage(profileEntity.getName(), profileEntity.getSurname(), token);
 
-            emailService.sendMail(profileEntity.getEmail(), message);
+            emailService.sendMail(profileEntity.getEmail(), message, lang);
             AuthResponseDTO responseDTO = new AuthResponseDTO();
             responseDTO.setResendVerification(true);
             return responseDTO;
@@ -117,30 +102,30 @@ public class AuthorizationService {
         return responseDTO;
     }
 
-    public String confirmToken(String token){
+    public String confirmToken(String token, String lang){
         Optional<ConfirmationTokenEntity> token1 = tokenService.getToken(token);
         if(token1.isEmpty()) {
             log.warn("Token not found");
-            throw new ItemNotFoundException("Token not found");
+            throw new ItemNotFoundException(resourceMessageService.getMessage("token.not.found", lang));
         }
 
         ConfirmationTokenEntity tokenEntity = token1.get();
 
         if(tokenEntity.getConfirmedAt() != null) {
             log.info("Account already confirmed");
-            throw new TokenAlreadyConfirmedException("Account already Confirmed");
+            throw new TokenAlreadyConfirmedException(resourceMessageService.getMessage("account.confirm", lang));
         }
 
         LocalDateTime expiresAt = tokenEntity.getExpiresAt();
 
         if(expiresAt.isBefore(LocalDateTime.now())) {
             log.info("Token expired");
-            throw new TokenNotValidException("Token Expired");
+            throw new TokenNotValidException(resourceMessageService.getMessage("token.expire", lang));
         }
 
         tokenService.setConfirmedAt(token);
         profileRepository.activateProfileStatus(tokenEntity.getProfileEntity().getEmail());
 
-        return "Confirmed";
+        return resourceMessageService.getMessage("confirm", lang);
     }
 }

@@ -33,10 +33,12 @@ import java.util.stream.Stream;
 public class CommentService {
 
     private final CommentRepository commentRepository;
+    private final ResourceMessageService resourceMessageService;
 
     @Autowired
-    public CommentService(CommentRepository commentRepository){
+    public CommentService(CommentRepository commentRepository, ResourceMessageService resourceMessageService){
         this.commentRepository = commentRepository;
+        this.resourceMessageService = resourceMessageService;
     }
 
     public CommentDTO createComment(Integer idFromHeader, String articleId, CommentDTO commentDTO) {
@@ -54,19 +56,19 @@ public class CommentService {
     }
 
 
-    public CommentDTO updateComment(Integer userId, CommentDTO commentDTO, String commentId) {
+    public CommentDTO updateComment(Integer userId, CommentDTO commentDTO, String commentId, String lang) {
         Optional<CommentEntity> byId = commentRepository.findById(commentId);
 
         if(byId.isEmpty()) {
             log.warn("Comment not found {}", commentId);
-            throw new ItemNotFoundException("Comment not found");
+            throw new ItemNotFoundException(resourceMessageService.getMessage("comment.not.found", lang));
         }
 
         CommentEntity entity = byId.get();
 
         if(!entity.getUserId().equals(userId)) {
             log.warn("Wrong user tried to update comment {}", userId);
-            throw new AppForbiddenException("Method not Allowed");
+            throw new AppForbiddenException(resourceMessageService.getMessage("method.not.allowed", lang));
         }
 
         entity.setUpdatedAt(LocalDateTime.now());
@@ -82,24 +84,24 @@ public class CommentService {
 
     @Transactional
     @Modifying
-    public String deleteById(String commentId, HttpServletRequest request) {
+    public String deleteById(String commentId, HttpServletRequest request, String lang) {
         Optional<CommentEntity> byId = commentRepository.findById(commentId);
         Integer commentUserId = JwtUtil.getIdFromHeader(request);
 
         if(byId.isEmpty()) {
             log.warn("Comment not found with id {}", commentId);
-            throw new ItemNotFoundException("Comment Not Found");
+            throw new ItemNotFoundException(resourceMessageService.getMessage("comment.not.found", lang));
         }
         CommentEntity entity = byId.get();
 
         if(!entity.getUserId().equals(commentUserId)) {
             log.warn("Wrong user tried to delete comment {}", commentUserId);
-            throw new AppForbiddenException("Method Not Allowed");
+            throw new AppForbiddenException(resourceMessageService.getMessage("method.not.allowed", lang));
         }
 
         commentRepository.deleteById(commentId);
 
-        return "Comment Deleted";
+        return resourceMessageService.getMessage("comment.deleted", lang);
     }
 
     public Page<CommentFullDTO> getCommentsForArticle(String articleId, int page, int size) {

@@ -21,10 +21,12 @@ import java.util.Optional;
 @Service
 public class RegionService {
     private final RegionRepository regionRepository;
+    private final ResourceMessageService resourceMessageService;
 
     @Autowired
-    public RegionService(RegionRepository regionRepository){
+    public RegionService(RegionRepository regionRepository, ResourceMessageService resourceMessageService){
         this.regionRepository = regionRepository;
+        this.resourceMessageService = resourceMessageService;
     }
     public RegionDTO create(RegionDTO regionDTO) {
 
@@ -50,12 +52,12 @@ public class RegionService {
         return regionEntity;
     }
 
-    public RegionDTO updateById(int id, RegionDTO regionDTO) {
+    public RegionDTO updateById(int id, RegionDTO regionDTO, String lang) {
         Optional<RegionEntity> byId = regionRepository.findById(id);
 
         if(byId.isEmpty()) {
             log.warn("Region not found {}", id);
-            throw new ItemNotFoundException("Region with this id not found");
+            throw new ItemNotFoundException(resourceMessageService.getMessage("region.not.found", lang));
         }
 
         RegionEntity regionEntity = byId.get();
@@ -71,15 +73,15 @@ public class RegionService {
         return regionDTO;
     }
 
-    public String deleteById(int id) {
+    public String deleteById(int id, String lang) {
         Optional<RegionEntity> byId = regionRepository.findById(id);
         if(byId.isEmpty()) {
             log.warn("Region not found {}", id);
-            throw new ItemNotFoundException("Region with this id not found");
+            throw new ItemNotFoundException(resourceMessageService.getMessage("region.not.found", lang));
         }
 
         regionRepository.deleteById(id);
-        return "Region has been deleted";
+        return resourceMessageService.getMessage("region.deleted", lang);
     }
 
     public List<RegionByLanguageDTO> getListByLanguage(String languageEnum) {

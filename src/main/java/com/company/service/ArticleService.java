@@ -196,7 +196,7 @@ public class ArticleService {
 
     public Page<ArticleDTO> getArticlesByCategory(String key, int page, int size, String language) {
         int languageId = getLanguageIdByCode(language);
-        CategoryEntity category = categoryService.getCategoryByKey(key);
+        CategoryEntity category = categoryService.getCategoryByKey(key, language);
 
         PageRequest pageable = PageRequest.of(page, size);
 
