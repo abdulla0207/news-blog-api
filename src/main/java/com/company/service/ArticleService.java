@@ -44,12 +44,15 @@ public class ArticleService {
     @Autowired
     private ArticleLikeService articleLikeService;
 
+    private final ResourceMessageService resourceMessageService;
+
     @Autowired
-    public ArticleService(ArticleRepository articleRepository, CategoryService categoryService){
+    public ArticleService(ArticleRepository articleRepository, CategoryService categoryService, ResourceMessageService resourceMessageService){
         this.articleRepository = articleRepository;
         this.categoryService = categoryService;
+        this.resourceMessageService = resourceMessageService;
     }
-    public ArticleDTO createPost(ArticleCreateDTO articleCreateDTO, int writerId) {
+    public ArticleDTO createPost(ArticleCreateDTO articleCreateDTO, int writerId, String lang) {
         try{
             ArticleEntity article = toEntity(articleCreateDTO);
             article.setAuthorId(writerId);
@@ -59,7 +62,7 @@ public class ArticleService {
             return resDTO;
         }catch (Exception e){
             log.error("Error creating article in service: {}", e.getMessage());
-            throw new ServiceException("Error creating article in service");
+            throw new ServiceException(resourceMessageService.getMessage("article.create", lang));
         }
 
     }
@@ -117,32 +120,32 @@ public class ArticleService {
         return response;
     }
 
-    public String deleteById(String uuid) {
+    public String deleteById(String uuid, String lang) {
         Optional<ArticleEntity> findById = articleRepository.findById(uuid);
 
         if(findById.isEmpty()) {
             log.warn("Article does not exist {}", uuid);
-            throw new ItemNotFoundException("Article with the ID not found in DB");
+            throw new ItemNotFoundException(resourceMessageService.getMessage("article.not.found", lang));
         }
 
         articleRepository.deleteById(uuid);
-        return "Article deleted";
+        return resourceMessageService.getMessage("article.deleted", lang);
     }
 
     @Transactional
-    public String updateById(String uuid, ArticleCreateDTO articleDTO, Integer currentUserId) {
+    public String updateById(String uuid, ArticleCreateDTO articleDTO, Integer currentUserId, String lang) {
         Optional<ArticleEntity> findById = articleRepository.findById(uuid);
 
         if(findById.isEmpty()) {
             log.warn("Article does not exist {}", uuid);
-            throw new ItemNotFoundException("Article not found");
+            throw new ItemNotFoundException(resourceMessageService.getMessage("article.not.found", lang));
         }
 
         ArticleEntity article = findById.get();
 
         if(!article.getAuthorId().equals(currentUserId)) {
             log.warn("Wrong user tried updating article {}", currentUserId);
-            throw new AppForbiddenException("Method not allowed");
+            throw new AppForbiddenException(resourceMessageService.getMessage("method.not.allowed", lang));
         }
 
         article.setContent(articleDTO.content());
@@ -157,15 +160,15 @@ public class ArticleService {
 
         articleRepository.save(article);
 
-        return "Article Updated";
+        return resourceMessageService.getMessage("article.update", lang);
     }
 
-    public ArticleDTO getById(String uuid) {
+    public ArticleDTO getById(String uuid, String lang) {
         Optional<ArticleEntity> getById = articleRepository.findByUuidAndArticleStatus(uuid, ArticleStatusEnum.PUBLISHED);
 
         if(getById.isEmpty()) {
             log.warn("Article not found {}", uuid);
-            throw new ItemNotFoundException("Article not FOUND");
+            throw new ItemNotFoundException(resourceMessageService.getMessage("article.not.found", lang));
         }
 
         ArticleEntity article = getById.get();
@@ -203,12 +206,12 @@ public class ArticleService {
     }
 
 
-    public String changeStatus(String id, Integer publisherId, ArticleStatusEnum statusEnum) {
+    public String changeStatus(String id, Integer publisherId, ArticleStatusEnum statusEnum, String lang) {
         Optional<ArticleEntity> byId = articleRepository.findById(id);
 
         if(byId.isEmpty()) {
             log.warn("Article not Found {}", id);
-            throw new ItemNotFoundException("Article not found. Wrong ID");
+            throw new ItemNotFoundException(resourceMessageService.getMessage("article.not.found", lang));
         }
 
         ArticleEntity articleEntity = byId.get();
@@ -219,7 +222,7 @@ public class ArticleService {
 
         articleRepository.save(articleEntity);
 
-        return "Article Published";
+        return resourceMessageService.getMessage("article.publish", lang);
     }
 
     public Page<ArticleDTO> getArticleForReview(int page, int size) {
@@ -230,11 +233,11 @@ public class ArticleService {
         return returnPagination(articlesByTitle, of);
     }
 
-    public String updateModeratorAction(String articleId, ModeratorActionEnum moderatorAction, Integer moderatorId) {
+    public String updateModeratorAction(String articleId, ModeratorActionEnum moderatorAction, Integer moderatorId, String lang) {
         Optional<ArticleEntity> byId = articleRepository.findById(articleId);
         if (byId.isEmpty()) {
             log.warn("Article not found {}", articleId);
-            throw new ItemNotFoundException("Article Not Found");
+            throw new ItemNotFoundException(resourceMessageService.getMessage("article.not.found", lang));
         }
 
         ArticleEntity articleEntity = byId.get();
@@ -244,7 +247,7 @@ public class ArticleService {
 
         articleRepository.save(articleEntity);
 
-        return "Article Updated";
+        return resourceMessageService.getMessage("article.update", lang);
     }
 
     public List<ArticleShortDTO> getLastFiveByType(int typeId, String language){
@@ -253,7 +256,7 @@ public class ArticleService {
 
         if(entities.isEmpty()) {
             log.warn("Article not found by type id {}", typeId);
-            throw new ItemNotFoundException("Articles Not Found");
+            throw new ItemNotFoundException(resourceMessageService.getMessage("article.not.found", language));
         }
         List<ArticleShortDTO> response = new ArrayList<>();
         for(IArticleShortViewInfo entity : entities){
@@ -340,7 +343,7 @@ public class ArticleService {
         Optional<ArticleEntity> articlesByIdAndLanguageId = articleRepository.findArticlesByIdAndLanguageId(uuid, languageId);
         if(articlesByIdAndLanguageId.isEmpty()) {
             log.warn("Article not found by id and language id {} {}", uuid, languageId);
-            throw new ItemNotFoundException("Article Not Found");
+            throw new ItemNotFoundException(resourceMessageService.getMessage("article.not.found", language));
         }
 
         ArticleEntity articleEntity = articlesByIdAndLanguageId.get();

@@ -73,7 +73,7 @@ public class JwtUtil {
             ProfileRoleEnum adminRole = (ProfileRoleEnum) request.getAttribute("role");
             if(!adminRole.equals(roleEnum)){
                 log.warn("User Role not Allowed");
-                throw new AppForbiddenException("Method Not Allowed");
+                throw new AppForbiddenException("Method not allowed.");
             }
 
             return true;

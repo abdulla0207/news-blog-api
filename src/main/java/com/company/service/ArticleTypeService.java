@@ -25,10 +25,12 @@ import java.util.Optional;
 @Service
 public class ArticleTypeService {
     private final ArticleTypeRepository articleTypeRepository;
+    private final ResourceMessageService resourceMessageService;
 
     @Autowired
-    public ArticleTypeService(ArticleTypeRepository articleTypeRepository){
+    public ArticleTypeService(ArticleTypeRepository articleTypeRepository, ResourceMessageService resourceMessageService){
         this.articleTypeRepository = articleTypeRepository;
+        this.resourceMessageService = resourceMessageService;
     }
 
     public ArticleTypeDTO create(ArticleTypeCreateDTO articleTypeDTO) {
@@ -68,12 +70,12 @@ public class ArticleTypeService {
 
     }
 
-    public ArticleTypeDTO updateById(int id, ArticleTypeDTO dto) {
+    public ArticleTypeDTO updateById(int id, ArticleTypeDTO dto, String lang) {
         Optional<ArticleTypeEntity> byId = articleTypeRepository.findById(id);
 
         if(byId.isEmpty()) {
             log.warn("Article Type not found {}", id);
-            throw new ItemNotFoundException("Article Type with id " + id + " not found");
+            throw new ItemNotFoundException(resourceMessageService.getMessage("article.type.not.found", lang));
         }
 
         ArticleTypeEntity entity = byId.get();
@@ -116,17 +118,17 @@ public class ArticleTypeService {
         return dtos;
     }
 
-    public String deleteById(int id) {
+    public String deleteById(int id, String lang) {
         Optional<ArticleTypeEntity> byId = articleTypeRepository.findById(id);
 
         if(byId.isEmpty()) {
             log.warn("Article Type not found {}", id);
-            throw new ItemNotFoundException("Article Type with this id not found");
+            throw new ItemNotFoundException(resourceMessageService.getMessage("article.type.not.found", lang));
         }
 
         articleTypeRepository.deleteById(id);
 
-        return "Article Type with id " + id + " has been deleted";
+        return resourceMessageService.getMessage("article.type.deleted", lang);
     }
 
     public List<ArticleTypeByLanguageDTO> getListByLanguage(LanguageEnum languageEnum) {

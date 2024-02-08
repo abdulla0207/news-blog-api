@@ -20,12 +20,14 @@ import java.util.Optional;
 @Service
 public class ArticleLikeService {
     private final ArticleLikeRepository articleLikeRepository;
+    private final ResourceMessageService resourceMessageService;
 
     @Autowired
-    public ArticleLikeService(ArticleLikeRepository articleLikeRepository){
+    public ArticleLikeService(ArticleLikeRepository articleLikeRepository, ResourceMessageService resourceMessageService){
         this.articleLikeRepository = articleLikeRepository;
+        this.resourceMessageService = resourceMessageService;
     }
-    public String likeArticle(String articleId, Integer idFromHeader) {
+    public String likeArticle(String articleId, Integer idFromHeader, String lang) {
         Optional<ArticleLikeEntity> byArticleIdAndUserId = articleLikeRepository.findByArticleIdAndUserId(articleId, idFromHeader);
         if(byArticleIdAndUserId.isEmpty()){
             ArticleLikeEntity entity = new ArticleLikeEntity();
@@ -35,17 +37,17 @@ public class ArticleLikeService {
             entity.setLikeStatusEnum(LikeStatusEnum.LIKE);
             entity.setCreatedAt(LocalDateTime.now());
             articleLikeRepository.save(entity);
-            return "Article liked";
+            return resourceMessageService.getMessage("article.like", lang);
         }
 
         ArticleLikeEntity entity = byArticleIdAndUserId.get();
         if(entity.getLikeStatusEnum().equals(LikeStatusEnum.DISLIKE)){
             entity.setLikeStatusEnum(LikeStatusEnum.LIKE);
         }
-        return "Article liked";
+        return resourceMessageService.getMessage("article.like", lang);
     }
 
-    public String dislikeArticle(String articleId, Integer idFromHeader) {
+    public String dislikeArticle(String articleId, Integer idFromHeader, String lang) {
         Optional<ArticleLikeEntity> byArticleIdAndUserId = articleLikeRepository.findByArticleIdAndUserId(articleId, idFromHeader);
         if(byArticleIdAndUserId.isEmpty()){
             ArticleLikeEntity entity = new ArticleLikeEntity();
@@ -55,21 +57,21 @@ public class ArticleLikeService {
             entity.setLikeStatusEnum(LikeStatusEnum.DISLIKE);
             entity.setCreatedAt(LocalDateTime.now());
             articleLikeRepository.save(entity);
-            return "Article disliked";
+            return resourceMessageService.getMessage("article.disliked", lang);
         }
 
         ArticleLikeEntity entity = byArticleIdAndUserId.get();
         if(entity.getLikeStatusEnum().equals(LikeStatusEnum.LIKE)){
             entity.setLikeStatusEnum(LikeStatusEnum.DISLIKE);
         }
-        return "Article Disliked";
+        return resourceMessageService.getMessage("article.disliked", lang);
     }
 
-    public String removeLikeDislikeFromArticle(Integer idFromHeader, String articleId) {
+    public String removeLikeDislikeFromArticle(Integer idFromHeader, String articleId, String lang) {
         Optional<ArticleLikeEntity> byArticleIdAndUserId = articleLikeRepository.findByArticleIdAndUserId(articleId, idFromHeader);
         if(byArticleIdAndUserId.isEmpty()) {
             log.warn("Article is not liked or disliked for the user");
-            throw new ItemNotFoundException("Article is not liked or disliked for this user");
+            throw new ItemNotFoundException(resourceMessageService.getMessage("article.like.not.found", lang));
         }
 
         articleLikeRepository.deleteArticleLikeEntityByArticleUuidAndUserId(articleId, idFromHeader);
@@ -77,15 +79,15 @@ public class ArticleLikeService {
 
         if(entity.getLikeStatusEnum().equals(LikeStatusEnum.LIKE))
             return "Article Like Removed";
-        return "Article Dislike Removed";
+        return resourceMessageService.getMessage("article.dislike.remove", lang);
     }
 
-    public ArticleLikeDTO hasUserLikedOrDisliked(String articleId, Integer idFromHeader) {
+    public ArticleLikeDTO hasUserLikedOrDisliked(String articleId, Integer idFromHeader, String lang) {
         Optional<ArticleLikeEntity> byArticleIdAndUserId = articleLikeRepository.findByArticleIdAndUserId(articleId, idFromHeader);
 
         if(byArticleIdAndUserId.isEmpty()) {
             log.warn("Article not liked for the user yet {}", idFromHeader);
-            throw new ItemNotFoundException("No action yet");
+            throw new ItemNotFoundException(resourceMessageService.getMessage("article.like.not.found", lang));
         }
 
         ArticleLikeEntity entity = byArticleIdAndUserId.get();

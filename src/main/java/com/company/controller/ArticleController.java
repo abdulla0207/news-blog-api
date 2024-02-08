@@ -40,10 +40,10 @@ public class ArticleController {
      * It returns ok response with DTO object
      */
     @PostMapping("/writer")
-    public ResponseEntity<?> createPost(@Valid @RequestBody ArticleCreateDTO articleDTO, HttpServletRequest request){
+    public ResponseEntity<?> createPost(@Valid @RequestBody ArticleCreateDTO articleDTO, HttpServletRequest request, @RequestHeader("Accept-Language") String lang){
         JwtUtil.checkForRole(request, ProfileRoleEnum.WRITER);
         Integer writerId = JwtUtil.getIdFromHeader(request);
-        ArticleDTO res = articleService.createPost(articleDTO, writerId);
+        ArticleDTO res = articleService.createPost(articleDTO, writerId, lang);
         log.info("Article created {}", articleDTO);
         return ResponseEntity.ok(res);
     }
@@ -71,12 +71,13 @@ public class ArticleController {
 
     @PutMapping("/moderator/review/{articleId}")
     public ResponseEntity<?> updateModeratorAction(@PathVariable String articleId, HttpServletRequest request,
-                                                   @RequestParam(name = "moderator_action") ModeratorActionEnum moderatorAction){
+                                                   @RequestParam(name = "moderator_action") ModeratorActionEnum moderatorAction,
+                                                   @RequestHeader("Accept-Language") String lang){
         log.info("Request for updating moderator_action of an article {}", moderatorAction);
         JwtUtil.checkForRole(request, ProfileRoleEnum.MODERATOR);
         Integer moderatorId = JwtUtil.getIdFromHeader(request);
 
-        String response = articleService.updateModeratorAction(articleId, moderatorAction, moderatorId);
+        String response = articleService.updateModeratorAction(articleId, moderatorAction, moderatorId, lang);
         return ResponseEntity.ok(response);
     }
 
@@ -98,10 +99,10 @@ public class ArticleController {
      * Method returns Ok result.
      */
     @DeleteMapping("/moderator/{uuid}")
-    public ResponseEntity<?> deleteById(@PathVariable String uuid, HttpServletRequest request){
+    public ResponseEntity<?> deleteById(@PathVariable String uuid, HttpServletRequest request, @RequestHeader("Accept-Language") String lang){
         log.info("Request for deleting article {}", uuid);
         JwtUtil.checkForRole(request, ProfileRoleEnum.MODERATOR);
-        String response = articleService.deleteById(uuid);
+        String response = articleService.deleteById(uuid, lang);
 
         return ResponseEntity.ok(response);
     }
@@ -113,10 +114,10 @@ public class ArticleController {
      */
     @PutMapping("/writer/{uuid}")
     public ResponseEntity<?> updateById(@PathVariable String uuid, @RequestBody ArticleCreateDTO articleDTO,
-                                        HttpServletRequest request){
+                                        HttpServletRequest request, @RequestHeader("Accept-Language") String lang){
         log.info("Request for updating an article {}", uuid);
         Integer currentUserId = JwtUtil.getIdFromHeader(request);
-        String response = articleService.updateById(uuid, articleDTO, currentUserId);
+        String response = articleService.updateById(uuid, articleDTO, currentUserId, lang);
 
         return ResponseEntity.ok(response);
     }
@@ -126,9 +127,9 @@ public class ArticleController {
      * It returns ok result with object
      */
     @GetMapping("/{uuid}")
-    public ResponseEntity<?> getById(@PathVariable String uuid){
+    public ResponseEntity<?> getById(@PathVariable String uuid, @RequestHeader("Accept-Language") String lang){
         log.info("Get Article by id");
-        ArticleDTO articleDTO = articleService.getById(uuid);
+        ArticleDTO articleDTO = articleService.getById(uuid, lang);
 
         return ResponseEntity.ok(articleDTO);
     }
@@ -192,11 +193,12 @@ public class ArticleController {
 
     @PutMapping("/publisher/status/{uuid}")
     public ResponseEntity<String> changeStatus(@PathVariable String uuid, HttpServletRequest request,
-                                               @RequestParam(name = "article_status")ArticleStatusEnum articleStatusEnum){
+                                               @RequestParam(name = "article_status")ArticleStatusEnum articleStatusEnum,
+                                               @RequestHeader("Accept-Language") String lang){
         log.info("Change article status");
         JwtUtil.checkForRole(request, ProfileRoleEnum.PUBLISHER);
         Integer publisherId = JwtUtil.getIdFromHeader(request);
-        String response = articleService.changeStatus(uuid, publisherId, articleStatusEnum);
+        String response = articleService.changeStatus(uuid, publisherId, articleStatusEnum, lang);
 
         return ResponseEntity.ok(response);
     }

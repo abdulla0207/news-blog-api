@@ -39,10 +39,11 @@ public class ArticleTypeController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> updateById(@PathVariable int id, @RequestBody ArticleTypeDTO dto, HttpServletRequest request){
+    public ResponseEntity<?> updateById(@PathVariable int id, @RequestBody ArticleTypeDTO dto, HttpServletRequest request,
+                                        @RequestHeader("Accept-Language") String lang){
         log.info("update article type by id {}", dto);
         JwtUtil.checkForRole(request, ProfileRoleEnum.ADMIN);
-        ArticleTypeDTO responseDTO = articleTypeService.updateById(id, dto);
+        ArticleTypeDTO responseDTO = articleTypeService.updateById(id, dto, lang);
 
         return ResponseEntity.ok(responseDTO);
     }
@@ -58,11 +59,11 @@ public class ArticleTypeController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteById(@PathVariable int id, HttpServletRequest request){
+    public ResponseEntity<String> deleteById(@PathVariable int id, HttpServletRequest request, @RequestHeader("Accept-Language") String lang){
         log.info("delete article type {}", id);
         JwtUtil.checkForRole(request,ProfileRoleEnum.ADMIN);
 
-        String response = articleTypeService.deleteById(id);
+        String response = articleTypeService.deleteById(id, lang);
 
         return ResponseEntity.ok(response);
     }
