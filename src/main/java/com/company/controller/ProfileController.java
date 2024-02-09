@@ -4,6 +4,7 @@ import com.company.dto.ProfileDTO;
 import com.company.enums.ProfileRoleEnum;
 import com.company.service.ProfileService;
 import com.company.util.JwtUtil;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequestMapping("/api/profiles")
+@Tag(name = "Profile API list")
 public class ProfileController {
 
     private final ProfileService profileService;

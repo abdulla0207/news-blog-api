@@ -7,6 +7,7 @@ import com.company.enums.LanguageEnum;
 import com.company.enums.ProfileRoleEnum;
 import com.company.service.CategoryService;
 import com.company.util.JwtUtil;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +24,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/api/categories")
+@Tag(name = "Category API list")
 public class CategoryController {
 
     private final CategoryService categoryService;

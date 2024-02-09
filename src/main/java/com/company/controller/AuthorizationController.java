@@ -4,6 +4,7 @@ import com.company.dto.authentication.AuthResponseDTO;
 import com.company.dto.authentication.LoginDTO;
 import com.company.dto.authentication.RegistrationDTO;
 import com.company.service.AuthorizationService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequestMapping("/api/auth")
+@Tag(name = "Auth API list", description = "API list for authorization and authentication")
 public class AuthorizationController {
     private final AuthorizationService authorizationService;
 

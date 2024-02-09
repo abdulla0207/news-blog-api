@@ -4,6 +4,7 @@ import com.company.dto.article.ArticleLikeDTO;
 import com.company.dto.article.ArticleShortDTO;
 import com.company.service.ArticleLikeService;
 import com.company.util.JwtUtil;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/api/article/like")
+@Tag(name = "Article Like API list", description = "API list for article like or dislike operations")
 public class ArticleLikeController {
     private final ArticleLikeService articleLikeService;
 

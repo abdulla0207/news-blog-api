@@ -9,6 +9,7 @@ import com.company.enums.ModeratorActionEnum;
 import com.company.enums.ProfileRoleEnum;
 import com.company.service.ArticleService;
 import com.company.util.JwtUtil;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +28,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/api/articles")
+@Tag(name = "Article API list")
 public class ArticleController {
     private ArticleService articleService;
 

@@ -6,6 +6,7 @@ import com.company.enums.LanguageEnum;
 import com.company.enums.ProfileRoleEnum;
 import com.company.service.RegionService;
 import com.company.util.JwtUtil;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/api/regions")
+@Tag(name = "Region API list")
 public class RegionController {
     private final RegionService regionService;
 
@@ -48,11 +50,11 @@ public class RegionController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteById(@PathVariable(name = "id") int id, HttpServletRequest request){
+    public ResponseEntity<String> deleteById(@PathVariable(name = "id") int id, HttpServletRequest request, @RequestHeader("Accept-Language") String lang){
         log.info("Remove region {}", id);
         JwtUtil.checkForRole(request, ProfileRoleEnum.ADMIN);
 
-        String response = regionService.deleteById(id);
+        String response = regionService.deleteById(id, lang);
 
         return ResponseEntity.ok(response);
     }
