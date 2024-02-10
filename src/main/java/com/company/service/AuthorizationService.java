@@ -5,6 +5,7 @@ import com.company.dto.authentication.AuthResponseDTO;
 import com.company.dto.authentication.LoginDTO;
 import com.company.entity.ConfirmationTokenEntity;
 import com.company.entity.ProfileEntity;
+import com.company.enums.LanguageEnum;
 import com.company.enums.ProfileRoleEnum;
 import com.company.enums.ProfileStatusEnum;
 import com.company.exception.*;
@@ -68,26 +69,26 @@ public class AuthorizationService {
         return token;
     }
 
-    public AuthResponseDTO login(LoginDTO loginDTO, String lang) {
+    public AuthResponseDTO login(LoginDTO loginDTO, LanguageEnum lang) {
         Optional<ProfileEntity> getProfile = profileRepository.findByEmailAndPhoneNumberAndPassword(loginDTO.getEmail(),
                 loginDTO.getPhoneNumber(), MD5Util.encode(loginDTO.getPassword()));
 
         if(getProfile.isEmpty()) {
             log.info("Email, phone number or password is incorrect");
-            throw new ItemNotFoundException(resourceMessageService.getMessage("user.login.field.incorrect", lang));
+            throw new ItemNotFoundException(resourceMessageService.getMessage("user.login.field.incorrect", lang.name()));
         }
 
         ProfileEntity profileEntity = getProfile.get();
         if(profileEntity.getStatus().equals(ProfileStatusEnum.BLOCKED)) {
             log.info("Account blocked");
-            throw new RuntimeException(resourceMessageService.getMessage("user.blocked", lang));
+            throw new RuntimeException(resourceMessageService.getMessage("user.blocked", lang.name()));
         }
 
         if(profileEntity.getStatus().equals(ProfileStatusEnum.NOT_ACTIVE)){
             String token = TokenUtil.saveTokenForUser(profileEntity.getId(), tokenService);
             String message = MailUtil.mailMessage(profileEntity.getName(), profileEntity.getSurname(), token);
 
-            emailService.sendMail(profileEntity.getEmail(), message, lang);
+            emailService.sendMail(profileEntity.getEmail(), message, lang.name());
             AuthResponseDTO responseDTO = new AuthResponseDTO();
             responseDTO.setResendVerification(true);
             return responseDTO;
@@ -102,30 +103,30 @@ public class AuthorizationService {
         return responseDTO;
     }
 
-    public String confirmToken(String token, String lang){
+    public String confirmToken(String token, LanguageEnum lang){
         Optional<ConfirmationTokenEntity> token1 = tokenService.getToken(token);
         if(token1.isEmpty()) {
             log.warn("Token not found");
-            throw new ItemNotFoundException(resourceMessageService.getMessage("token.not.found", lang));
+            throw new ItemNotFoundException(resourceMessageService.getMessage("token.not.found", lang.name()));
         }
 
         ConfirmationTokenEntity tokenEntity = token1.get();
 
         if(tokenEntity.getConfirmedAt() != null) {
             log.info("Account already confirmed");
-            throw new TokenAlreadyConfirmedException(resourceMessageService.getMessage("account.confirm", lang));
+            throw new TokenAlreadyConfirmedException(resourceMessageService.getMessage("account.confirm", lang.name()));
         }
 
         LocalDateTime expiresAt = tokenEntity.getExpiresAt();
 
         if(expiresAt.isBefore(LocalDateTime.now())) {
             log.info("Token expired");
-            throw new TokenNotValidException(resourceMessageService.getMessage("token.expire", lang));
+            throw new TokenNotValidException(resourceMessageService.getMessage("token.expire", lang.name()));
         }
 
         tokenService.setConfirmedAt(token);
         profileRepository.activateProfileStatus(tokenEntity.getProfileEntity().getEmail());
 
-        return resourceMessageService.getMessage("confirm", lang);
+        return resourceMessageService.getMessage("confirm", lang.name());
     }
 }

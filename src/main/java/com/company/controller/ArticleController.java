@@ -5,6 +5,7 @@ import com.company.dto.article.ArticleDTO;
 import com.company.dto.article.ArticleFullDTO;
 import com.company.dto.article.ArticleShortDTO;
 import com.company.enums.ArticleStatusEnum;
+import com.company.enums.LanguageEnum;
 import com.company.enums.ModeratorActionEnum;
 import com.company.enums.ProfileRoleEnum;
 import com.company.service.ArticleService;
@@ -42,7 +43,7 @@ public class ArticleController {
      * It returns ok response with DTO object
      */
     @PostMapping("/writer")
-    public ResponseEntity<?> createPost(@Valid @RequestBody ArticleCreateDTO articleDTO, HttpServletRequest request, @RequestHeader("Accept-Language") String lang){
+    public ResponseEntity<?> createPost(@Valid @RequestBody ArticleCreateDTO articleDTO, HttpServletRequest request, @RequestHeader("Accept-Language") LanguageEnum lang){
         JwtUtil.checkForRole(request, ProfileRoleEnum.WRITER);
         Integer writerId = JwtUtil.getIdFromHeader(request);
         ArticleDTO res = articleService.createPost(articleDTO, writerId, lang);
@@ -74,7 +75,7 @@ public class ArticleController {
     @PutMapping("/moderator/review/{articleId}")
     public ResponseEntity<?> updateModeratorAction(@PathVariable String articleId, HttpServletRequest request,
                                                    @RequestParam(name = "moderator_action") ModeratorActionEnum moderatorAction,
-                                                   @RequestHeader("Accept-Language") String lang){
+                                                   @RequestHeader("Accept-Language") LanguageEnum lang){
         log.info("Request for updating moderator_action of an article {}", moderatorAction);
         JwtUtil.checkForRole(request, ProfileRoleEnum.MODERATOR);
         Integer moderatorId = JwtUtil.getIdFromHeader(request);
@@ -87,7 +88,7 @@ public class ArticleController {
      * This method sends the values to service and returns the list of articles
      */
     @GetMapping("/admin/")
-    public ResponseEntity<?> getArticlePagination(@RequestHeader(name = "Accept-Language", defaultValue = "uz") String language,
+    public ResponseEntity<?> getArticlePagination(@RequestHeader(name = "Accept-Language", defaultValue = "UZ") LanguageEnum language,
                                                   @RequestParam("page") int page, @RequestParam("size") int size, HttpServletRequest request){
         log.info("Get articles pagination for admin");
         JwtUtil.checkForRole(request, ProfileRoleEnum.ADMIN);
@@ -101,7 +102,7 @@ public class ArticleController {
      * Method returns Ok result.
      */
     @DeleteMapping("/moderator/{uuid}")
-    public ResponseEntity<?> deleteById(@PathVariable String uuid, HttpServletRequest request, @RequestHeader("Accept-Language") String lang){
+    public ResponseEntity<?> deleteById(@PathVariable String uuid, HttpServletRequest request, @RequestHeader("Accept-Language") LanguageEnum lang){
         log.info("Request for deleting article {}", uuid);
         JwtUtil.checkForRole(request, ProfileRoleEnum.MODERATOR);
         String response = articleService.deleteById(uuid, lang);
@@ -116,7 +117,7 @@ public class ArticleController {
      */
     @PutMapping("/writer/{uuid}")
     public ResponseEntity<?> updateById(@PathVariable String uuid, @RequestBody ArticleCreateDTO articleDTO,
-                                        HttpServletRequest request, @RequestHeader("Accept-Language") String lang){
+                                        HttpServletRequest request, @RequestHeader("Accept-Language") LanguageEnum lang){
         log.info("Request for updating an article {}", uuid);
         Integer currentUserId = JwtUtil.getIdFromHeader(request);
         String response = articleService.updateById(uuid, articleDTO, currentUserId, lang);
@@ -129,7 +130,7 @@ public class ArticleController {
      * It returns ok result with object
      */
     @GetMapping("/{uuid}")
-    public ResponseEntity<?> getById(@PathVariable String uuid, @RequestHeader("Accept-Language") String lang){
+    public ResponseEntity<ArticleDTO> getById(@PathVariable String uuid, @RequestHeader("Accept-Language") LanguageEnum lang){
         log.info("Get Article by id");
         ArticleDTO articleDTO = articleService.getById(uuid, lang);
 
@@ -140,7 +141,7 @@ public class ArticleController {
      * Gets all articles, filters articles by published date and applies pagination,
      */
     @GetMapping("/order/published-date/")
-    public ResponseEntity<?> getArticlesOrderedByPublishedDate(@RequestHeader(name = "Accept-Language", defaultValue = "uz") String language,
+    public ResponseEntity<?> getArticlesOrderedByPublishedDate(@RequestHeader(name = "Accept-Language", defaultValue = "UZ") LanguageEnum language,
                                                                @RequestParam("page") int page, @RequestParam("size") int size){
         log.info("Get Articles order by published date");
         Page<ArticleDTO> response = articleService.findAllArticleByPublishedDate(page, size, language);
@@ -160,7 +161,7 @@ public class ArticleController {
      */
     @GetMapping("/order/title/")
     public ResponseEntity<?> getArticlesOrderedByTitle(@RequestParam("page") int page, @RequestParam("size") int size,
-                                                         @RequestHeader(name = "Accept-Language", defaultValue = "uz") String language){
+                                                         @RequestHeader(name = "Accept-Language", defaultValue = "UZ") LanguageEnum language){
         log.info("Get Article order by title");
         Page<ArticleDTO> response = articleService.findArticlesOrderedByTitle(page, size, language);
 
@@ -173,7 +174,7 @@ public class ArticleController {
      */
     @GetMapping("/search/")
     public ResponseEntity<?> searchArticlesByTitle(@RequestParam("title") String title,
-                                                   @RequestHeader(name = "Accept-Language", defaultValue = "uz") String language){
+                                                   @RequestHeader(name = "Accept-Language", defaultValue = "UZ") LanguageEnum language){
         log.info("search articles by title");
         List<ArticleDTO> articleDTOS = articleService.searchArticlesByTitle(title, language);
 
@@ -184,7 +185,7 @@ public class ArticleController {
      * This method gets articles by category's key and applies pagination
      */
     @GetMapping("/category/{key}")
-    public ResponseEntity<?> getArticlesByCategory(@RequestHeader(name = "Accept-Language", defaultValue = "uz") String language, @PathVariable String key,
+    public ResponseEntity<?> getArticlesByCategory(@RequestHeader(name = "Accept-Language", defaultValue = "UZ") LanguageEnum language, @PathVariable String key,
                                                    @RequestParam("page") int page,
                                                    @RequestParam("size") int size){
         log.info("Get Articles by category");
@@ -196,7 +197,7 @@ public class ArticleController {
     @PutMapping("/publisher/status/{uuid}")
     public ResponseEntity<String> changeStatus(@PathVariable String uuid, HttpServletRequest request,
                                                @RequestParam(name = "article_status")ArticleStatusEnum articleStatusEnum,
-                                               @RequestHeader("Accept-Language") String lang){
+                                               @RequestHeader("Accept-Language") LanguageEnum lang){
         log.info("Change article status");
         JwtUtil.checkForRole(request, ProfileRoleEnum.PUBLISHER);
         Integer publisherId = JwtUtil.getIdFromHeader(request);
@@ -205,7 +206,7 @@ public class ArticleController {
         return ResponseEntity.ok(response);
     }
     @GetMapping("/last-five/by-type/{typeId}")
-    public ResponseEntity<?> getLastFiveByType(@PathVariable int typeId, @RequestHeader(name = "Accept-Language", defaultValue = "uz") String language){
+    public ResponseEntity<?> getLastFiveByType(@PathVariable int typeId, @RequestHeader(name = "Accept-Language", defaultValue = "uz") LanguageEnum language){
         log.info("get last five articles");
         List<ArticleShortDTO> response = articleService.getLastFiveByType(typeId, language);
 
@@ -214,14 +215,14 @@ public class ArticleController {
 
     @GetMapping("/last-eight")
     public ResponseEntity<?> getLastEightNotIncludeId(@RequestParam(name = "uuid") List<String> uuid,
-                                                      @RequestHeader(name = "Accept-Language", defaultValue = "uz") String language){
+                                                      @RequestHeader(name = "Accept-Language", defaultValue = "uz") LanguageEnum language){
         log.info("get last eight articles not included ids");
         List<ArticleShortDTO> response = articleService.getLastEightNotIncludeId(uuid, language);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/language/{uuid}")
-    public ResponseEntity<?> getArticleByIdAndLanguage(@PathVariable(name = "uuid") String uuid, @RequestHeader(name = "Accept-Language", defaultValue = "uz") String language){
+    public ResponseEntity<?> getArticleByIdAndLanguage(@PathVariable(name = "uuid") String uuid, @RequestHeader(name = "Accept-Language", defaultValue = "uz") LanguageEnum language){
         log.info("get articles by id and language");
         ArticleFullDTO response = articleService.getArticlesByIdAndLanguage(uuid, language);
 
@@ -229,7 +230,7 @@ public class ArticleController {
     }
 
     @GetMapping("/viewed/weekly")
-    public ResponseEntity<?> getMostViewedArticlesInAWeek(@RequestHeader(name = "Accept-Language", defaultValue = "uz") String language,
+    public ResponseEntity<?> getMostViewedArticlesInAWeek(@RequestHeader(name = "Accept-Language", defaultValue = "uz") LanguageEnum language,
                                                           @RequestParam("page") int page, @RequestParam("size") int size){
         log.info("get most viewed articles");
         Page<ArticleShortDTO> response = articleService.getMostViewedArticleInAWeek(language, page, size);

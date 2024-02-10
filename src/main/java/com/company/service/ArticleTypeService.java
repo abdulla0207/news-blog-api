@@ -138,8 +138,8 @@ public class ArticleTypeService {
         all.forEach(entity -> {
             String name = entity.getNameEn();
             switch (languageEnum){
-                case UZBEK -> name = entity.getNameUz();
-                case ENGLISH -> name = entity.getNameEn();
+                case UZ -> name = entity.getNameUz();
+                case EN -> name = entity.getNameEn();
             }
             ArticleTypeByLanguageDTO dto = new ArticleTypeByLanguageDTO(entity.getId(), entity.getKey(), name);
             response.add(dto);

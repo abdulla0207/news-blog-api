@@ -3,6 +3,7 @@ package com.company.controller;
 import com.company.dto.authentication.AuthResponseDTO;
 import com.company.dto.authentication.LoginDTO;
 import com.company.dto.authentication.RegistrationDTO;
+import com.company.enums.LanguageEnum;
 import com.company.service.AuthorizationService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -29,7 +30,7 @@ public class AuthorizationController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> registration(@Valid @RequestBody RegistrationDTO registrationDTO, @RequestHeader("Accept-Language") String lang){
+    public ResponseEntity<String> registration(@Valid @RequestBody RegistrationDTO registrationDTO, @RequestHeader("Accept-Language") String lang){
         log.info("Registration {}", registrationDTO);
         String response = authorizationService.signup(registrationDTO, lang);
 
@@ -37,7 +38,7 @@ public class AuthorizationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginDTO loginDTO, @RequestHeader("Accept-Language") String lang){
+    public ResponseEntity<AuthResponseDTO> login(@Valid @RequestBody LoginDTO loginDTO, @RequestHeader("Accept-Language") LanguageEnum lang){
         log.info("Log in {}", loginDTO);
         AuthResponseDTO responseDTO = authorizationService.login(loginDTO, lang);
 
@@ -45,7 +46,7 @@ public class AuthorizationController {
     }
 
     @GetMapping("/confirm")
-    public ResponseEntity<String> confirm(@RequestParam("token") String token, @RequestHeader("Accept-Language") String lang){
+    public ResponseEntity<String> confirm(@RequestParam("token") String token, @RequestHeader("Accept-Language") LanguageEnum lang){
         log.info("confirmation token");
         String response = authorizationService.confirmToken(token, lang);
 

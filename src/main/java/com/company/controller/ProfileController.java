@@ -31,6 +31,11 @@ public class ProfileController {
         this.profileService = profileService;
     }
 
+    @GetMapping("/gett")
+    public String getAll(){
+        return "PROFILESSS";
+    }
+
     // POST "/profile/" request is send to API from front. It receives headerToken that was generated from JWT when user is logged in
     //and the body object that should be created
     // This method decodes the headerToken to JwtDTO object and sends to create service
@@ -61,7 +66,7 @@ public class ProfileController {
     // page and size from URI query
     // Method decodes headerToken and gets list of profiles from service
     @GetMapping("/")
-    public ResponseEntity<?> getList(HttpServletRequest request,
+    public ResponseEntity<Page<ProfileDTO>> getList(HttpServletRequest request,
                                      @RequestParam("page") int page, @RequestParam("size") int size){
         log.info("get user list");
         JwtUtil.checkForRole(request, ProfileRoleEnum.ADMIN);

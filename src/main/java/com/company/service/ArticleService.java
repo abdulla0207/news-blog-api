@@ -9,6 +9,7 @@ import com.company.dto.article.ArticleShortDTO;
 import com.company.entity.ArticleEntity;
 import com.company.entity.CategoryEntity;
 import com.company.enums.ArticleStatusEnum;
+import com.company.enums.LanguageEnum;
 import com.company.enums.LikeStatusEnum;
 import com.company.enums.ModeratorActionEnum;
 import com.company.exception.AppForbiddenException;
@@ -52,7 +53,7 @@ public class ArticleService {
         this.categoryService = categoryService;
         this.resourceMessageService = resourceMessageService;
     }
-    public ArticleDTO createPost(ArticleCreateDTO articleCreateDTO, int writerId, String lang) {
+    public ArticleDTO createPost(ArticleCreateDTO articleCreateDTO, int writerId, LanguageEnum lang) {
         try{
             ArticleEntity article = toEntity(articleCreateDTO);
             article.setAuthorId(writerId);
@@ -62,12 +63,12 @@ public class ArticleService {
             return resDTO;
         }catch (Exception e){
             log.error("Error creating article in service: {}", e.getMessage());
-            throw new ServiceException(resourceMessageService.getMessage("article.create", lang));
+            throw new ServiceException(resourceMessageService.getMessage("article.create", lang.name()));
         }
 
     }
 
-    public Page<ArticleDTO> getArticlePagination(String languageCode, int page, int size) {
+    public Page<ArticleDTO> getArticlePagination(LanguageEnum languageCode, int page, int size) {
         int languageId = getLanguageIdByCode(languageCode);
         Pageable pageable = PageRequest.of(page, size);
         Page<ArticleEntity> pageAllArticle =articleRepository.findAllByLanguageCode(languageId, pageable);
@@ -75,10 +76,10 @@ public class ArticleService {
         return returnPagination(pageAllArticle, pageable);
     }
 
-    private int getLanguageIdByCode(String languageCode) {
-        if("uz".equalsIgnoreCase(languageCode))
+    private int getLanguageIdByCode(LanguageEnum languageCode) {
+        if("UZ".equalsIgnoreCase(languageCode.name()))
             return 1;
-        else if("en".equalsIgnoreCase(languageCode))
+        else if("EN".equalsIgnoreCase(languageCode.name()))
             return 2;
         else
             log.warn("Unsupported Language code");
@@ -97,7 +98,7 @@ public class ArticleService {
         return new PageImpl<>(responseList, pageRequest, totalElements);
     }
 
-    public Page<ArticleDTO> findAllArticleByPublishedDate(int page, int size, String languageCode){
+    public Page<ArticleDTO> findAllArticleByPublishedDate(int page, int size, LanguageEnum languageCode){
         Pageable pageable = PageRequest.of(page, size);
 
         int languageId = getLanguageIdByCode(languageCode);
@@ -120,32 +121,32 @@ public class ArticleService {
         return response;
     }
 
-    public String deleteById(String uuid, String lang) {
+    public String deleteById(String uuid, LanguageEnum lang) {
         Optional<ArticleEntity> findById = articleRepository.findById(uuid);
 
         if(findById.isEmpty()) {
             log.warn("Article does not exist {}", uuid);
-            throw new ItemNotFoundException(resourceMessageService.getMessage("article.not.found", lang));
+            throw new ItemNotFoundException(resourceMessageService.getMessage("article.not.found", lang.name()));
         }
 
         articleRepository.deleteById(uuid);
-        return resourceMessageService.getMessage("article.deleted", lang);
+        return resourceMessageService.getMessage("article.deleted", lang.name());
     }
 
     @Transactional
-    public String updateById(String uuid, ArticleCreateDTO articleDTO, Integer currentUserId, String lang) {
+    public String updateById(String uuid, ArticleCreateDTO articleDTO, Integer currentUserId, LanguageEnum lang) {
         Optional<ArticleEntity> findById = articleRepository.findById(uuid);
 
         if(findById.isEmpty()) {
             log.warn("Article does not exist {}", uuid);
-            throw new ItemNotFoundException(resourceMessageService.getMessage("article.not.found", lang));
+            throw new ItemNotFoundException(resourceMessageService.getMessage("article.not.found", lang.name()));
         }
 
         ArticleEntity article = findById.get();
 
         if(!article.getAuthorId().equals(currentUserId)) {
             log.warn("Wrong user tried updating article {}", currentUserId);
-            throw new AppForbiddenException(resourceMessageService.getMessage("method.not.allowed", lang));
+            throw new AppForbiddenException(resourceMessageService.getMessage("method.not.allowed", lang.name()));
         }
 
         article.setContent(articleDTO.content());
@@ -160,15 +161,15 @@ public class ArticleService {
 
         articleRepository.save(article);
 
-        return resourceMessageService.getMessage("article.update", lang);
+        return resourceMessageService.getMessage("article.update", lang.name());
     }
 
-    public ArticleDTO getById(String uuid, String lang) {
+    public ArticleDTO getById(String uuid, LanguageEnum lang) {
         Optional<ArticleEntity> getById = articleRepository.findByUuidAndArticleStatus(uuid, ArticleStatusEnum.PUBLISHED);
 
         if(getById.isEmpty()) {
             log.warn("Article not found {}", uuid);
-            throw new ItemNotFoundException(resourceMessageService.getMessage("article.not.found", lang));
+            throw new ItemNotFoundException(resourceMessageService.getMessage("article.not.found", lang.name()));
         }
 
         ArticleEntity article = getById.get();
@@ -176,7 +177,7 @@ public class ArticleService {
         return toDto(article);
     }
 
-    public Page<ArticleDTO> findArticlesOrderedByTitle(int page, int size, String languageCode) {
+    public Page<ArticleDTO> findArticlesOrderedByTitle(int page, int size, LanguageEnum languageCode) {
         PageRequest of = PageRequest.of(page, size);
 
         int languageId = getLanguageIdByCode(languageCode);
@@ -186,7 +187,7 @@ public class ArticleService {
         return returnPagination(articlesByTitle, of);
     }
 
-    public List<ArticleDTO> searchArticlesByTitle(String title, String languageCode){
+    public List<ArticleDTO> searchArticlesByTitle(String title, LanguageEnum languageCode){
         int languageId = getLanguageIdByCode(languageCode);
         title = "%" + title + "%";
         List<ArticleEntity> articleEntities = articleRepository.findArticleEntitiesByTitleLikeIgnoreCaseAndLanguageIdAndArticleStatus(title, languageId, ArticleStatusEnum.PUBLISHED);
@@ -194,9 +195,9 @@ public class ArticleService {
         return toDtoList(articleEntities);
     }
 
-    public Page<ArticleDTO> getArticlesByCategory(String key, int page, int size, String language) {
+    public Page<ArticleDTO> getArticlesByCategory(String key, int page, int size, LanguageEnum language) {
         int languageId = getLanguageIdByCode(language);
-        CategoryEntity category = categoryService.getCategoryByKey(key, language);
+        CategoryEntity category = categoryService.getCategoryByKey(key, language.name());
 
         PageRequest pageable = PageRequest.of(page, size);
 
@@ -206,12 +207,12 @@ public class ArticleService {
     }
 
 
-    public String changeStatus(String id, Integer publisherId, ArticleStatusEnum statusEnum, String lang) {
+    public String changeStatus(String id, Integer publisherId, ArticleStatusEnum statusEnum, LanguageEnum lang) {
         Optional<ArticleEntity> byId = articleRepository.findById(id);
 
         if(byId.isEmpty()) {
             log.warn("Article not Found {}", id);
-            throw new ItemNotFoundException(resourceMessageService.getMessage("article.not.found", lang));
+            throw new ItemNotFoundException(resourceMessageService.getMessage("article.not.found", lang.name()));
         }
 
         ArticleEntity articleEntity = byId.get();
@@ -222,7 +223,7 @@ public class ArticleService {
 
         articleRepository.save(articleEntity);
 
-        return resourceMessageService.getMessage("article.publish", lang);
+        return resourceMessageService.getMessage("article.publish", lang.name());
     }
 
     public Page<ArticleDTO> getArticleForReview(int page, int size) {
@@ -233,11 +234,11 @@ public class ArticleService {
         return returnPagination(articlesByTitle, of);
     }
 
-    public String updateModeratorAction(String articleId, ModeratorActionEnum moderatorAction, Integer moderatorId, String lang) {
+    public String updateModeratorAction(String articleId, ModeratorActionEnum moderatorAction, Integer moderatorId, LanguageEnum lang) {
         Optional<ArticleEntity> byId = articleRepository.findById(articleId);
         if (byId.isEmpty()) {
             log.warn("Article not found {}", articleId);
-            throw new ItemNotFoundException(resourceMessageService.getMessage("article.not.found", lang));
+            throw new ItemNotFoundException(resourceMessageService.getMessage("article.not.found", lang.name()));
         }
 
         ArticleEntity articleEntity = byId.get();
@@ -247,16 +248,16 @@ public class ArticleService {
 
         articleRepository.save(articleEntity);
 
-        return resourceMessageService.getMessage("article.update", lang);
+        return resourceMessageService.getMessage("article.update", lang.name());
     }
 
-    public List<ArticleShortDTO> getLastFiveByType(int typeId, String language){
+    public List<ArticleShortDTO> getLastFiveByType(int typeId, LanguageEnum language){
         int languageId = getLanguageIdByCode(language);
         List<IArticleShortViewInfo> entities = articleRepository.findLastFiveByType(typeId, languageId);
 
         if(entities.isEmpty()) {
             log.warn("Article not found by type id {}", typeId);
-            throw new ItemNotFoundException(resourceMessageService.getMessage("article.not.found", language));
+            throw new ItemNotFoundException(resourceMessageService.getMessage("article.not.found", language.name()));
         }
         List<ArticleShortDTO> response = new ArrayList<>();
         for(IArticleShortViewInfo entity : entities){
@@ -266,7 +267,7 @@ public class ArticleService {
 
         return response;
     }
-    public List<ArticleShortDTO> getLastEightNotIncludeId(List<String> uuid, String language) {
+    public List<ArticleShortDTO> getLastEightNotIncludeId(List<String> uuid, LanguageEnum language) {
         List<IArticleShortViewInfo> entities = articleRepository.getTop8ByArticleStatusAndUuidNotInOrderByCreatedAt(uuid, getLanguageIdByCode(language));
 
         List<ArticleShortDTO> response = new ArrayList<>();
@@ -337,13 +338,13 @@ public class ArticleService {
         return articleRepository.findArticlesByUserAndStatus(idFromHeader, likeStatusEnum);
     }
 
-    public ArticleFullDTO getArticlesByIdAndLanguage(String uuid, String language) {
+    public ArticleFullDTO getArticlesByIdAndLanguage(String uuid, LanguageEnum language) {
         int languageId = getLanguageIdByCode(language);
 
         Optional<ArticleEntity> articlesByIdAndLanguageId = articleRepository.findArticlesByIdAndLanguageId(uuid, languageId);
         if(articlesByIdAndLanguageId.isEmpty()) {
             log.warn("Article not found by id and language id {} {}", uuid, languageId);
-            throw new ItemNotFoundException(resourceMessageService.getMessage("article.not.found", language));
+            throw new ItemNotFoundException(resourceMessageService.getMessage("article.not.found", language.name()));
         }
 
         ArticleEntity articleEntity = articlesByIdAndLanguageId.get();
@@ -369,7 +370,7 @@ public class ArticleService {
         return response;
     }
 
-    public Page<ArticleShortDTO> getMostViewedArticleInAWeek(String language, int page, int size) {
+    public Page<ArticleShortDTO> getMostViewedArticleInAWeek(LanguageEnum language, int page, int size) {
         int languageId = getLanguageIdByCode(language);
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startOfWeek = now.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).with(LocalTime.MIN);
