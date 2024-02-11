@@ -10,11 +10,11 @@ import com.company.enums.ModeratorActionEnum;
 import com.company.enums.ProfileRoleEnum;
 import com.company.service.ArticleService;
 import com.company.util.JwtUtil;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -42,6 +42,7 @@ public class ArticleController {
      * This method gets the object and sends it to service
      * It returns ok response with DTO object
      */
+    @Operation(summary = "Create article endpoint", description = "Users with WRITER role can create post and use this endpoint")
     @PostMapping("/writer")
     public ResponseEntity<?> createPost(@Valid @RequestBody ArticleCreateDTO articleDTO, HttpServletRequest request, @RequestHeader("Accept-Language") LanguageEnum lang){
         JwtUtil.checkForRole(request, ProfileRoleEnum.WRITER);
@@ -51,6 +52,7 @@ public class ArticleController {
         return ResponseEntity.ok(res);
     }
 
+    @Operation(summary = "Get articles that must be published", description = "It provides a list of created articles by writers and checked by moderators for PUBLISHER role users")
     @GetMapping("/publisher/publish")
     public ResponseEntity<?> getArticlesForPublish(HttpServletRequest request, @RequestParam(name = "page") int page,
                                                               @RequestParam(name = "size") int size){
@@ -62,6 +64,7 @@ public class ArticleController {
         return ResponseEntity.ok(getArticlePaginationList);
     }
 
+    @Operation(summary = "Get articles that must be reviewed", description = "This endpoint provides a pagination list of articles that should be checked by moderators")
     @GetMapping("/moderator/review")
     public ResponseEntity<?> getArticleForReview(HttpServletRequest request, @RequestParam(name = "page") int page,
                                                  @RequestParam(name = "size") int size){
@@ -72,6 +75,7 @@ public class ArticleController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Update moderator action of a specific article", description = "Only accessible for MODERATORs")
     @PutMapping("/moderator/review/{articleId}")
     public ResponseEntity<?> updateModeratorAction(@PathVariable String articleId, HttpServletRequest request,
                                                    @RequestParam(name = "moderator_action") ModeratorActionEnum moderatorAction,
@@ -87,6 +91,7 @@ public class ArticleController {
     /** GET "/article/" request is sent to the API with the page and size(size mainly the same number) from Parameters
      * This method sends the values to service and returns the list of articles
      */
+    @Operation(summary = "Get all article pagination list", description = "Only accessible for ADMIN")
     @GetMapping("/admin/")
     public ResponseEntity<?> getArticlePagination(@RequestHeader(name = "Accept-Language", defaultValue = "UZ") LanguageEnum language,
                                                   @RequestParam("page") int page, @RequestParam("size") int size, HttpServletRequest request){
@@ -101,6 +106,7 @@ public class ArticleController {
      * It gets the uuid, calls the service method by sending uuid and gets the result of String
      * Method returns Ok result.
      */
+    @Operation(summary = "Delete an article by ID for MODERATOR")
     @DeleteMapping("/moderator/{uuid}")
     public ResponseEntity<?> deleteById(@PathVariable String uuid, HttpServletRequest request, @RequestHeader("Accept-Language") LanguageEnum lang){
         log.info("Request for deleting article {}", uuid);
@@ -113,8 +119,8 @@ public class ArticleController {
     /** PUT "/article/UUID" request is send with uuid, and new object with new values of fields
      * Calls the service method to update by sending UUID and OBJECT
      * Method returns Ok result
-     *
      */
+    @Operation(summary = "Update article content by ID", description = "This endpoint is used for WRITERs and they can update content, descriptions of an article")
     @PutMapping("/writer/{uuid}")
     public ResponseEntity<?> updateById(@PathVariable String uuid, @RequestBody ArticleCreateDTO articleDTO,
                                         HttpServletRequest request, @RequestHeader("Accept-Language") LanguageEnum lang){
@@ -129,6 +135,7 @@ public class ArticleController {
      * Calls service method and GETS particular object with uuid
      * It returns ok result with object
      */
+    @Operation(summary = "Get article by ID", description = "This endpoint is used for anyone who wants to read specific article")
     @GetMapping("/{uuid}")
     public ResponseEntity<ArticleDTO> getById(@PathVariable String uuid, @RequestHeader("Accept-Language") LanguageEnum lang){
         log.info("Get Article by id");
@@ -140,6 +147,7 @@ public class ArticleController {
     /** GET "/article/order/published-date/" request is send to API with page and size
      * Gets all articles, filters articles by published date and applies pagination,
      */
+    @Operation(summary = "Get articles order by published date", description = "This endpoint provides a list of article pagination in published ordered way")
     @GetMapping("/order/published-date/")
     public ResponseEntity<?> getArticlesOrderedByPublishedDate(@RequestHeader(name = "Accept-Language", defaultValue = "UZ") LanguageEnum language,
                                                                @RequestParam("page") int page, @RequestParam("size") int size){
@@ -147,6 +155,8 @@ public class ArticleController {
         Page<ArticleDTO> response = articleService.findAllArticleByPublishedDate(page, size, language);
         return ResponseEntity.ok(response);
     }
+
+    @Operation(summary = "Get articles that are liked by a user", description = "This endpoint provides a list of articles that are liked by a specific person")
     @GetMapping("/user/likes")
     public ResponseEntity<?> getLikedArticlesForUser(HttpServletRequest request){
         log.info("get liked articles for user");
@@ -159,6 +169,7 @@ public class ArticleController {
     /** GET "/article/order/title" request is send to API with page and size
      * Gets all articles, filters articles by TITLE and applies pagination
      */
+    @Operation(summary = "Get articles ordered  by title")
     @GetMapping("/order/title/")
     public ResponseEntity<?> getArticlesOrderedByTitle(@RequestParam("page") int page, @RequestParam("size") int size,
                                                          @RequestHeader(name = "Accept-Language", defaultValue = "UZ") LanguageEnum language){
@@ -184,6 +195,7 @@ public class ArticleController {
     /** GET "/article/category?key=KEY_EXAMPLE" request is send to API
      * This method gets articles by category's key and applies pagination
      */
+    @Operation(summary = "Get article by specific category", description = "This endpoint gives a list of articles that are connected to specific category")
     @GetMapping("/category/{key}")
     public ResponseEntity<?> getArticlesByCategory(@RequestHeader(name = "Accept-Language", defaultValue = "UZ") LanguageEnum language, @PathVariable String key,
                                                    @RequestParam("page") int page,
@@ -194,6 +206,7 @@ public class ArticleController {
         return ResponseEntity.ok(articleDTOS);
     }
 
+    @Operation(summary = "Change publisher status of an article")
     @PutMapping("/publisher/status/{uuid}")
     public ResponseEntity<String> changeStatus(@PathVariable String uuid, HttpServletRequest request,
                                                @RequestParam(name = "article_status")ArticleStatusEnum articleStatusEnum,
@@ -205,6 +218,8 @@ public class ArticleController {
 
         return ResponseEntity.ok(response);
     }
+
+    @Operation(summary = "Get last top five articles by type")
     @GetMapping("/last-five/by-type/{typeId}")
     public ResponseEntity<?> getLastFiveByType(@PathVariable int typeId, @RequestHeader(name = "Accept-Language", defaultValue = "uz") LanguageEnum language){
         log.info("get last five articles");
@@ -213,6 +228,7 @@ public class ArticleController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Get last top eight articles and not include an ID of specific article")
     @GetMapping("/last-eight")
     public ResponseEntity<?> getLastEightNotIncludeId(@RequestParam(name = "uuid") List<String> uuid,
                                                       @RequestHeader(name = "Accept-Language", defaultValue = "uz") LanguageEnum language){
@@ -221,6 +237,7 @@ public class ArticleController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Get article by ID and language")
     @GetMapping("/language/{uuid}")
     public ResponseEntity<?> getArticleByIdAndLanguage(@PathVariable(name = "uuid") String uuid, @RequestHeader(name = "Accept-Language", defaultValue = "uz") LanguageEnum language){
         log.info("get articles by id and language");
@@ -229,6 +246,7 @@ public class ArticleController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Get most viewed articles in a latest week")
     @GetMapping("/viewed/weekly")
     public ResponseEntity<?> getMostViewedArticlesInAWeek(@RequestHeader(name = "Accept-Language", defaultValue = "uz") LanguageEnum language,
                                                           @RequestParam("page") int page, @RequestParam("size") int size){

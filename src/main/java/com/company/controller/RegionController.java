@@ -6,6 +6,7 @@ import com.company.enums.LanguageEnum;
 import com.company.enums.ProfileRoleEnum;
 import com.company.service.RegionService;
 import com.company.util.JwtUtil;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +28,8 @@ public class RegionController {
         this.regionService = regionService;
     }
 
+
+    @Operation(summary = "Create region by ADMIN")
     @PostMapping("/")
     public ResponseEntity<RegionDTO> create(HttpServletRequest request, @RequestBody RegionDTO regionDTO){
         log.info("Create region {}", regionDTO);
@@ -37,6 +40,7 @@ public class RegionController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Update region by ADMIN")
     @PutMapping("/update/{id}")
     public ResponseEntity<RegionDTO> updateById(@PathVariable(name = "id") int id,
                                                 HttpServletRequest request, @RequestBody RegionDTO regionDTO,
@@ -49,6 +53,7 @@ public class RegionController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Delete region by ADMIN")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteById(@PathVariable(name = "id") int id, HttpServletRequest request, @RequestHeader("Accept-Language") String lang){
         log.info("Remove region {}", id);
@@ -59,6 +64,7 @@ public class RegionController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Get list of regions by ADMIN")
     @GetMapping("/")
     public ResponseEntity<List<RegionDTO>> getList(HttpServletRequest request){
         log.info("Get region list");
@@ -69,6 +75,7 @@ public class RegionController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Get list regions by language for any user")
     @GetMapping("/language")
     public ResponseEntity<List<RegionByLanguageDTO>> getListByLanguage(@RequestParam(name = "lang")String languageEnum){
         log.info("get region list by language");

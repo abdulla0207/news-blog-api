@@ -4,6 +4,7 @@ import com.company.dto.ProfileDTO;
 import com.company.enums.ProfileRoleEnum;
 import com.company.service.ProfileService;
 import com.company.util.JwtUtil;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -31,14 +32,10 @@ public class ProfileController {
         this.profileService = profileService;
     }
 
-    @GetMapping("/gett")
-    public String getAll(){
-        return "PROFILESSS";
-    }
-
     // POST "/profile/" request is send to API from front. It receives headerToken that was generated from JWT when user is logged in
     //and the body object that should be created
     // This method decodes the headerToken to JwtDTO object and sends to create service
+    @Operation(summary = "Create user profile by ADMIN")
     @PostMapping("/")
     public ResponseEntity<?> create(HttpServletRequest request, @RequestBody ProfileDTO profileDTO, @RequestHeader("Accept-Language") String lang){
         log.info("create user {}", profileDTO);
@@ -52,6 +49,7 @@ public class ProfileController {
     // DELETE "/profile/1" request is send to API controller method
     // id is received from URI and headerToken from the field of Authorization
     // Method decodes the token and calls deleteById method that deletes profile by id
+    @Operation(summary = "Remove user profile by ADMIN")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteById(@PathVariable int id, HttpServletRequest request, @RequestHeader("Accept-Language") String lang){
         log.info("remove user {}", id);
@@ -65,6 +63,7 @@ public class ProfileController {
     // It receives headerToken that will identify if this request is send by ADMIN
     // page and size from URI query
     // Method decodes headerToken and gets list of profiles from service
+    @Operation(summary = "Get user profile list for ADMIN")
     @GetMapping("/")
     public ResponseEntity<Page<ProfileDTO>> getList(HttpServletRequest request,
                                      @RequestParam("page") int page, @RequestParam("size") int size){
@@ -79,6 +78,7 @@ public class ProfileController {
     // PUT "profile/admin/1" request is send to API controller method from front
     // Method gets profile object, id and headerToken
     // Decodes headerToken, and sends all properties to service method to Update specific profile
+    @Operation(summary = "Update user profile by ADMIN")
     @PutMapping("/admin/{id}")
     public ResponseEntity<?> updateByAdmin(@RequestBody ProfileDTO profileDTO, @PathVariable int id, HttpServletRequest request,
                                            @RequestHeader("Accept-Language") String lang){
@@ -93,6 +93,7 @@ public class ProfileController {
     // PUT "/profile/edit" request is send to API
     // Method gets the update version of object and headerToken
     // It decodes the token and calls updateByProfile method from service
+    @Operation(summary = "Update user profile for user")
     @PutMapping("/edit")
     public ResponseEntity<?> updateByProfile(@RequestBody ProfileDTO profileDTO, HttpServletRequest request,
                                              @RequestHeader("Accept-Language") String lang){

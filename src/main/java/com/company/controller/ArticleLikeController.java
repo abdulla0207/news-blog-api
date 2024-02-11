@@ -4,6 +4,7 @@ import com.company.dto.article.ArticleLikeDTO;
 import com.company.dto.article.ArticleShortDTO;
 import com.company.service.ArticleLikeService;
 import com.company.util.JwtUtil;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,7 @@ public class ArticleLikeController {
         this.articleLikeService = articleLikeService;
     }
 
+    @Operation(summary = "Like an article for a user")
     @PostMapping("/like")
     public ResponseEntity<?> likeArticle(HttpServletRequest request,
                                          @RequestParam(name = "article-id") String articleId,
@@ -35,6 +37,8 @@ public class ArticleLikeController {
 
         return ResponseEntity.ok(response);
     }
+
+    @Operation(summary = "Dislike article for a user")
     @PostMapping("/unlike")
     public ResponseEntity<?> unlikeArticle(HttpServletRequest request,
                                            @RequestParam(name = "article-id") String articleId,
@@ -46,6 +50,7 @@ public class ArticleLikeController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Remove like or dislike for a user")
     @DeleteMapping("/remove")
     public ResponseEntity<?> removeLikeDislikeFromArticle(HttpServletRequest request,
                                                           @RequestParam(name = "article-id") String articleId,
@@ -57,6 +62,7 @@ public class ArticleLikeController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Gets the number of likes for a specific article")
     @GetMapping("/hasLikes")
     public ResponseEntity<?> hasUserLikedOrDisliked(HttpServletRequest request,
                                                     @RequestParam(name = "article-id") String articleId,

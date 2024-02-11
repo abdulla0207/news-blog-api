@@ -7,6 +7,7 @@ import com.company.enums.LanguageEnum;
 import com.company.enums.ProfileRoleEnum;
 import com.company.service.CategoryService;
 import com.company.util.JwtUtil;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -37,6 +38,7 @@ public class CategoryController {
      * Request Method gets category object that should be added to database
      * It sends to service method and returns a response entity
      **/
+    @Operation(summary = "Create a category", description = "Only accessible for ADMIN")
     @PostMapping("/")
     public ResponseEntity<?> createCategory(@Valid @RequestBody CategoryCreateDTO categoryDTO, HttpServletRequest request,
                                             @RequestHeader("Accept-Language") String lang){
@@ -50,6 +52,7 @@ public class CategoryController {
      * Request Method gets page and size that for pagination
      * It gets categories by pagination
      */
+    @Operation(summary = "Create a category", description = "Only accessible for ADMIN")
     @GetMapping("/")
     public ResponseEntity<?> getCategoryList(@RequestParam("page") int page, @RequestParam("size") int size, HttpServletRequest request){
         log.info("Get category list");
@@ -62,6 +65,7 @@ public class CategoryController {
     /** PUT "/category/KEY_EXAMPLE" request is send to API controller method
      * It receives key of specific category and a new category object with updated fields
      */
+    @Operation(summary = "Update a category by ID", description = "Only accessible for ADMIN")
     @PutMapping("/")
     public ResponseEntity<?> updateCategoryById(@RequestParam("id") int id, @RequestBody CategoryDTO categoryDTO, HttpServletRequest request,
                                                 @RequestHeader("Accept-Language") String lang){
@@ -72,6 +76,7 @@ public class CategoryController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Delete a category by ID", description = "Only accessible for ADMIN")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteById(@PathVariable(name = "id") int id, HttpServletRequest request, @RequestHeader("Accept-Language") String lang){
         log.info("delete category {}", id);
@@ -82,6 +87,7 @@ public class CategoryController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Get category list by language", description = "Accessible for any user")
     @GetMapping("/language")
     public ResponseEntity<?> getByLanguage(@RequestParam("language") String languageEnum){
         log.info("get categories by language");

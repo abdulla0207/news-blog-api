@@ -2,6 +2,7 @@ package com.company.controller;
 
 import com.company.service.CommentLikeService;
 import com.company.util.JwtUtil;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,7 @@ public class CommentLikeController {
         this.commentLikeService = commentLikeService;
     }
 
+    @Operation(summary = "Create like comment")
     @PostMapping("/")
     public ResponseEntity<?> likeComment(HttpServletRequest request,
                                          @RequestParam(name = "comment-id") String commentId,
@@ -31,6 +33,7 @@ public class CommentLikeController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Create dislike comment")
     @PostMapping("/dislike")
     public ResponseEntity<?> dislikeComment(HttpServletRequest request, @RequestParam(name = "comment-id") String commentId,
                                             @RequestHeader("Accept-Language") String lang){
@@ -41,6 +44,7 @@ public class CommentLikeController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Delete like or dislike comment")
     @DeleteMapping("/remove")
     public ResponseEntity<?> removeLikeDislikeFromComment(HttpServletRequest request,
                                                           @RequestParam(name = "comment-id") String commentId,
