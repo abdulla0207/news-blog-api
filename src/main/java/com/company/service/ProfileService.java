@@ -1,16 +1,12 @@
 package com.company.service;
 
-import com.company.dto.JwtDTO;
 import com.company.dto.ProfileDTO;
 import com.company.entity.ProfileEntity;
-import com.company.enums.ProfileRoleEnum;
 import com.company.enums.ProfileStatusEnum;
-import com.company.exception.AppForbiddenException;
 import com.company.exception.ItemNotFoundException;
 import com.company.exception.ProfileCreateException;
-import com.company.exception.TokenNotValidException;
 import com.company.repository.ProfileRepository;
-import com.company.util.MD5Util;
+import com.company.util.BCryptUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -98,7 +94,7 @@ public class ProfileService {
         ProfileEntity profileEntity = new ProfileEntity();
         profileEntity.setSurname(profileDTO.surname());
         profileEntity.setName(profileDTO.name());
-        profileEntity.setPassword(MD5Util.encode(profileDTO.password()));
+        profileEntity.setPassword(BCryptUtil.hashPassword(profileDTO.password()));
         profileEntity.setEmail(profileDTO.email());
         profileEntity.setRole(profileDTO.roleEnum());
         profileEntity.setStatus(ProfileStatusEnum.ACTIVE);

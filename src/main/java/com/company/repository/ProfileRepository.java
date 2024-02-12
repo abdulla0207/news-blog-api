@@ -16,7 +16,7 @@ public interface ProfileRepository extends JpaRepository<ProfileEntity, Integer>
 
     Optional<ProfileEntity> findByEmail(String email);
 
-    Optional<ProfileEntity> findByEmailAndPhoneNumberAndPassword(String email, String phoneNumber, String password);
+    Optional<ProfileEntity> findByEmailAndPhoneNumber(String email, String phoneNumber);
 
     Optional<ProfileEntity> findByPhoneNumber(String phoneNum);
 

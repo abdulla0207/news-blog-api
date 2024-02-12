@@ -11,7 +11,7 @@ import com.company.enums.ProfileStatusEnum;
 import com.company.exception.*;
 import com.company.repository.ProfileRepository;
 import com.company.util.JwtUtil;
-import com.company.util.MD5Util;
+import com.company.util.BCryptUtil;
 import com.company.util.MailUtil;
 import com.company.util.TokenUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -54,7 +54,7 @@ public class AuthorizationService {
         profileEntity.setEmail(registrationDTO.email());
         profileEntity.setStatus(ProfileStatusEnum.NOT_ACTIVE);
         profileEntity.setRole(ProfileRoleEnum.USER);
-        profileEntity.setPassword(MD5Util.encode(registrationDTO.password()));
+        profileEntity.setPassword(BCryptUtil.hashPassword(registrationDTO.password()));
         profileEntity.setUpdatedAt(LocalDateTime.now());
         profileEntity.setCreatedAt(LocalDateTime.now());
 
@@ -70,8 +70,8 @@ public class AuthorizationService {
     }
 
     public AuthResponseDTO login(LoginDTO loginDTO, LanguageEnum lang) {
-        Optional<ProfileEntity> getProfile = profileRepository.findByEmailAndPhoneNumberAndPassword(loginDTO.getEmail(),
-                loginDTO.getPhoneNumber(), MD5Util.encode(loginDTO.getPassword()));
+        Optional<ProfileEntity> getProfile = profileRepository.findByEmailAndPhoneNumber(loginDTO.getEmail(),
+                loginDTO.getPhoneNumber());
 
         if(getProfile.isEmpty()) {
             log.info("Email, phone number or password is incorrect");
@@ -79,6 +79,12 @@ public class AuthorizationService {
         }
 
         ProfileEntity profileEntity = getProfile.get();
+
+        if(!BCryptUtil.verifyPassword(loginDTO.getPassword(), profileEntity.getPassword())){
+            log.info("Incorrect password provided for user {}", loginDTO.getEmail());
+            throw new ItemNotFoundException(resourceMessageService.getMessage("user.login.field.incorrect", lang.name()));
+        }
+
         if(profileEntity.getStatus().equals(ProfileStatusEnum.BLOCKED)) {
             log.info("Account blocked");
             throw new RuntimeException(resourceMessageService.getMessage("user.blocked", lang.name()));

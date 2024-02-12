@@ -221,7 +221,7 @@ public class ArticleController {
 
     @Operation(summary = "Get last top five articles by type")
     @GetMapping("/last-five/by-type/{typeId}")
-    public ResponseEntity<?> getLastFiveByType(@PathVariable int typeId, @RequestHeader(name = "Accept-Language", defaultValue = "uz") LanguageEnum language){
+    public ResponseEntity<?> getLastFiveByType(@PathVariable int typeId, @RequestHeader(name = "Accept-Language", defaultValue = "UZ") LanguageEnum language){
         log.info("get last five articles");
         List<ArticleShortDTO> response = articleService.getLastFiveByType(typeId, language);
 
@@ -231,7 +231,7 @@ public class ArticleController {
     @Operation(summary = "Get last top eight articles and not include an ID of specific article")
     @GetMapping("/last-eight")
     public ResponseEntity<?> getLastEightNotIncludeId(@RequestParam(name = "uuid") List<String> uuid,
-                                                      @RequestHeader(name = "Accept-Language", defaultValue = "uz") LanguageEnum language){
+                                                      @RequestHeader(name = "Accept-Language", defaultValue = "UZ") LanguageEnum language){
         log.info("get last eight articles not included ids");
         List<ArticleShortDTO> response = articleService.getLastEightNotIncludeId(uuid, language);
         return ResponseEntity.ok(response);
@@ -239,7 +239,7 @@ public class ArticleController {
 
     @Operation(summary = "Get article by ID and language")
     @GetMapping("/language/{uuid}")
-    public ResponseEntity<?> getArticleByIdAndLanguage(@PathVariable(name = "uuid") String uuid, @RequestHeader(name = "Accept-Language", defaultValue = "uz") LanguageEnum language){
+    public ResponseEntity<?> getArticleByIdAndLanguage(@PathVariable(name = "uuid") String uuid, @RequestHeader(name = "Accept-Language", defaultValue = "UZ") LanguageEnum language){
         log.info("get articles by id and language");
         ArticleFullDTO response = articleService.getArticlesByIdAndLanguage(uuid, language);
 
@@ -248,7 +248,7 @@ public class ArticleController {
 
     @Operation(summary = "Get most viewed articles in a latest week")
     @GetMapping("/viewed/weekly")
-    public ResponseEntity<?> getMostViewedArticlesInAWeek(@RequestHeader(name = "Accept-Language", defaultValue = "uz") LanguageEnum language,
+    public ResponseEntity<?> getMostViewedArticlesInAWeek(@RequestHeader(name = "Accept-Language", defaultValue = "UZ") LanguageEnum language,
                                                           @RequestParam("page") int page, @RequestParam("size") int size){
         log.info("get most viewed articles");
         Page<ArticleShortDTO> response = articleService.getMostViewedArticleInAWeek(language, page, size);

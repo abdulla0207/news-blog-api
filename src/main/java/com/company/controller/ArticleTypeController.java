@@ -78,7 +78,7 @@ public class ArticleTypeController {
 
     @Operation(summary = "Get article type list by language")
     @GetMapping("/language")
-    public ResponseEntity<?> getListByLanguage(@RequestParam(name = "lang", defaultValue = "ENGLISH") LanguageEnum lang){
+    public ResponseEntity<?> getListByLanguage(@RequestParam(name = "lang", defaultValue = "EN") LanguageEnum lang){
         log.info("get list of article types by language");
         List<ArticleTypeByLanguageDTO> dtos = articleTypeService.getListByLanguage(lang);
 
