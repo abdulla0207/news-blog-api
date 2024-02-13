@@ -19,6 +19,12 @@ article management, content organization, commenting system, attachment handling
 
 ---
 
+## Database UML Diagram
+
+![UML](https://github.com/abdulla0207/news-blog-api/blob/3987a2ce34021968165074d53303d2f02af59bf4/src/main/resources/readme-files/news-blog-db-UML.png)
+
+---
+
 ## Technologies Used
 - **Java:** A versatile programming language known for its portability and scalability.
 - **Spring Boot:** A framework for building Java-based enterprise applications with ease.
